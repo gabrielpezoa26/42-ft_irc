@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/20 16:23:44 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/20 17:25:07 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,11 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <limits>
+#include <exception>
 #include "utils.hpp"
 
-#define DEBUG true
+#define DEBUG false
 
 class Server
 {
@@ -28,13 +30,14 @@ class Server
 
 	public:
 		Server();
-		Server(const Server& other);
+		Server(const Server& other);  //cpa n vai precisar
 		~Server();
-		Server& operator=(const Server& other);
+		Server& operator=(const Server& other); //cpa n vai precisar
 
 		void init(char **argv);
-
-};
+		bool isValidPort(const std::string &port);
+		bool isPasswordValid(const std::string &password);
+	};
 
 
 // Your executable will be run as follows:

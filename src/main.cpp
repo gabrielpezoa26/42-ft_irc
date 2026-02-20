@@ -6,17 +6,14 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 10:40:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/20 16:20:04 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/20 17:20:49 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
 
-int main(int argc, char **argv)
+static void server_loop(char **argv)
 {
-	if (argc != 3)
-		return 1;
-
 	try
 	{
 		Server server;
@@ -25,7 +22,14 @@ int main(int argc, char **argv)
 	catch(const std::exception& e)
 	{
 		std::cerr << e.what() << '\n';
-		return 1;
 	}
+}
+
+int main(int argc, char **argv)
+{
+	if (argc != 3)
+		return 1;
+
+	server_loop(argv);
 	return 0;
 }
