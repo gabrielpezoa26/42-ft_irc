@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/20 17:30:16 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/20 17:33:53 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,7 @@ void Server::init(char **argv)
 	_defined_password = argv[2];
 	if (!isValidPort(_defined_port) || !isPasswordValid(_defined_password))
 	{
-		// throw invalidInputException();
-		log("deu ruimm");
+		throw std::runtime_error("Server-> Exception caught: invalid input");
 	}
 	log("DEBUG: init-> deu bommm");
 }
@@ -81,7 +80,7 @@ bool Server::isPasswordValid(const std::string &password)
 	// std::cout << "DEBUG: password = " << _defined_password << std::endl;
 	if (_defined_password.empty())
 	{
-		log("password cannot be empty");
+		// log("password cannot be empty");
 		return false;
 	}
 	for (size_t i = 0; i < _defined_password.length(); i++)
