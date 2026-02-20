@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/20 17:33:53 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/20 18:56:04 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,11 @@ bool Server::isValidPort(const std::string &port)
 		printDebug("Server-> isValidPort() called");
 
 	_defined_port = port;
-	// std::cout << "DEBUG: port = " << _defined_port << std::endl;
-	if (!atoi(_defined_port.c_str()) || atoi(_defined_port.c_str()) < 0
-		|| atol(_defined_port.c_str()) > std::numeric_limits<int>::max())
-	{
-		// log("invalid port");
+	std::string valid_chars = "0123456789";
+	if (_defined_port.find_first_not_of(valid_chars) != std::string::npos)
 		return false;
-	}
+	if (!atoi(_defined_port.c_str()) || atoi(_defined_port.c_str()) < 0 || atol(_defined_port.c_str()) > std::numeric_limits<int>::max())
+		return false;
 	return true;
 }
 
@@ -77,19 +75,14 @@ bool Server::isPasswordValid(const std::string &password)
 		printDebug("Server-> isPasswordValid() called");
 
 	_defined_password = password;
-	// std::cout << "DEBUG: password = " << _defined_password << std::endl;
 	if (_defined_password.empty())
-	{
-		// log("password cannot be empty");
 		return false;
-	}
 	for (size_t i = 0; i < _defined_password.length(); i++)
 	{
 		if (!isascii(_defined_password[i]))
-		{
-			// log("DEBUG: senha nao eh ascii");
 			return false;
-		}
 	}
+	// if (atoi(_defined_password.c_str()) < 5)
+	// 	return false;
 	return true;
 }

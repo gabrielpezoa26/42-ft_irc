@@ -6,12 +6,13 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 10:40:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/20 17:20:49 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/20 18:41:18 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
 
+// implementar sinais
 static void server_loop(char **argv)
 {
 	try

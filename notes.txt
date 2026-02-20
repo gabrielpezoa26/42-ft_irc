@@ -1,19 +1,10 @@
 20/02/2026
 
 afazeres:
-	-> arrumar estrutura de pastas
-
-	-> começar a fazer o parse do argv
-		Your executable will be run as follows:
-		./ircserv <port> <password>
-
 	-> criar branches rs
 	
 	dps:
-	-> classe Server vai virar Parser na vdd
-	-> refatorar init() em funções menores
-
-
+	-> arrumar makefile
 
 
 

@@ -26,12 +26,12 @@ $(OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-
 clean:
 	rm -rf $(OBJ_DIR)
 
 fclean: clean
 	rm -f $(NAME)
+
 
 
 run: all
