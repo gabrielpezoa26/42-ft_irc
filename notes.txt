@@ -3,12 +3,17 @@
 afazeres:
 	-> arrumar estrutura de pastas
 
+	-> começar a fazer o parse do argv
+		Your executable will be run as follows:
+		./ircserv <port> <password>
+
+
+
+
 
 links:
 	https://pt.wikipedia.org/wiki/Internet_Relay_Chat
 
 	https://medium.com/@afatir.ahmedfatir/small-irc-server-ft-irc-42-network-7cee848de6f9
 
-
-	
 	https://modern.ircdocs.horse/

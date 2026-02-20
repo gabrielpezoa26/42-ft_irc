@@ -1,28 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.cpp                                          :+:      :+:    :+:   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/20 10:42:08 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/20 10:48:59 by gcesar-n         ###   ########.fr       */
+/*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
+/*   Updated: 2026/02/20 16:23:44 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifndef SERVER_HPP
+#define SERVER_HPP
+
+#include <iostream>
+#include <stdlib.h>
 #include "utils.hpp"
 
-void log(std::string message)
-{
-	std::cout << message << std::endl;
-}
+#define DEBUG true
 
-void logColor(std::string message, std::string color)
+class Server
 {
-	std::cout << color << message << RESET << std::endl;
-}
+	private:
+		std::string _defined_port;
+		std::string _defined_password;
 
-void printDebug(std::string message)
-{
-	std::cout << PURPLE << message << RESET << std::endl;
-}
+
+	public:
+		Server();
+		Server(const Server& other);
+		~Server();
+		Server& operator=(const Server& other);
+
+		void init(char **argv);
+
+};
+
+
+// Your executable will be run as follows:
+// 	./ircserv <port> <password>
+
+#endif

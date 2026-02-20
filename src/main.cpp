@@ -1,31 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.hpp                                          :+:      :+:    :+:   */
+/*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/20 10:42:42 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/20 10:47:42 by gcesar-n         ###   ########.fr       */
+/*   Created: 2026/02/20 10:40:00 by gcesar-n          #+#    #+#             */
+/*   Updated: 2026/02/20 16:20:04 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef UTILS_HPP
-#define UTILS_HPP
+#include "../includes/Server.hpp"
 
-#include <iostream>
+int main(int argc, char **argv)
+{
+	if (argc != 3)
+		return 1;
 
-#define GREEN "\033[32m"
-#define RED "\033[31m"
-#define BLUE "\033[34m"
-#define PURPLE "\033[35m"
-#define YELLOW "\033[33m"
-#define RESET "\033[0m"
-
-
-void log(std::string message);
-void logColor(std::string message, std::string color);
-void printDebug(std::string message);
-
-
-#endif
+	try
+	{
+		Server server;
+		server.init(argv);
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+		return 1;
+	}
+	return 0;
+}

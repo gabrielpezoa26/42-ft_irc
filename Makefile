@@ -1,25 +1,31 @@
 NAME = ircserv
-OBJECTS = objects/main.o objects/utils.o
 
 CC = c++
-CFLAGS = -Wall -Wextra -Werror -std=c++98
+CFLAGS = -Wall -Wextra -Werror -I $(INCLUDES) -std=c++98
+
+INCLUDES = includes
 OBJ_DIR = objects
+
+SRC_DIR = src
+SERVER_DIR = $(SRC_DIR)/server
+UTILS_DIR = $(SRC_DIR)/utils
+
+SRCS = $(SRC_DIR)/main.cpp \
+		$(SERVER_DIR)/Server.cpp \
+		$(UTILS_DIR)/utils.cpp
+
+OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
+
 
 all: $(NAME)
 
-$(NAME): $(OBJECTS)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJECTS)
+$(NAME): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
-$(OBJECTS): | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
-
-objects/main.o: main.cpp
-	$(CC) $(CFLAGS) -c main.cpp -o objects/main.o
-
-objects/utils.o: utils.cpp
-	$(CC) $(CFLAGS) -c utils.cpp -o objects/utils.o
 
 clean:
 	rm -rf $(OBJ_DIR)
@@ -27,12 +33,19 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 
-#arrumar dps
-run: all
-	./$(NAME) port password
 
-#arrumar dps
+run: all
+	./$(NAME) 4444 senha123
+
+#apagar dps
+run2: all
+	./$(NAME) aaaa senha123
+
+#apagar dps
+run3: all
+	./$(NAME) -4444 senha123
+
 val: all
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME)
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4444 senha123
 
 re: fclean all
