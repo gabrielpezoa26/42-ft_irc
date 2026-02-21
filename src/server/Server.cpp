@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/20 18:56:04 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/21 13:55:23 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 /* ---------- Canonical Form ---------- */
 Server::Server()
-: _defined_port("default_port"), _defined_password("default_password")
+: _defined_port(0), _defined_password("default_password")
 {
 	if (DEBUG)
 		printDebug("Server-> Default constructor called");
@@ -40,39 +40,62 @@ Server& Server::operator=(const Server& other)
 	return *this;
 }
 
+
+
 /* ---------- Methods ---------- */
 void Server::init(char **argv)
 {
 	if (DEBUG)
 		printDebug("Server-> init() called");
 
-	_defined_port = argv[1];
+	std::string input_port = argv[1];
 	_defined_password = argv[2];
-	if (!isValidPort(_defined_port) || !isPasswordValid(_defined_password))
+	if (!_isValidPort(input_port) || !_isValidPassword(_defined_password))
 	{
-		throw std::runtime_error("Server-> Exception caught: invalid input");
+		throw std::invalid_argument("Server-> Exception caught: invalid input");
 	}
-	log("DEBUG: init-> deu bommm");
+	printVarDebug("port", _defined_port);
+	printVarDebug("password", _defined_password);
 }
 
-bool Server::isValidPort(const std::string &port)
+void Server::setSocket()
 {
 	if (DEBUG)
-		printDebug("Server-> isValidPort() called");
+		printDebug("Server-> setSocket() called");
 
-	_defined_port = port;
+	add.sin_family = AF_INET;
+	add.sin_port = htons(_defined_port);
+	server_fd_socket = socket(AF_INET, SOCK_STREAM, 0);
+
+	if (server_fd_socket == -1)
+		throw std::runtime_error("Error while creating socket");
+
+	printVarDebug("socket", server_fd_socket);
+}
+
+
+
+/* ---------- Helpers ---------- */
+bool Server::_isValidPort(const std::string &port)
+{
+	if (DEBUG)
+		printDebug("Server-> _isValidPort() called");
+
+	std::string temp = port;
 	std::string valid_chars = "0123456789";
-	if (_defined_port.find_first_not_of(valid_chars) != std::string::npos)
+	if (temp.find_first_not_of(valid_chars) != std::string::npos)
 		return false;
-	if (!atoi(_defined_port.c_str()) || atoi(_defined_port.c_str()) < 0 || atol(_defined_port.c_str()) > std::numeric_limits<int>::max())
+	if (!atoi(temp.c_str()) || atoi(temp.c_str()) < 0 || atol(temp.c_str()) > std::numeric_limits<int>::max())
 		return false;
+	
+	_defined_port = atoi(temp.c_str());
 	return true;
 }
 
-bool Server::isPasswordValid(const std::string &password)
+bool Server::_isValidPassword(const std::string &password)
 {
 	if (DEBUG)
-		printDebug("Server-> isPasswordValid() called");
+		printDebug("Server-> _isValidPassword() called");
 
 	_defined_password = password;
 	if (_defined_password.empty())
@@ -82,7 +105,5 @@ bool Server::isPasswordValid(const std::string &password)
 		if (!isascii(_defined_password[i]))
 			return false;
 	}
-	// if (atoi(_defined_password.c_str()) < 5)
-	// 	return false;
 	return true;
 }
