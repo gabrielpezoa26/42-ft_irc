@@ -1,0 +1,27 @@
+21/02/2026
+
+afazeres:
+	-> criar branches rs
+	-> revisar parsing
+	-> começar implementar lógica do server
+		-> tratar sinais
+		-> criar socket
+
+
+
+
+formatação q eu to usando(inventei da minha cabeça rs)
+	-> camelCase() pra funções
+	-> snake_case pra variáveis
+	-> _mangoLoko() ou _mango_loko pra atributos privados de classe
+	-> evitando abreviações pq a memória do pai eh ruim
+
+
+
+
+links:
+	https://pt.wikipedia.org/wiki/Internet_Relay_Chat
+
+	https://medium.com/@afatir.ahmedfatir/small-irc-server-ft-irc-42-network-7cee848de6f9
+
+	https://modern.ircdocs.horse/

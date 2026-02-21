@@ -1,0 +1,25 @@
+21/02/2026
+
+
+
+testes pra rodar de vez em quando p ter ctz q nd quebrou resolves
+
+
+
+
+testes válidos:
+	./ircserv 4444 senha123
+
+
+
+inválidos:
+	./ircserv -4444 senha123
+
+	./ircserv 44o4 senha 123
+
+	./ircserv 4444 senhçççç
+
+	./ircserv 4444 ""
+	
+	./ircserv "" ""
+
