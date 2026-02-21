@@ -4,6 +4,9 @@ socket
 - Returns: An integer (the new file descriptor) or -1 on error.
 - Usage: Call this first to ask the OS for a new network endpoint (IPv4, TCP stream). It returns the ID number you will use for all future configuration.
 
+	example:
+		int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen);
+
 close
 - Returns: 0 on success, or -1 on error.
 - Usage: Pass it a file descriptor to destroy the endpoint and free up memory when you are done with a client or shutting down the server.
