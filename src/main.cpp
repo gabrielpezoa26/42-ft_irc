@@ -6,13 +6,13 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 10:40:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/21 13:07:04 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/21 19:39:22 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
 
-// implementar sinais
+// implementar signal handling ctrl + C etc
 static void server_loop(char **argv)
 {
 	try
@@ -20,6 +20,9 @@ static void server_loop(char **argv)
 		Server server;
 		server.init(argv);
 		server.setSocket();
+		server.run();
+		// delete
+		// etc
 	}
 	catch(const std::exception& e)
 	{
@@ -30,8 +33,10 @@ static void server_loop(char **argv)
 int main(int argc, char **argv)
 {
 	if (argc != 3)
+	{
+		log("Error: invalid arg count.\n Correct usage: ./ircserv <portnumber> <password>");
 		return 1;
-
+	}
 	server_loop(argv);
 	return 0;
 }

@@ -2,16 +2,17 @@
 
 afazeres:
 	-> criar branches rs
-	-> revisar parsing
-	-> arrumar pastas (tirar Server.cpp da pasta server, etc)
+	-> revisar parsing       ok
+	-> arrumar pastas (tirar Server.cpp da pasta server, etc)    ok
 	-> começar implementar lógica do server
-		-> criar socket
-		-> setar options
+		-> criar socket        ok
+		-> setar options    wip
 		-> fazer o bind
 		-> fazer o listen
 
 		dps:
 		-> implementar ipv6
+		-> implementar exceptions
 		-> tratar sinais
 
 
@@ -24,6 +25,10 @@ formatação q eu to usando(inventei da minha cabeça rs)
 	-> evitando abreviações pq a memória do pai eh ruim
 
 
+
+output:
+	roxo: se a flag DEBUG tiver ativa, mostra o "fluxo" do programa
+	amarelo: é do template debugVar, dps a gnt vai tirando
 
 
 links:

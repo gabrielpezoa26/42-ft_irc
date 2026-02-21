@@ -7,11 +7,10 @@ INCLUDES = includes
 OBJ_DIR = objects
 
 SRC_DIR = src
-SERVER_DIR = $(SRC_DIR)/server
 UTILS_DIR = $(SRC_DIR)/utils
 
 SRCS = $(SRC_DIR)/main.cpp \
-		$(SERVER_DIR)/Server.cpp \
+		$(SRC_DIR)/Server.cpp \
 		$(UTILS_DIR)/utils.cpp
 
 OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)

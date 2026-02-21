@@ -6,11 +6,11 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/21 15:09:22 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/21 19:40:02 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/Server.hpp"
+#include "../includes/Server.hpp"
 
 /* ---------- Canonical Form ---------- */
 Server::Server()
@@ -54,8 +54,6 @@ void Server::init(char **argv)
 	{
 		throw std::invalid_argument("Server-> Exception caught: invalid input");
 	}
-	printVarDebug("port", _defined_port);
-	printVarDebug("password", _defined_password);
 }
 
 void Server::setSocket()
@@ -63,20 +61,41 @@ void Server::setSocket()
 	if (DEBUG)
 		printDebug("Server-> setSocket() called");
 
-	add.sin_family = AF_INET;  //funciona só com ipv4, dps tem q mudar
-	add.sin_port = htons(_defined_port);
+	_add.sin_family = AF_INET;  //assim funciona só com ipv4, dps TALVEZ tem q mudar pra funfar com ipv6 tbm.
+	_add.sin_port = htons(_defined_port);
 	_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 	int flag = 1;
 
 	if (_socket_fd == -1)
 		throw std::runtime_error("Error while socket creation");
-	if (setsockopt(_socket_fd, SOL_SOCKET, SO_REUSEADDR,  &flag, sizeof(flag)) == -1)
-		throw std::runtime_error("Error when setting SO_REUSEADDR on main socket");
+	if (setsockopt(_socket_fd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) == -1)
+		throw std::runtime_error("Error while setting SO_REUSEADDR on main socket");
 	if (fcntl(_socket_fd, F_SETFL, O_NONBLOCK) == -1)
-		throw std::runtime_error("Error when setting O_NONBLOCK on main socket");
+		throw std::runtime_error("Error while setting O_NONBLOCK on main socket");
+	if (bind(_socket_fd, (struct sockaddr *)&_add, sizeof(_add)) == -1)
+		throw std::runtime_error("Error while binding socket");
+	if (listen(_socket_fd, SOMAXCONN) == -1)
+		throw std::runtime_error("Error while listen() call");
 
+	debugVar("port", _defined_port);
+	debugVar("password", _defined_password);
+	debugVar("socket fd", _socket_fd);
+	debugVar("_add.sin_family", _add.sin_family);
+	debugVar("_add.sin_port", _add.sin_port);
+	debugVar("SOMAXCONN macro value", SOMAXCONN);
+}
 
-	printVarDebug("socket fd", _socket_fd);
+void Server::run()
+{
+	if (DEBUG)
+		printDebug("Server-> run() called");
+	
+	std::time_t start_time = std::time(0);
+	char* readable_start_time = std::ctime(&start_time);
+
+	std::cout << GREEN << readable_start_time << RESET;
+	log("Server is running....");
+	// loop q faz o parse dos sinais/comandos/etc
 }
 
 
@@ -93,7 +112,6 @@ bool Server::_isValidPort(const std::string &port)
 		return false;
 	if (!atoi(temp.c_str()) || atoi(temp.c_str()) < 0 || atol(temp.c_str()) > std::numeric_limits<int>::max())
 		return false;
-	
 	_defined_port = atoi(temp.c_str());
 	return true;
 }

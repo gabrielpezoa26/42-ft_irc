@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/21 15:08:08 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/21 19:40:05 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,15 @@
 #include <sys/socket.h> //socket()
 #include <netinet/in.h> //sockaddr_in struct
 #include <arpa/inet.h> //htons()
+#include <ctime>
 #include <fcntl.h>
+
+#define GREEN "\033[32m"
+#define RED "\033[31m"
+#define BLUE "\033[34m"
+#define PURPLE "\033[35m"
+#define YELLOW "\033[33m"
+#define RESET "\033[0m"
 
 #define DEBUG true
 
@@ -30,9 +38,8 @@ class Server
 	private:
 		int _defined_port;
 		std::string _defined_password;
-
 		int _socket_fd;
-		struct sockaddr_in add;
+		struct sockaddr_in _add;
 
 		bool _isValidPort(const std::string &port);
 		bool _isValidPassword(const std::string &password);
@@ -45,12 +52,13 @@ class Server
 
 		void init(char **argv);
 		void setSocket();
-		template <typename T>
-
+		void run();
+		
 		// apagar dps
-		void printVarDebug(const std::string name, const T value)
+		template <typename T>
+		void debugVar(const std::string name, const T value)
 		{
-			std::cout << "DEBUG: " << name << " = " << value << std::endl;
+			std::cout << YELLOW << "DEBUG: " << name << " = " << value << RESET << std::endl;
 		}
 };
 
