@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/21 13:55:23 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/21 15:09:22 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,14 +63,20 @@ void Server::setSocket()
 	if (DEBUG)
 		printDebug("Server-> setSocket() called");
 
-	add.sin_family = AF_INET;
+	add.sin_family = AF_INET;  //funciona só com ipv4, dps tem q mudar
 	add.sin_port = htons(_defined_port);
-	server_fd_socket = socket(AF_INET, SOCK_STREAM, 0);
+	_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+	int flag = 1;
 
-	if (server_fd_socket == -1)
-		throw std::runtime_error("Error while creating socket");
+	if (_socket_fd == -1)
+		throw std::runtime_error("Error while socket creation");
+	if (setsockopt(_socket_fd, SOL_SOCKET, SO_REUSEADDR,  &flag, sizeof(flag)) == -1)
+		throw std::runtime_error("Error when setting SO_REUSEADDR on main socket");
+	if (fcntl(_socket_fd, F_SETFL, O_NONBLOCK) == -1)
+		throw std::runtime_error("Error when setting O_NONBLOCK on main socket");
 
-	printVarDebug("socket", server_fd_socket);
+
+	printVarDebug("socket fd", _socket_fd);
 }
 
 

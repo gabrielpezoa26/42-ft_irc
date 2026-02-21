@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 10:40:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/20 18:41:18 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/21 13:07:04 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ static void server_loop(char **argv)
 	{
 		Server server;
 		server.init(argv);
+		server.setSocket();
 	}
 	catch(const std::exception& e)
 	{
