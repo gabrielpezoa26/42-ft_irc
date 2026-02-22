@@ -1,19 +1,22 @@
 21/02/2026
 
 afazeres:
-	-> criar branches rs
-	-> revisar parsing       ok
-	-> arrumar pastas (tirar Server.cpp da pasta server, etc)    ok
 	-> começar implementar lógica do server
 		-> criar socket        ok
-		-> setar options    wip
-		-> fazer o bind
-		-> fazer o listen
+		-> setar options    ok
+		-> fazer o bind   ok
+		-> fazer o listen    ok
+
+
+		agora:
+			-> fazer o accept()
+			-> conectar test_client no server
+			-> fazer o loop
+				-> tratar sinais
+				-> printa msg (teste)
 
 		dps:
-		-> implementar ipv6
-		-> implementar exceptions
-		-> tratar sinais
+			->criar dev branches
 
 
 
@@ -33,6 +36,10 @@ output:
 
 links:
 	https://pt.wikipedia.org/wiki/Internet_Relay_Chat
+
+	https://www.geeksforgeeks.org/cpp/socket-programming-in-cpp/
+
+	https://www.tutorialspoint.com/cplusplus/cpp_socket_programming.htm
 
 	https://www.youtube.com/watch?v=6UbKenFipjo
 

@@ -36,17 +36,9 @@ fclean: clean
 run: all
 	./$(NAME) 4444 senha123
 
-#apagar dps
-run2: all
-	./$(NAME) aaaa senha123
+client:
+	c++ test_client.cpp -o client
 
-#apagar dps
-run3: all
-	./$(NAME) -4444 senha123
-
-#apagar dps
-run4: all
-	./$(NAME) 4444 senhaçç
 
 val: all
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4444 senha123

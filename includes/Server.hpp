@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/21 19:40:05 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/22 11:37:40 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,9 @@
 #include <arpa/inet.h> //htons()
 #include <ctime>
 #include <fcntl.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <sys/types.h> 
 
 #define GREEN "\033[32m"
 #define RED "\033[31m"
@@ -38,7 +41,7 @@ class Server
 	private:
 		int _defined_port;
 		std::string _defined_password;
-		int _socket_fd;
+		int _server_socket;
 		struct sockaddr_in _add;
 
 		bool _isValidPort(const std::string &port);
@@ -54,7 +57,6 @@ class Server
 		void setSocket();
 		void run();
 		
-		// apagar dps
 		template <typename T>
 		void debugVar(const std::string name, const T value)
 		{
