@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/22 11:37:40 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/22 13:11:31 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/types.h> 
+#include <poll.h>
 
 #define GREEN "\033[32m"
 #define RED "\033[31m"
@@ -46,6 +47,7 @@ class Server
 
 		bool _isValidPort(const std::string &port);
 		bool _isValidPassword(const std::string &password);
+		void _printCurrentTime();
 
 	public:
 		Server();

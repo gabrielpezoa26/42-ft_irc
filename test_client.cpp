@@ -1,4 +1,4 @@
-	// peguei desse link
+	// peguei desse link	
 	// https://www.geeksforgeeks.org/cpp/socket-programming-in-cpp/
 
 
@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <arpa/inet.h>
 
 int main()
 {
@@ -17,7 +18,7 @@ int main()
     sockaddr_in serverAddress;
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(4444);
-    serverAddress.sin_addr.s_addr = INADDR_ANY;
+    inet_pton(AF_INET, "127.0.0.1", &serverAddress.sin_addr);
 
     // sending connection request
     connect(clientSocket, (struct sockaddr*)&serverAddress,

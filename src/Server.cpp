@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/22 11:47:18 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/22 13:19:52 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,47 +64,38 @@ void Server::setSocket()
 	_add.sin_family = AF_INET;  //assim funciona só com ipv4, dps TALVEZ tem q mudar pra funfar com ipv6 tbm.
 	_add.sin_port = htons(_defined_port);
 	_server_socket = socket(AF_INET, SOCK_STREAM, 0);
+	_add.sin_addr.s_addr = INADDR_ANY;
 	int flag = 1;
 
 	if (_server_socket == -1)
 		throw std::runtime_error("Error while socket creation");
 	if (setsockopt(_server_socket, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) == -1)
 		throw std::runtime_error("Error while setting SO_REUSEADDR on main socket");
-	if (fcntl(_server_socket, F_SETFL, O_NONBLOCK) == -1)
-		throw std::runtime_error("Error while setting O_NONBLOCK on main socket");
+	// if (fcntl(_server_socket, F_SETFL, O_NONBLOCK) == -1)
+	// 	throw std::runtime_error("Error while setting O_NONBLOCK on main socket");  //descomentar dps
 	if (bind(_server_socket, (struct sockaddr *)&_add, sizeof(_add)) == -1)
 		throw std::runtime_error("Error while binding socket");
 	if (listen(_server_socket, SOMAXCONN) == -1)
 		throw std::runtime_error("Error while listen() call");
-
-	// debugVar("port", _defined_port);
-	// debugVar("password", _defined_password);
-	// debugVar("socket fd", _server_socket);
-	// debugVar("_add.sin_family", _add.sin_family);
-	// debugVar("_add.sin_port", _add.sin_port);
-	// debugVar("SOMAXCONN macro value", SOMAXCONN);
 }
 
 void Server::run()
 {
 	if (DEBUG)
 		printDebug("Server-> run() called");
-	
-	std::time_t start_time = std::time(0);
-	char* readable_start_time = std::ctime(&start_time);
-	std::cout << GREEN << readable_start_time << RESET;
+	_printCurrentTime();
 
 	int client_socket;
-	int len;
+	socklen_t len;
 	struct sockaddr_in cli;
 
 	len = sizeof(cli);
-	client_socket = accept(_server_socket, NULL, NULL); //o erro ta aki
-	debugVar("client socket", client_socket);
-
+	client_socket = accept(_server_socket, (struct sockaddr *)&cli, &len);
 	
 	log("Server is running....");
-	// loop q faz o parse dos sinais/comandos/etc
+	char buffer[1024] = { 0 };
+	recv(client_socket, buffer, sizeof(buffer), 0);
+	std::cout << "Message from client: " << buffer << std::endl;
 }
 
 
@@ -139,4 +130,11 @@ bool Server::_isValidPassword(const std::string &password)
 			return false;
 	}
 	return true;
+}
+
+void Server::_printCurrentTime()
+{
+	std::time_t current_time = std::time(0);
+	char* readable_start_time = std::ctime(&current_time);
+	std::cout << GREEN << readable_start_time << RESET;
 }
