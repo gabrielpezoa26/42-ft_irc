@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/22 13:11:31 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/22 16:12:11 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <netinet/in.h> //sockaddr_in struct
 #include <arpa/inet.h> //htons()
 #include <ctime>
+#include <cstring>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -42,16 +43,20 @@ class Server
 	private:
 		int _defined_port;
 		std::string _defined_password;
+		bool _continue;
+
 		int _server_socket;
 		struct sockaddr_in _add;
+		struct pollfd _new_client;
 
 		bool _isValidPort(const std::string &port);
 		bool _isValidPassword(const std::string &password);
 		void _printCurrentTime();
 
+
 	public:
 		Server();
-		Server(const Server& other);  //cpa n vai precisar
+		Server(const Server& other); //cpa n vai precisar
 		~Server();
 		Server& operator=(const Server& other); //cpa n vai precisar
 

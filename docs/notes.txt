@@ -1,19 +1,11 @@
-21/02/2026
+22/02/2026
+
 
 afazeres:
-	-> começar implementar lógica do server
-		-> criar socket        ok
-		-> setar options    ok
-		-> fazer o bind   ok
-		-> fazer o listen    ok
-
-
 		agora:
-			-> fazer o accept()
-			-> conectar test_client no server
-			-> fazer o loop
-				-> tratar sinais
-				-> printa msg (teste)
+			-> criar vector pro struct do poll
+			-> implementar multiplexing
+			-> poll()
 
 		dps:
 			->criar dev branches
@@ -30,7 +22,7 @@ formatação q eu to usando(inventei da minha cabeça rs)
 
 
 output:
-	roxo: se a flag DEBUG tiver ativa, mostra o "fluxo" do programa
+	roxo: se a flag DEBUG for true, printa o "fluxo" do programa
 	amarelo: é do template debugVar, dps a gnt vai tirando
 
 
@@ -40,6 +32,8 @@ links:
 	https://www.geeksforgeeks.org/cpp/socket-programming-in-cpp/
 
 	https://www.tutorialspoint.com/cplusplus/cpp_socket_programming.htm
+
+	https://www.youtube.com/watch?v=O-yMs3T0APU
 
 	https://www.youtube.com/watch?v=6UbKenFipjo
 

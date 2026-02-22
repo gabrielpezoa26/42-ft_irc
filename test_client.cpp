@@ -28,6 +28,7 @@ int main()
     const char* message = "Hello, server!";
     send(clientSocket, message, strlen(message), 0);
 
+
     // closing socket
     close(clientSocket);
 

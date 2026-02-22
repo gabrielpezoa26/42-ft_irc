@@ -39,7 +39,6 @@ run: all
 client:
 	c++ test_client.cpp -o client
 
-
 val: all
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4444 senha123
 

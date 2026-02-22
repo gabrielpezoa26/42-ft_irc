@@ -100,7 +100,8 @@ ntohs / ntohl
 
 poll
 - Returns: Number of file descriptors with activity, 0 on timeout, or -1 on error.
-- Usage: Pass it your array of socket IDs. It puts the server to sleep until at least one socket is ready to read, write, or has an error.
+- Usage: Pass it your array of socket IDs.
+	It puts the server to sleep until at least one socket is ready to read, write, or has an error.
 
 
 -------------------------------- FILE METADATA & SEEKING --------------------------------
