@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/22 16:12:11 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/23 16:48:25 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #include <sys/socket.h>
 #include <sys/types.h> 
 #include <poll.h>
+#include <csignal>
 
 #define GREEN "\033[32m"
 #define RED "\033[31m"
@@ -43,7 +44,7 @@ class Server
 	private:
 		int _defined_port;
 		std::string _defined_password;
-		bool _continue;
+		static bool g_continue_running;
 
 		int _server_socket;
 		struct sockaddr_in _add;
@@ -63,6 +64,9 @@ class Server
 		void init(char **argv);
 		void setSocket();
 		void run();
+
+		static void signalHandler(int signum);
+		void setupSignals();
 		
 		template <typename T>
 		void debugVar(const std::string name, const T value)

@@ -1,6 +1,10 @@
 22/02/2026
 
 
+lsof -i :4444     lista os processos ativos
+
+kill -9 <pid>     limpa a porta
+
 afazeres:
 		agora:
 			-> criar vector pro struct do poll
