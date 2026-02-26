@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/23 16:48:25 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/26 16:28:02 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 #include <sys/types.h> 
 #include <poll.h>
 #include <csignal>
+#include <vector>
 
 #define GREEN "\033[32m"
 #define RED "\033[31m"
@@ -49,10 +50,13 @@ class Server
 		int _server_socket;
 		struct sockaddr_in _add;
 		struct pollfd _new_client;
+		std::vector<struct pollfd> _vec_client_fds;
 
 		bool _isValidPort(const std::string &port);
 		bool _isValidPassword(const std::string &password);
 		void _printCurrentTime();
+		void _function1();
+		void _function2();
 
 
 	public:

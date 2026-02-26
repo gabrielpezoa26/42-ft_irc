@@ -6,13 +6,12 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 10:40:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/22 11:41:13 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/26 15:26:11 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
 
-// implementar signal handling ctrl + C etc
 static void server_loop(char **argv)
 {
 	try

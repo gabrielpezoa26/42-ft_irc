@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/23 16:49:57 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/26 17:14:35 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ Server& Server::operator=(const Server& other)
 }
 
 
-bool Server::g_continue_running = 1;
+bool Server::g_continue_running = true;
 
 void Server::signalHandler(int signum)
 {
@@ -90,8 +90,8 @@ void Server::setSocket()
 		throw std::runtime_error("Error while socket creation");
 	if (setsockopt(_server_socket, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) == -1)
 		throw std::runtime_error("Error while setting SO_REUSEADDR on main socket");
-	// if (fcntl(_server_socket, F_SETFL, O_NONBLOCK) == -1)
-	// 	throw std::runtime_error("Error while setting O_NONBLOCK on main socket");
+	if (fcntl(_server_socket, F_SETFL, O_NONBLOCK) == -1)
+		throw std::runtime_error("Error while setting O_NONBLOCK on main socket");
 	if (bind(_server_socket, (struct sockaddr *)&_add, sizeof(_add)) == -1)
 		throw std::runtime_error("Error while binding socket");
 	if (listen(_server_socket, SOMAXCONN) == -1)
@@ -99,8 +99,10 @@ void Server::setSocket()
 	memset(&_new_client, 0, sizeof(_new_client));
 	_new_client.fd = _server_socket;
 	_new_client.events = POLLIN;
+
 	debugVar("_new_client events:", _new_client.events);
 	debugVar("_new_client fds:", _new_client.fd);
+	_vec_client_fds.push_back(_new_client);
 }
 
 void Server::run()
@@ -109,40 +111,70 @@ void Server::run()
 		printDebug("Server-> run() called");
 	_printCurrentTime();
 
-	int client_socket = -1;
-	socklen_t len;
-	struct sockaddr_in cli_container;
+	// int client_socket = -1;
+	// socklen_t len;
+	// struct sockaddr_in cli_container;
 	
-	log("Server is running....");
+	// log("Server is running....");
+	// len = sizeof(cli_container);
+	// client_socket = accept(_server_socket, (struct sockaddr *)&cli_container, &len);  //temporário
+	// _new_client.fd = client_socket;
 	setupSignals();
-	len = sizeof(cli_container);
-	client_socket = accept(_server_socket, (struct sockaddr *)&cli_container, &len);
-	_new_client.fd = client_socket;
-	
-	char client_message[1024] = { 0 };
+	// char client_message[1024] = { 0 };  //temporário
 	while (g_continue_running)
 	{
-		int poll_result = poll(&_new_client, 1, 100);
-		if (poll_result > 0)
+		int poll_result = poll(&_vec_client_fds[0], _vec_client_fds.size(), -1);
+		if (poll_result == -1 && Server::g_continue_running == true)
 		{
-			recv(client_socket, client_message, sizeof(client_message), 0);
-			std::cout << client_message << std::endl;
-			break ;
+			throw std::runtime_error("deu ruim");
 		}
-		else if (poll_result == -1 && g_continue_running)
+		for (size_t i = 0; i < _vec_client_fds.size(); i++)
 		{
-			log("poll() error");
-			break;
+			if (_vec_client_fds[i].revents & POLLIN)
+			{
+				if (_vec_client_fds[i].fd == _server_socket)
+				{
+					_function1();
+				}
+				// else
+				// {
+				// 	_function2();
+				// }
+			}
 		}
 	}
 	if (_server_socket != -1)
 		close(_server_socket);
-	if(client_socket != -1)
-		close(client_socket);
-	log("sockets closeddd");
+	log("\nsocket closeddd");
 }
 
+void Server::_function1()
+{
+	if (DEBUG)
+		printDebug("Server-> function1 called");
 
+	struct sockaddr_in client_address;
+	socklen_t len = sizeof(client_address);
+
+	int client_socket = accept(_server_socket, (struct sockaddr *)&client_address, &len);
+
+	struct pollfd new_client_poll;
+	new_client_poll.fd = client_socket;
+	new_client_poll.events = POLLIN;
+	new_client_poll.revents = 0;
+
+	_vec_client_fds.push_back(new_client_poll);
+	printDebug("conexao deu bom");
+}
+
+void Server::_function2()
+{
+	if (DEBUG)
+		printDebug("Server-> function2 called");
+		// recv()
+		// etc
+		// etc
+}
 
 /* ---------- Helpers ---------- */
 bool Server::_isValidPort(const std::string &port)
