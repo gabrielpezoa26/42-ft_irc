@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/26 17:14:35 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/26 19:02:45 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ void Server::run()
 {
 	if (DEBUG)
 		printDebug("Server-> run() called");
-	_printCurrentTime();
+	printCurrentTime();
 
 	// int client_socket = -1;
 	// socklen_t len;
@@ -134,12 +134,14 @@ void Server::run()
 			{
 				if (_vec_client_fds[i].fd == _server_socket)
 				{
-					_function1();
+					log("1");
+					_handleNewConnection();
 				}
-				// else
-				// {
-				// 	_function2();
-				// }
+				else
+				{
+					log("2");
+					_handleClientActivity(_vec_client_fds[i].fd);
+				}
 			}
 		}
 	}
@@ -148,10 +150,11 @@ void Server::run()
 	log("\nsocket closeddd");
 }
 
-void Server::_function1()
+//temporario
+void Server::_handleNewConnection()
 {
 	if (DEBUG)
-		printDebug("Server-> function1 called");
+		printDebug("Server-> _handleNewConnection() called");
 
 	struct sockaddr_in client_address;
 	socklen_t len = sizeof(client_address);
@@ -167,13 +170,36 @@ void Server::_function1()
 	printDebug("conexao deu bom");
 }
 
-void Server::_function2()
+// isso eh temporário, dps tem q criar/usar a classe do Client e seus atributos
+void Server::_handleClientActivity(int client_fd)
 {
 	if (DEBUG)
-		printDebug("Server-> function2 called");
-		// recv()
-		// etc
-		// etc
+		printDebug("Server-> _handleClientActivity called");
+
+	char client_message[1024];
+	memset(client_message, 0, sizeof(client_message));
+
+	ssize_t bytes_received = recv(client_fd, client_message, sizeof(client_message) - 1, 0);
+	if (bytes_received > 0)
+	{
+		std::cout << "Client <" << client_fd << ">: " << client_message;
+	}
+	else
+	{
+		if (bytes_received == 0)
+			std::cout << "Client <" << client_fd << "> disconnected" << std::endl;
+		else
+			std::cerr << "Error: connection lost on client <" << client_fd << ">." << std::endl;
+		close(client_fd);
+		for (std::vector<struct pollfd>::iterator it = _vec_client_fds.begin(); it != _vec_client_fds.end(); ++it)
+		{
+			if (it->fd == client_fd)
+			{
+				_vec_client_fds.erase(it);
+				break; 
+			}
+		}
+	}
 }
 
 /* ---------- Helpers ---------- */
@@ -206,11 +232,4 @@ bool Server::_isValidPassword(const std::string &password)
 			return false;
 	}
 	return true;
-}
-
-void Server::_printCurrentTime()
-{
-	std::time_t current_time = std::time(0);
-	char* readable_current_time = std::ctime(&current_time);
-	std::cout << GREEN << readable_current_time << RESET;
 }

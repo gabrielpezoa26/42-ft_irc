@@ -1,31 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.hpp                                          :+:      :+:    :+:   */
+/*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/20 10:42:42 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/26 18:37:20 by gcesar-n         ###   ########.fr       */
+/*   Created: 2026/02/26 18:20:56 by gcesar-n          #+#    #+#             */
+/*   Updated: 2026/02/26 18:30:21 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef UTILS_HPP
-#define UTILS_HPP
+#ifndef CLIENT_HPP
+#define CLIENT_HPP
 
 #include <iostream>
-#include <ctime>
+#include "utils.hpp"
 
-#define GREEN "\033[32m"
-#define RED "\033[31m"
-#define BLUE "\033[34m"
-#define PURPLE "\033[35m"
-#define YELLOW "\033[33m"
-#define RESET "\033[0m"
+#define DEBUG true
 
-void log(std::string message);
-void logColor(std::string message, std::string color);
-void printDebug(std::string message);
-void printCurrentTime();
+class Client
+{
+	private:
+		std::string _user_name;
+		std::string _nick_name;
+		int _fd;
+		bool _is_authenticated;
+
+	public:
+		Client();
+		Client(const Client& other);
+		~Client();
+
+		Client& operator=(const Client& other);
+};
+
+
 
 #endif

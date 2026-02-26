@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/26 16:28:02 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/26 18:56:39 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 #include <sys/socket.h> //socket()
 #include <netinet/in.h> //sockaddr_in struct
 #include <arpa/inet.h> //htons()
-#include <ctime>
 #include <cstring>
 #include <fcntl.h>
 #include <unistd.h>
@@ -54,9 +53,8 @@ class Server
 
 		bool _isValidPort(const std::string &port);
 		bool _isValidPassword(const std::string &password);
-		void _printCurrentTime();
-		void _function1();
-		void _function2();
+		void _handleNewConnection();
+		void _handleClientActivity(int client_fd);
 
 
 	public:

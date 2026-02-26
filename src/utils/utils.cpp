@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 10:42:08 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/20 16:51:35 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/26 18:36:42 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,4 +25,11 @@ void logColor(std::string message, std::string color)
 void printDebug(std::string message)
 {
 	std::cout << PURPLE << message << RESET << std::endl;
+}
+
+void printCurrentTime()
+{
+	std::time_t current_time = std::time(0);
+	char* readable_current_time = std::ctime(&current_time);
+	std::cout << GREEN << readable_current_time << RESET;
 }
