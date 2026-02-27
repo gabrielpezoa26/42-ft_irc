@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/26 18:56:39 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/27 00:02:07 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,12 @@
 class Server
 {
 	private:
-		int _defined_port;
-		std::string _defined_password;
-		static bool g_continue_running;
+		int _server_port;
+		std::string _server_password;
+		static bool _is_running;
 
-		int _server_socket;
-		struct sockaddr_in _add;
+		int _server_socket_fd;
+		struct sockaddr_in _server_adress;
 		struct pollfd _new_client;
 		std::vector<struct pollfd> _vec_client_fds;
 
@@ -67,7 +67,7 @@ class Server
 		void setSocket();
 		void run();
 
-		static void signalHandler(int signum);
+		static void handleSignals(int signum);
 		void setupSignals();
 		
 		template <typename T>

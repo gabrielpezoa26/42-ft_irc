@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/26 19:02:45 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/02/27 00:04:49 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 
 /* ---------- Canonical Form ---------- */
 Server::Server()
-: _defined_port(0), _defined_password("default_password")
+: _server_port(0), _server_password("default_password")
 {
 	if (DEBUG)
 		printDebug("Server-> Default constructor called");
 }
 
 Server::Server(const Server& other)
-: _defined_port(other._defined_port), _defined_password(other._defined_password)
+: _server_port(other._server_port), _server_password(other._server_password)
 {
 	if (DEBUG)
 		printDebug("Server-> Copy constructor called");
@@ -35,18 +35,17 @@ Server::~Server()
 
 Server& Server::operator=(const Server& other)
 {
-	_defined_port = other._defined_port;
-	_defined_password = other._defined_password;
+	_server_port = other._server_port;
+	_server_password = other._server_password;
 	return *this;
 }
 
+bool Server::_is_running = true;
 
-bool Server::g_continue_running = true;
-
-void Server::signalHandler(int signum)
+void Server::handleSignals(int signum)
 {
 	(void)signum;
-	Server::g_continue_running = 0;
+	Server::_is_running = 0;
 }
 
 void Server::setupSignals()
@@ -54,7 +53,7 @@ void Server::setupSignals()
 	struct sigaction sa;
 	
 	memset(&sa, 0, sizeof(sa));
-	sa.sa_handler = Server::signalHandler;
+	sa.sa_handler = Server::handleSignals;
 	sa.sa_flags = 0;
 	sigemptyset(&sa.sa_mask);
 	sigaction(SIGINT, &sa, NULL);
@@ -68,8 +67,8 @@ void Server::init(char **argv)
 		printDebug("Server-> init() called");
 
 	std::string input_port = argv[1];
-	_defined_password = argv[2];
-	if (!_isValidPort(input_port) || !_isValidPassword(_defined_password))
+	_server_password = argv[2];
+	if (!_isValidPort(input_port) || !_isValidPassword(_server_password))
 	{
 		throw std::invalid_argument("Server-> Exception caught: invalid input");
 	}
@@ -80,24 +79,24 @@ void Server::setSocket()
 	if (DEBUG)
 		printDebug("Server-> setSocket() called");
 
-	_add.sin_family = AF_INET;
-	_add.sin_port = htons(_defined_port);
-	_server_socket = socket(AF_INET, SOCK_STREAM, 0);
-	_add.sin_addr.s_addr = INADDR_ANY;
+	_server_adress.sin_family = AF_INET;
+	_server_adress.sin_port = htons(_server_port);
+	_server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+	_server_adress.sin_addr.s_addr = INADDR_ANY;
 	int flag = 1;
 
-	if (_server_socket == -1)
+	if (_server_socket_fd == -1)
 		throw std::runtime_error("Error while socket creation");
-	if (setsockopt(_server_socket, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) == -1)
+	if (setsockopt(_server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) == -1)
 		throw std::runtime_error("Error while setting SO_REUSEADDR on main socket");
-	if (fcntl(_server_socket, F_SETFL, O_NONBLOCK) == -1)
+	if (fcntl(_server_socket_fd, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("Error while setting O_NONBLOCK on main socket");
-	if (bind(_server_socket, (struct sockaddr *)&_add, sizeof(_add)) == -1)
+	if (bind(_server_socket_fd, (struct sockaddr *)&_server_adress, sizeof(_server_adress)) == -1)
 		throw std::runtime_error("Error while binding socket");
-	if (listen(_server_socket, SOMAXCONN) == -1)
+	if (listen(_server_socket_fd, SOMAXCONN) == -1)
 		throw std::runtime_error("Error while listen() call");
 	memset(&_new_client, 0, sizeof(_new_client));
-	_new_client.fd = _server_socket;
+	_new_client.fd = _server_socket_fd;
 	_new_client.events = POLLIN;
 
 	debugVar("_new_client events:", _new_client.events);
@@ -109,22 +108,22 @@ void Server::run()
 {
 	if (DEBUG)
 		printDebug("Server-> run() called");
-	printCurrentTime();
-
+		
 	// int client_socket = -1;
 	// socklen_t len;
 	// struct sockaddr_in cli_container;
 	
 	// log("Server is running....");
 	// len = sizeof(cli_container);
-	// client_socket = accept(_server_socket, (struct sockaddr *)&cli_container, &len);  //temporário
+	// client_socket = accept(_server_socket_fd, (struct sockaddr *)&cli_container, &len);  //temporário
 	// _new_client.fd = client_socket;
+	printCurrentTime();
 	setupSignals();
 	// char client_message[1024] = { 0 };  //temporário
-	while (g_continue_running)
+	while (_is_running)
 	{
 		int poll_result = poll(&_vec_client_fds[0], _vec_client_fds.size(), -1);
-		if (poll_result == -1 && Server::g_continue_running == true)
+		if (poll_result == -1 && Server::_is_running == true)
 		{
 			throw std::runtime_error("deu ruim");
 		}
@@ -132,7 +131,7 @@ void Server::run()
 		{
 			if (_vec_client_fds[i].revents & POLLIN)
 			{
-				if (_vec_client_fds[i].fd == _server_socket)
+				if (_vec_client_fds[i].fd == _server_socket_fd)
 				{
 					log("1");
 					_handleNewConnection();
@@ -145,8 +144,8 @@ void Server::run()
 			}
 		}
 	}
-	if (_server_socket != -1)
-		close(_server_socket);
+	if (_server_socket_fd != -1)
+		close(_server_socket_fd);
 	log("\nsocket closeddd");
 }
 
@@ -159,7 +158,7 @@ void Server::_handleNewConnection()
 	struct sockaddr_in client_address;
 	socklen_t len = sizeof(client_address);
 
-	int client_socket = accept(_server_socket, (struct sockaddr *)&client_address, &len);
+	int client_socket = accept(_server_socket_fd, (struct sockaddr *)&client_address, &len);
 
 	struct pollfd new_client_poll;
 	new_client_poll.fd = client_socket;
@@ -214,7 +213,7 @@ bool Server::_isValidPort(const std::string &port)
 		return false;
 	if (!atoi(temp.c_str()) || atoi(temp.c_str()) < 0 || atol(temp.c_str()) > std::numeric_limits<int>::max())
 		return false;
-	_defined_port = atoi(temp.c_str());
+	_server_port = atoi(temp.c_str());
 	return true;
 }
 
@@ -223,12 +222,12 @@ bool Server::_isValidPassword(const std::string &password)
 	if (DEBUG)
 		printDebug("Server-> _isValidPassword() called");
 
-	_defined_password = password;
-	if (_defined_password.empty())
+	_server_password = password;
+	if (_server_password.empty())
 		return false;
-	for (size_t i = 0; i < _defined_password.length(); i++)
+	for (size_t i = 0; i < _server_password.length(); i++)
 	{
-		if (!isascii(_defined_password[i]))
+		if (!isascii(_server_password[i]))
 			return false;
 	}
 	return true;

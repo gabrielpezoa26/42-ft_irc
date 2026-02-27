@@ -1,18 +1,19 @@
-22/02/2026
-
-
-lsof -i :4444     lista os processos ativos
-
-kill -9 <pid>     limpa a porta
+26/02/2026
 
 afazeres:
-		agora:
-			-> criar vector pro struct do poll
-			-> implementar multiplexing
-			-> poll()
+	Server:
+		-> revisar lógica geral
+		-> limpar comentarios etc
+		-> refatorar classe Server em classes menores
+			-> Parser     (na hora q o client for conectar)
+			-> Socket*    (cpa)
 
-		dps:
-			->criar dev branches
+	Client:
+		-> implementar forma canônica, inicializar td
+		-> autenticação
+		-> buffer d mensagens
+		-> estado do cliente
+
 
 
 
@@ -24,10 +25,15 @@ formatação q eu to usando(inventei da minha cabeça rs)
 	-> evitando abreviações pq a memória do pai eh ruim
 
 
-
 output:
 	roxo: se a flag DEBUG for true, printa o "fluxo" do programa
 	amarelo: é do template debugVar, dps a gnt vai tirando
+
+
+comandos úteis:
+	lsof -i :4444     lista os processos ativos
+
+	kill -9 <pid>     limpa a porta
 
 
 links:
