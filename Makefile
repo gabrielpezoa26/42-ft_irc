@@ -11,6 +11,7 @@ UTILS_DIR = $(SRC_DIR)/utils
 
 SRCS = $(SRC_DIR)/main.cpp \
 		$(SRC_DIR)/Server.cpp \
+		$(SRC_DIR)/Client.cpp \
 		$(UTILS_DIR)/utils.cpp
 
 OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)

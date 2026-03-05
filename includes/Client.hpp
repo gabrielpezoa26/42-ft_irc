@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:56 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/26 18:30:21 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/05 09:49:36 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,14 @@
 #include <iostream>
 #include "utils.hpp"
 
-#define DEBUG true
+#define DEBUG_CLIENT true
 
 class Client
 {
 	private:
-		std::string _user_name;
-		std::string _nick_name;
-		int _fd;
+		std::string _username;
+		std::string _nickname;
+		int _client_fd;
 		bool _is_authenticated;
 
 	public:
