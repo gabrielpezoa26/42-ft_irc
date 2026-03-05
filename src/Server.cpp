@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/27 00:04:49 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/05 09:53:45 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,36 +16,39 @@
 Server::Server()
 : _server_port(0), _server_password("default_password")
 {
-	if (DEBUG)
+	if (DEBUG_SERVER)
 		printDebug("Server-> Default constructor called");
 }
 
 Server::Server(const Server& other)
 : _server_port(other._server_port), _server_password(other._server_password)
 {
-	if (DEBUG)
+	if (DEBUG_SERVER)
 		printDebug("Server-> Copy constructor called");
 }
 
 Server::~Server()
 {
-	if (DEBUG)
+	if (DEBUG_SERVER)
 		printDebug("Server-> Default destructor called");
 }
 
 Server& Server::operator=(const Server& other)
 {
-	_server_port = other._server_port;
-	_server_password = other._server_password;
+	if (this != &other)
+	{
+		_server_port = other._server_port;
+		_server_password = other._server_password;
+	}
 	return *this;
 }
 
-bool Server::_is_running = true;
+bool Server::_continue_running = true;
 
 void Server::handleSignals(int signum)
 {
 	(void)signum;
-	Server::_is_running = 0;
+	Server::_continue_running = 0;
 }
 
 void Server::setupSignals()
@@ -63,7 +66,7 @@ void Server::setupSignals()
 /* ---------- Methods ---------- */
 void Server::init(char **argv)
 {
-	if (DEBUG)
+	if (DEBUG_SERVER)
 		printDebug("Server-> init() called");
 
 	std::string input_port = argv[1];
@@ -76,7 +79,7 @@ void Server::init(char **argv)
 
 void Server::setSocket()
 {
-	if (DEBUG)
+	if (DEBUG_SERVER)
 		printDebug("Server-> setSocket() called");
 
 	_server_adress.sin_family = AF_INET;
@@ -106,24 +109,15 @@ void Server::setSocket()
 
 void Server::run()
 {
-	if (DEBUG)
+	if (DEBUG_SERVER)
 		printDebug("Server-> run() called");
-		
-	// int client_socket = -1;
-	// socklen_t len;
-	// struct sockaddr_in cli_container;
 	
-	// log("Server is running....");
-	// len = sizeof(cli_container);
-	// client_socket = accept(_server_socket_fd, (struct sockaddr *)&cli_container, &len);  //temporário
-	// _new_client.fd = client_socket;
 	printCurrentTime();
 	setupSignals();
-	// char client_message[1024] = { 0 };  //temporário
-	while (_is_running)
+	while (_continue_running)
 	{
 		int poll_result = poll(&_vec_client_fds[0], _vec_client_fds.size(), -1);
-		if (poll_result == -1 && Server::_is_running == true)
+		if (poll_result == -1 && Server::_continue_running == true)
 		{
 			throw std::runtime_error("deu ruim");
 		}
@@ -152,7 +146,7 @@ void Server::run()
 //temporario
 void Server::_handleNewConnection()
 {
-	if (DEBUG)
+	if (DEBUG_SERVER)
 		printDebug("Server-> _handleNewConnection() called");
 
 	struct sockaddr_in client_address;
@@ -169,10 +163,10 @@ void Server::_handleNewConnection()
 	printDebug("conexao deu bom");
 }
 
-// isso eh temporário, dps tem q criar/usar a classe do Client e seus atributos
+// isso eh meio temporário, dps tem q criar/usar a classe do Client e seus atributos
 void Server::_handleClientActivity(int client_fd)
 {
-	if (DEBUG)
+	if (DEBUG_SERVER)
 		printDebug("Server-> _handleClientActivity called");
 
 	char client_message[1024];
@@ -202,9 +196,11 @@ void Server::_handleClientActivity(int client_fd)
 }
 
 /* ---------- Helpers ---------- */
+// 1024    65535
+
 bool Server::_isValidPort(const std::string &port)
 {
-	if (DEBUG)
+	if (DEBUG_SERVER)
 		printDebug("Server-> _isValidPort() called");
 
 	std::string temp = port;
@@ -214,12 +210,14 @@ bool Server::_isValidPort(const std::string &port)
 	if (!atoi(temp.c_str()) || atoi(temp.c_str()) < 0 || atol(temp.c_str()) > std::numeric_limits<int>::max())
 		return false;
 	_server_port = atoi(temp.c_str());
+	if (_server_port < 1024 || _server_port > 65535)  // tem q tratar se n falha na htons() ou bind()
+		return false;
 	return true;
 }
 
 bool Server::_isValidPassword(const std::string &password)
 {
-	if (DEBUG)
+	if (DEBUG_SERVER)
 		printDebug("Server-> _isValidPassword() called");
 
 	_server_password = password;

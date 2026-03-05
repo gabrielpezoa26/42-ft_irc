@@ -35,6 +35,8 @@ comandos úteis:
 
 	kill -9 <pid>     limpa a porta
 
+	sudo apt update && sudo apt install irssi
+
 
 links:
 	https://pt.wikipedia.org/wiki/Internet_Relay_Chat
