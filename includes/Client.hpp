@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:56 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/05 09:49:36 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/10 17:20:57 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define CLIENT_HPP
 
 #include <iostream>
+#include <string>
 #include "utils.hpp"
 
 #define DEBUG_CLIENT true
@@ -24,7 +25,13 @@ class Client
 		std::string _username;
 		std::string _nickname;
 		int _client_fd;
-		bool _is_authenticated;
+		bool _has_nickname;
+		bool _has_username;
+		bool _has_pass;
+
+		std::string _input_buffer;
+		std::string _output_buffer;
+
 
 	public:
 		Client();
@@ -32,8 +39,10 @@ class Client
 		~Client();
 
 		Client& operator=(const Client& other);
+
+		std::string fetchCommand();
+		void appendInputBuffer(const std::string &in_to_append);
+		void appendOutputBuffer(const std::string &out_to_append);
 };
-
-
 
 #endif

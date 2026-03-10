@@ -2,6 +2,8 @@
 
 afazeres:
 	-> terminar implementar classe Client
+
+
 	-> implementar TCP (mensagem pode ir "quebrada")
 	-> "login" (PASS, NICK, USER) etc
 	-> parser mensagem
