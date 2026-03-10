@@ -1,18 +1,11 @@
-26/02/2026
+10/03/2026
 
 afazeres:
-	Server:
-		-> revisar lógica geral
-		-> limpar comentarios etc
-		-> refatorar classe Server em classes menores
-			-> Parser     (na hora q o client for conectar)
-			-> Socket*    (cpa)
-
-	Client:
-		-> implementar forma canônica, inicializar td
-		-> autenticação
-		-> buffer d mensagens
-		-> estado do cliente
+	-> terminar implementar classe Client
+	-> implementar TCP (mensagem pode ir "quebrada")
+	-> "login" (PASS, NICK, USER) etc
+	-> parser mensagem
+	-> dps disso em tese só fica faltando os Channels
 
 
 
@@ -33,7 +26,7 @@ output:
 comandos úteis:
 	lsof -i :4444     lista os processos ativos
 
-	kill -9 <pid>     limpa a porta
+	kill -9 <pid>     limpa a porta ocupada
 
 	sudo apt update && sudo apt install irssi
 

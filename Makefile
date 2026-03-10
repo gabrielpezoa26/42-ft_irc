@@ -32,7 +32,7 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 
-
+re: fclean all
 
 run: all
 	./$(NAME) 4444 senha123
@@ -40,7 +40,14 @@ run: all
 client:
 	c++ test_client.cpp -o client
 
+kill:
+	killall -9 $(NAME) || true
+
+nc:
+	nc 127.0.0.1 4444
+
+spam:
+	for i in 1 2 3 4 5; do nc -w 1 127.0.0.1 4444 & done
+	
 val: all
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4444 senha123
-
-re: fclean all
