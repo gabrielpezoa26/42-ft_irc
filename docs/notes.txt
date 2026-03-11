@@ -1,13 +1,15 @@
 10/03/2026
 
 afazeres:
-	-> terminar implementar classe Client
+	-> implementar classe Client
+		-> revisar código
+		-> instanciar os Client dentro do Server
 
 
 	-> implementar TCP (mensagem pode ir "quebrada")
 	-> "login" (PASS, NICK, USER) etc
 	-> parser mensagem
-	-> dps disso em tese só fica faltando os Channels
+	-> dps disso em tese só fica faltando os Channels (ju)
 
 
 
@@ -18,6 +20,7 @@ formatação q eu to usando(inventei da minha cabeça rs)
 	-> snake_case pra variáveis
 	-> _mangoLoko() ou _mango_loko pra atributos privados de classe
 	-> evitando abreviações pq a memória do pai eh ruim
+	-> evitando funçao gigante
 
 
 output:
@@ -26,11 +29,7 @@ output:
 
 
 comandos úteis:
-	lsof -i :4444     lista os processos ativos
-
-	kill -9 <pid>     limpa a porta ocupada
-
-	sudo apt update && sudo apt install irssi
+	ta no makefile
 
 
 links:
