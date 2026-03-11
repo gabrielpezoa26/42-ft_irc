@@ -1,25 +1,32 @@
-21/02/2026
-
-
+11/03/2026
 
 testes pra rodar de vez em quando p ter ctz q nd quebrou rs
 
+parsing do argv:
+	testes válidos:
+		./ircserv 4444 senha123
+
+	inválidos:
+		./ircserv -4444 senha123
+
+		./ircserv 44o4 senha 123
+
+		./ircserv 4444 senhçççç
+
+		./ircserv 4444 ""
+		
+		./ircserv "" ""
 
 
+server:
+	-> roda make run
+		-> abre outro terminal, roda make nc
+		-> digita qqr coisa e dá Enter, o terminal do Server
+			tem q printar a mensagem
 
-testes válidos:
-	./ircserv 4444 senha123
 
-
-
-inválidos:
-	./ircserv -4444 senha123
-
-	./ircserv 44o4 senha 123
-
-	./ircserv 4444 senhçççç
-
-	./ircserv 4444 ""
-	
-	./ircserv "" ""
-
+	->roda make run
+	-> abre outro terminal, roda make nc-manual
+		-> digita qqr coisa, dá enter
+		-> dps de digitar várias msgs, aperta Ctrl + v, ctrl + m, Enter.
+			agora sim a msg é pra printar no server

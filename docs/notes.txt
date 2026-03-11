@@ -1,18 +1,34 @@
-10/03/2026
+11/03/2026
 
 afazeres:
-	-> implementar classe Client
-		-> revisar código
-		-> instanciar os Client dentro do Server
-
-
-	-> implementar TCP (mensagem pode ir "quebrada")
-	-> "login" (PASS, NICK, USER) etc
-	-> parser mensagem
-	-> dps disso em tese só fica faltando os Channels (ju)
+	-> revisar nomes funções/variaveis
+	-> revisar encapsulamento Client && Server
+	-> reorganização geral
 
 
 
+	->dps:
+		-> implementar TCP (mensagem pode ir "quebrada")     ok
+		-> "login" (PASS, NICK, USER) etc
+		-> parser mensagem
+		-> dps disso em tese só fica faltando os Channels (ju)
+
+
+como testar:
+(a primeira forma já manda o "\r\n" no final de cada mensagem, ent o server entende que já chegou no final.
+na segunda forma, a gnt faz isso na mão.)
+	-> jeito 1:
+		-> roda make run
+		-> abre outro terminal, roda make nc
+			-> digita qqr coisa e dá Enter, o terminal do Server
+				tem q printar a mensagem
+
+	-> jeito2:
+		->roda make run
+		-> abre outro terminal, roda make nc-manual
+			-> digita qqr coisa, dá enter
+			-> dps de digitar várias msgs, aperta Ctrl + v, ctrl + m, Enter.
+				agora sim a msg é pra printar no server
 
 
 formatação q eu to usando(inventei da minha cabeça rs)
@@ -26,10 +42,6 @@ formatação q eu to usando(inventei da minha cabeça rs)
 output:
 	roxo: se a flag DEBUG for true, printa o "fluxo" do programa
 	amarelo: é do template debugVar, dps a gnt vai tirando
-
-
-comandos úteis:
-	ta no makefile
 
 
 links:

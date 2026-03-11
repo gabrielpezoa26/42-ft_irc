@@ -43,13 +43,26 @@ kill:
 	killall -9 $(NAME) || true
 
 nc:
+	nc -C 127.0.0.1 4444
+
+nc-manual:
 	nc 127.0.0.1 4444
+
 
 spam:
 	for i in 1 2 3 4 5; do nc -w 1 127.0.0.1 4444 & done
+
 
 val: all
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4444 senha123
 
 client:
 	c++ test_client.cpp -o client
+
+#rodar no bash normal, fora do vscode
+test:
+	gnome-terminal -- bash -c "make run; exec bash" &
+	sleep 1
+	gnome-terminal -- bash -c "nc -C 127.0.0.1 4444; exec bash" &
+	gnome-terminal -- bash -c "nc -C 127.0.0.1 4444; exec bash" &
+	gnome-terminal -- bash -c "nc -C 127.0.0.1 4444; exec bash" &
