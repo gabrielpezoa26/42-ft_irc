@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/10 17:21:35 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/10 20:50:30 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 /* ---------- Canonical Form ---------- */
 Client::Client()
- : _username("default_username"),
-_nickname("default_nickname"),
+ : _client_username("default_username"),
+_client_nickname("default_nickname"),
 _has_nickname(false),
 _has_username(false),
 _has_pass(false)
@@ -25,8 +25,8 @@ _has_pass(false)
 }
 
 Client::Client(const Client& other)
- : _username(other._username),
-_nickname(other._nickname),
+ : _client_username(other._client_username),
+_client_nickname(other._client_nickname),
 _client_fd(other._client_fd),
 _has_nickname(other._has_nickname),
 _has_username(other._has_username),
@@ -51,8 +51,8 @@ Client& Client::operator=(const Client& other)
 
 	if (this != &other)
 	{
-		_username = other._username;
-		_nickname = other._nickname;
+		_client_username = other._client_username;
+		_client_nickname = other._client_nickname;
 		_client_fd = other._client_fd;
 		_has_nickname = other._has_nickname;
 		_has_username = other._has_username;
@@ -100,4 +100,65 @@ void Client::appendOutputBuffer(const std::string &out_to_append)
 		printDebug("Client-> appendOutputBuffer() called");	
 
 	_output_buffer.append(out_to_append);
+}
+
+
+
+// getters && setters
+std::string Client::getNickname() { return _client_nickname; }
+
+std::string Client::getUsername() { return _client_username; }
+
+void Client::setNickname(std::string given_nickname) { _client_nickname = given_nickname; }
+
+void Client::setUsername(std::string given_username) { _client_username = given_username; }
+
+
+
+// flips
+void Client::flipNickname()
+{
+	if (DEBUG_CLIENT)
+		printDebug("Client-> flipNickname() called");
+
+	_has_nickname = !_has_nickname;
+}
+
+void Client::flipUsername()
+{
+	if (DEBUG_CLIENT)
+		printDebug("Client-> flipUsername() called");
+
+	_has_username = !_has_username;
+}
+
+void Client::flipPass()
+{
+	if (DEBUG_CLIENT)
+		printDebug("Client-> flipPass() called");
+
+	_has_pass = !_has_pass;
+}
+
+void Client::flipAll()
+{
+	if (DEBUG_CLIENT)
+		printDebug("Client-> flipAll() called");
+
+	_has_nickname = !_has_nickname;
+	_has_username = !_has_username;
+	_has_pass = !_has_pass;
+}
+
+bool Client::isClientRegistered()
+{
+	if (DEBUG_CLIENT)
+		printDebug("Client-> isClientRegistered() called");
+
+	if (_has_nickname && _has_username && _has_pass)
+	{
+		log("DEBUG: isClientRegistered() retornou truee");
+		return true;
+	}
+	return false;
 }

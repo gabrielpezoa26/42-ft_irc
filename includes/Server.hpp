@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/05 09:35:10 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/10 20:48:45 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ class Server
 		bool _isValidPassword(const std::string &password);
 		void _handleNewConnection();
 		void _handleClientActivity(int client_fd);
+
 
 
 	public:
