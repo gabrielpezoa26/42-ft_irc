@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/11 13:18:52 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/11 15:49:01 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,7 +172,7 @@ void Server::_handleNewConnection()
 	printDebug("conexao deu bom");
 }
 
-// isso eh meio temporário, dps tem q criar/usar a classe do Client e seus atributos
+//refatorar dps
 void Server::_handleClientActivity(int client_fd)
 {
 	if (DEBUG_SERVER)
@@ -181,20 +181,23 @@ void Server::_handleClientActivity(int client_fd)
 	std::map<int, Client>::iterator it = _map_connected_clients.find(client_fd);
 	if (it == _map_connected_clients.end())
 	{
-		log("vishhh");
-		return ;
+		log("vishhh: client not found in map");
+		return;
 	}
-	debugVar("it", it->first);
 	char client_message[1024];
 	memset(client_message, 0, sizeof(client_message));
 	ssize_t bytes_received = recv(client_fd, client_message, sizeof(client_message) - 1, 0);
-
 	if (bytes_received > 0)
 	{
 		std::string new_data(client_message, bytes_received);
 		it->second.appendInputBuffer(new_data);
-		// std::cout << "Client <" << client_fd << ">: " << client_message;
-		//ate aq ta certo
+		while (true)
+		{
+			std::string extracted_cmd = it->second.fetchCommand();
+			if (extracted_cmd.empty())
+				break;
+			std::cout << "Client <" << client_fd << "> sent: [" << extracted_cmd << "]" << std::endl;
+		}
 	}
 	else
 	{
@@ -203,12 +206,13 @@ void Server::_handleClientActivity(int client_fd)
 		else
 			std::cerr << "Error: connection lost on client <" << client_fd << ">." << std::endl;
 		close(client_fd);
-		for (std::vector<struct pollfd>::iterator it = _vec_client_fds.begin(); it != _vec_client_fds.end(); ++it)
+		_map_connected_clients.erase(client_fd);
+		for (std::vector<struct pollfd>::iterator poll_it = _vec_client_fds.begin(); poll_it != _vec_client_fds.end(); ++poll_it)
 		{
-			if (it->fd == client_fd)
+			if (poll_it->fd == client_fd)
 			{
-				_vec_client_fds.erase(it);
-				break; 
+				_vec_client_fds.erase(poll_it);
+				break;
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:56 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/11 13:10:42 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/11 16:37:44 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <string>
 #include "utils.hpp"
 
-#define DEBUG_CLIENT true
+#define DEBUG_CLIENT false
 
 class Client
 {
@@ -38,13 +38,10 @@ class Client
 		~Client();
 		Client& operator=(const Client& other);
 
-		void flipNickname();
-		void flipUsername();
-		void flipPass();
-		void flipAll();  //cpa so vamo usar esse
-		bool isClientRegistered();
+		std::string fetchCommand();
+		void appendInputBuffer(const std::string &in_to_append);
+		void appendOutputBuffer(const std::string &out_to_append);
 
-		
 		std::string getNickname();
 		std::string getUsername();
 		int getClientFd();
@@ -53,9 +50,12 @@ class Client
 		void setUsername(std::string given_username);
 		void setClientFd(int given_fd);
 
-		std::string fetchCommand();
-		void appendInputBuffer(const std::string &in_to_append);
-		void appendOutputBuffer(const std::string &out_to_append);
+		void flipNickname();
+		void flipUsername();
+		void flipPass();
+		void flipAll();  //cpa so vamo usar esse
+		bool isClientRegistered();
+
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/11 12:03:39 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/11 16:36:49 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,20 +70,19 @@ std::string Client::fetchCommand()
 		printDebug("Client-> fetchCommand() called");
 
 	std::string::size_type pos;
-	std::string res;
+	std::string result;
 
 	pos = _input_buffer.find("\r\n");
 	if (pos == std::string::npos)
 	{
-		res = "";
+		result = "";
 	}
 	else
 	{
-		res = _input_buffer.substr(0, pos);
-		debugVar("res", res);
+		result = _input_buffer.substr(0, pos);
 		_input_buffer.erase(0, pos + 2); //fica +2 por causa do '\r\n'
 	}
-	return res;
+	return result;
 }
 
 void Client::appendInputBuffer(const std::string &in_to_append)
@@ -118,7 +117,7 @@ void Client::setUsername(std::string given_username) { _client_username = given_
 
 void Client::setClientFd(int given_fd) { _client_fd = given_fd; }
 
-// flips
+//auth
 void Client::flipNickname()
 {
 	if (DEBUG_CLIENT)
