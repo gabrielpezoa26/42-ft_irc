@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/11 16:38:13 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/11 19:23:35 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,11 @@ class Server
 		std::vector<struct pollfd> _vec_client_fds;
 		std::map<int, Client> _map_connected_clients;
 
-
 		bool _isValidPort(const std::string &port);
 		bool _isValidPassword(const std::string &password);
+
+		static void handleSignals(int signum);
+		void setupSignals();
 		void _handleNewConnection();
 		void _handleClientActivity(int client_fd);
 
@@ -65,9 +67,6 @@ class Server
 		void init(char **argv);
 		void setSocket();
 		void run();
-
-		static void handleSignals(int signum);
-		void setupSignals();
 };
 
 #endif

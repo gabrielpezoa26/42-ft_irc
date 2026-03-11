@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/11 16:36:49 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/11 19:11:03 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,26 +103,23 @@ void Client::appendOutputBuffer(const std::string &out_to_append)
 
 
 
-// getters && setters
+/* ---------- Getters && Setters ---------- */
 std::string Client::getNickname() { return _client_nickname; }
-
 std::string Client::getUsername() { return _client_username; }
-
 int Client::getClientFd() { return _client_fd; }
 
 
 void Client::setNickname(std::string given_nickname) { _client_nickname = given_nickname; }
-
 void Client::setUsername(std::string given_username) { _client_username = given_username; }
-
 void Client::setClientFd(int given_fd) { _client_fd = given_fd; }
 
-//auth
+
+
+/* ---------- Auth ---------- */
 void Client::flipNickname()
 {
 	if (DEBUG_CLIENT)
 		printDebug("Client-> flipNickname() called");
-
 	_has_nickname = !_has_nickname;
 }
 
@@ -130,7 +127,6 @@ void Client::flipUsername()
 {
 	if (DEBUG_CLIENT)
 		printDebug("Client-> flipUsername() called");
-
 	_has_username = !_has_username;
 }
 
@@ -138,7 +134,6 @@ void Client::flipPass()
 {
 	if (DEBUG_CLIENT)
 		printDebug("Client-> flipPass() called");
-
 	_has_pass = !_has_pass;
 }
 
@@ -156,11 +151,7 @@ bool Client::isClientRegistered()
 {
 	if (DEBUG_CLIENT)
 		printDebug("Client-> isClientRegistered() called");
-
 	if (_has_nickname && _has_username && _has_pass)
-	{
-		log("DEBUG: isClientRegistered() retornou truee");
 		return true;
-	}
 	return false;
 }

@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/11 15:49:01 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/11 19:08:42 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,42 @@ Server& Server::operator=(const Server& other)
 	}
 	return *this;
 }
+
+/* ---------- Helpers ---------- */
+bool Server::_isValidPort(const std::string &port)
+{
+	if (DEBUG_SERVER)
+		printDebug("Server-> _isValidPort() called");
+
+	std::string temp = port;
+	std::string valid_chars = "0123456789";
+	if (temp.find_first_not_of(valid_chars) != std::string::npos)
+		return false;
+	if (!atoi(temp.c_str()) || atoi(temp.c_str()) < 0 || atol(temp.c_str()) > std::numeric_limits<int>::max())
+		return false;
+	_server_port = atoi(temp.c_str());
+	if (_server_port < 1024 || _server_port > 65535)  // tem q tratar se n falha na htons() ou bind()
+		return false;
+	return true;
+}
+
+bool Server::_isValidPassword(const std::string &password)
+{
+	if (DEBUG_SERVER)
+		printDebug("Server-> _isValidPassword() called");
+
+	_server_password = password;
+	if (_server_password.empty())
+		return false;
+	for (size_t i = 0; i < _server_password.length(); i++)
+	{
+		if (!isascii(_server_password[i]))
+			return false;
+	}
+	return true;
+}
+
+/* ---------- Signals ---------- */
 
 bool Server::_continue_running = true;
 
@@ -142,6 +178,7 @@ void Server::run()
 	log("\nsocket closeddd");
 }
 
+/* ---------- Client Handlers ---------- */
 void Server::_handleNewConnection()
 {
 	if (DEBUG_SERVER)
@@ -216,38 +253,4 @@ void Server::_handleClientActivity(int client_fd)
 			}
 		}
 	}
-}
-
-/* ---------- Helpers ---------- */
-bool Server::_isValidPort(const std::string &port)
-{
-	if (DEBUG_SERVER)
-		printDebug("Server-> _isValidPort() called");
-
-	std::string temp = port;
-	std::string valid_chars = "0123456789";
-	if (temp.find_first_not_of(valid_chars) != std::string::npos)
-		return false;
-	if (!atoi(temp.c_str()) || atoi(temp.c_str()) < 0 || atol(temp.c_str()) > std::numeric_limits<int>::max())
-		return false;
-	_server_port = atoi(temp.c_str());
-	if (_server_port < 1024 || _server_port > 65535)  // tem q tratar se n falha na htons() ou bind()
-		return false;
-	return true;
-}
-
-bool Server::_isValidPassword(const std::string &password)
-{
-	if (DEBUG_SERVER)
-		printDebug("Server-> _isValidPassword() called");
-
-	_server_password = password;
-	if (_server_password.empty())
-		return false;
-	for (size_t i = 0; i < _server_password.length(); i++)
-	{
-		if (!isascii(_server_password[i]))
-			return false;
-	}
-	return true;
 }
