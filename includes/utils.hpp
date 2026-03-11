@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 10:42:42 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/02/27 15:03:05 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/11 12:12:55 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,13 @@ void debugVar(const std::string name, const T value)
 	std::cout << YELLOW << "DEBUG: " << name << " = " << value << RESET << std::endl;
 }
 
+template <typename T>
+void printObject(const T& obj)
+{
+	typename T::const_iterator start = obj.begin();
+	for (; start != obj.end(); ++start)
+		std::cout << " " << *start;
+	std::cout << std::endl;
+}
 
 #endif

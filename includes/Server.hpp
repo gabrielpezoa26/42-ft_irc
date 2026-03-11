@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/11 11:03:35 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/11 12:47:38 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #include <poll.h>
 #include <csignal>
 #include <vector>
+#include <map>
 #include "Client.hpp"
 #include "utils.hpp"
 
@@ -45,7 +46,7 @@ class Server
 
 		struct pollfd _new_client_poll;
 		std::vector<struct pollfd> _vec_client_fds;
-		std::vector<Client> _vec_connected_clients;  //cpa trocar pra std::set
+		std::map<int, Client> _map_connected_clients;
 
 
 		bool _isValidPort(const std::string &port);

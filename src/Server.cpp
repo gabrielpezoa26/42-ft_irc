@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/11 11:01:44 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/11 13:18:52 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,12 +128,10 @@ void Server::run()
 			{
 				if (_vec_client_fds[i].fd == _server_socket_fd)
 				{
-					log("1");
 					_handleNewConnection();
 				}
 				else
 				{
-					log("2");
 					_handleClientActivity(_vec_client_fds[i].fd);
 				}
 			}
@@ -156,7 +154,13 @@ void Server::_handleNewConnection()
 	int client_socket = accept(_server_socket_fd, (struct sockaddr *)&_client_address, &len);
 	if (client_socket == -1)
 	{
-		log("vishhh");
+		log("vishhh no accept()");
+		return ;
+	}
+	if (fcntl(client_socket, F_SETFL, O_NONBLOCK) == -1)
+	{
+		log("vishh no fcntl()");
+		return ;
 	}
 	_new_client_poll.fd = client_socket;
 	_new_client_poll.events = POLLIN;
@@ -164,7 +168,7 @@ void Server::_handleNewConnection()
 	_vec_client_fds.push_back(_new_client_poll);
 
 	client.setClientFd(client_socket);
-	_vec_connected_clients.push_back(client);
+	_map_connected_clients[client_socket] = client;
 	printDebug("conexao deu bom");
 }
 
@@ -174,13 +178,23 @@ void Server::_handleClientActivity(int client_fd)
 	if (DEBUG_SERVER)
 		printDebug("Server-> _handleClientActivity called");
 
+	std::map<int, Client>::iterator it = _map_connected_clients.find(client_fd);
+	if (it == _map_connected_clients.end())
+	{
+		log("vishhh");
+		return ;
+	}
+	debugVar("it", it->first);
 	char client_message[1024];
 	memset(client_message, 0, sizeof(client_message));
-
 	ssize_t bytes_received = recv(client_fd, client_message, sizeof(client_message) - 1, 0);
+
 	if (bytes_received > 0)
 	{
-		std::cout << "Client <" << client_fd << ">: " << client_message;
+		std::string new_data(client_message, bytes_received);
+		it->second.appendInputBuffer(new_data);
+		// std::cout << "Client <" << client_fd << ">: " << client_message;
+		//ate aq ta certo
 	}
 	else
 	{

@@ -25,7 +25,7 @@ int main()
             sizeof(serverAddress));
 
     // sending data
-    const char* message = "Hello, server!";
+    const char* message = "Hello, server!\r\n";
     send(clientSocket, message, strlen(message), 0);
 
 

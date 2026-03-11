@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/11 10:40:25 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/11 12:03:39 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,9 @@ void Client::appendOutputBuffer(const std::string &out_to_append)
 std::string Client::getNickname() { return _client_nickname; }
 
 std::string Client::getUsername() { return _client_username; }
+
+int Client::getClientFd() { return _client_fd; }
+
 
 void Client::setNickname(std::string given_nickname) { _client_nickname = given_nickname; }
 
