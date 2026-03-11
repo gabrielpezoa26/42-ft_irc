@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:56 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/10 22:01:53 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/11 10:39:56 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ class Client
 		std::string getUsername();
 		void setNickname(std::string given_nickname);
 		void setUsername(std::string given_username);
+		void setClientFd(int given_fd);
 };
 
 #endif

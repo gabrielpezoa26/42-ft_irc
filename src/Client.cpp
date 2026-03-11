@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/10 20:50:30 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/11 10:40:25 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ void Client::setNickname(std::string given_nickname) { _client_nickname = given_
 
 void Client::setUsername(std::string given_username) { _client_username = given_username; }
 
-
+void Client::setClientFd(int given_fd) { _client_fd = given_fd; }
 
 // flips
 void Client::flipNickname()

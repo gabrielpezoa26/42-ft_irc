@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/10 12:29:40 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/11 11:01:44 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,13 +101,11 @@ void Server::setSocket()
 		throw std::runtime_error("Error while binding socket");
 	if (listen(_server_socket_fd, SOMAXCONN) == -1)
 		throw std::runtime_error("Error while listen() call");
-	memset(&_new_client, 0, sizeof(_new_client));
-	_new_client.fd = _server_socket_fd;
-	_new_client.events = POLLIN;
+	memset(&_new_client_poll, 0, sizeof(_new_client_poll));
+	_new_client_poll.fd = _server_socket_fd;
+	_new_client_poll.events = POLLIN;
 
-	debugVar("_new_client events:", _new_client.events);
-	debugVar("_new_client fds:", _new_client.fd);
-	_vec_client_fds.push_back(_new_client);
+	_vec_client_fds.push_back(_new_client_poll);
 }
 
 void Server::run()
@@ -146,23 +144,27 @@ void Server::run()
 	log("\nsocket closeddd");
 }
 
-//temporario
 void Server::_handleNewConnection()
 {
 	if (DEBUG_SERVER)
 		printDebug("Server-> _handleNewConnection() called");
 
-	struct sockaddr_in client_address;
-	socklen_t len = sizeof(client_address);
+	Client client;
+	socklen_t len = sizeof(_client_address);
+	memset(&_client_address, 0, sizeof(_client_address));
 
-	int client_socket = accept(_server_socket_fd, (struct sockaddr *)&client_address, &len);
+	int client_socket = accept(_server_socket_fd, (struct sockaddr *)&_client_address, &len);
+	if (client_socket == -1)
+	{
+		log("vishhh");
+	}
+	_new_client_poll.fd = client_socket;
+	_new_client_poll.events = POLLIN;
+	_new_client_poll.revents = 0;
+	_vec_client_fds.push_back(_new_client_poll);
 
-	struct pollfd new_client_poll;
-	new_client_poll.fd = client_socket;
-	new_client_poll.events = POLLIN;
-	new_client_poll.revents = 0;
-
-	_vec_client_fds.push_back(new_client_poll);
+	client.setClientFd(client_socket);
+	_vec_connected_clients.push_back(client);
 	printDebug("conexao deu bom");
 }
 
@@ -199,8 +201,6 @@ void Server::_handleClientActivity(int client_fd)
 }
 
 /* ---------- Helpers ---------- */
-// 1024    65535
-
 bool Server::_isValidPort(const std::string &port)
 {
 	if (DEBUG_SERVER)
