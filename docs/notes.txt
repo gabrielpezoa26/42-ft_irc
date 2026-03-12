@@ -1,15 +1,15 @@
 11/03/2026
 
 afazeres:
-	-> revisar nomes funções/variaveis
-	-> revisar encapsulamento Client && Server
-	-> reorganização geral
-
-
+	-> "login" (PASS, NICK, USER) etc
+		comando PASS:
+		-> ver se a senha eh a certa
+		-> setar a flag
+		-> código de erro
+		-> edge cases
+		
 
 	->dps:
-		-> implementar TCP (mensagem pode ir "quebrada")     ok
-		-> "login" (PASS, NICK, USER) etc
 		-> parser mensagem
 		-> dps disso em tese só fica faltando os Channels (ju)
 

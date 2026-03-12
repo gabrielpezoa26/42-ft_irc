@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/11 19:11:03 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/12 20:12:02 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,9 @@ std::string Client::fetchCommand()
 	else
 	{
 		result = _input_buffer.substr(0, pos);
+		debugVar("result", result);
+		if (result == "PASS\r\n")  // ta errado
+			_authClient();
 		_input_buffer.erase(0, pos + 2); //fica +2 por causa do '\r\n'
 	}
 	return result;
@@ -154,4 +157,12 @@ bool Client::isClientRegistered()
 	if (_has_nickname && _has_username && _has_pass)
 		return true;
 	return false;
+}
+
+
+void Client::_authClient()
+{
+	if (DEBUG_CLIENT)
+		printDebug("Client-> _authClient() called");
+
 }

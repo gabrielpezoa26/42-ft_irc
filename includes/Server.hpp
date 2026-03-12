@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/11 19:23:35 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/12 12:05:28 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
 #include "Client.hpp"
 #include "utils.hpp"
 
-#define DEBUG_SERVER true
+#define DEBUG_SERVER false
 
 class Server
 {
@@ -55,8 +55,6 @@ class Server
 		void setupSignals();
 		void _handleNewConnection();
 		void _handleClientActivity(int client_fd);
-
-
 
 	public:
 		Server();
