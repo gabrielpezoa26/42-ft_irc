@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:56 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 15:09:58 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 15:50:14 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <string>
 #include "utils.hpp"
 
-#define DEBUG_CLIENT true
+#define DEBUG_CLIENT false
 
 class Client
 {
@@ -47,18 +47,18 @@ class Client
 		void setNickname(std::string given_nickname);
 		void setUsername(std::string given_username);
 		void setClientFd(int given_fd);
-		std::string getNickname();
-		std::string getUsername();
-		int getClientFd();
+		std::string getNickname() const;
+		std::string getUsername() const;
+		int getClientFd() const;
 
-		void flipNickname();
-		void flipUsername();
-		void flipPass();
-		bool isClientRegistered();
-
-		bool hasPass();
-		bool hasNickname();
-		bool hasUsername();
+		void markPasswordStatus(bool value);
+		void markNicknameStatus(bool value);
+		void markUsernameStatus(bool value);
+		bool isClientRegistered() const;
+		
+		bool hasPassword() const;
+		bool hasNickname() const;
+		bool hasUsername() const;
 
 };
 

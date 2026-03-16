@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 08:00:17 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 14:41:25 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 16:20:01 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <cctype>
 #include "Client.hpp"
 
 #define DEBUG_AUTH true
@@ -23,9 +24,9 @@
 class Auth
 {
 	private:
-		bool _validatePassword(Client& client, const std::string& cmd, const std::string& server_password);
-		bool _validateNickname(Client& client, const std::string& cmd);
-		bool _validateUsername(Client& client, const std::string& cmd);
+		bool _validatePassword(Client& client, const std::string& cmd, const std::string& server_password) const;
+		bool _validateNickname(Client& client, const std::string& cmd) const;
+		bool _validateUsername(Client& client, const std::string& cmd) const;
 		std::map<int, Client>& _existing_clients;
 
 

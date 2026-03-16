@@ -5,13 +5,18 @@ afazeres:
 		comando PASS:
 		-> ver se a senha eh a certa
 		-> setar a flag
-		-> código de erro
 		-> edge cases
 
 		comando NICK:
 		-> ver se o nick ja existe
 		-> seta a flag
-		-> *código de erro cpa
+
+		revisar encapsulamento
+
+		comando NICK:
+		-> ver se o user ja existe
+		-> seta a flag
+
 
 		
 

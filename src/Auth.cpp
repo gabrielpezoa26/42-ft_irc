@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 12:14:41 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 15:07:30 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 16:20:09 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,24 +25,35 @@ Auth::~Auth()
 }
 
 //TODO: add códigos de erro protocolo irc
-bool Auth::_validatePassword(Client& client, const std::string& cmd, const std::string& server_password)
+//TODO: trocar msgs de erro
+bool Auth::_validatePassword(Client& client, const std::string& cmd, const std::string& server_password) const
 {
 	if (DEBUG_AUTH)
 		printDebug("Auth-> _validatePassword() called");
 
+	if (cmd.empty())
+	{
+		log("empty password");
+		return false;
+	}
 	if (cmd != server_password)
 	{
 		log("incorrect password!");
 		return false;
 	}
-	client.flipPass();
+	client.markPasswordStatus(true);
 	printDebug("senha deu bommm");
 	return true;
 }
-//TODO: validar nick e username
-bool Auth::_validateNickname(Client& client, const std::string& cmd)
+
+//TODO: add códigos de erro protocolo irc
+//TODO: trocar msgs de erro
+bool Auth::_validateNickname(Client& client, const std::string& cmd) const
 {
-	if (!client.hasPass())
+	if (DEBUG_AUTH)
+		printDebug("Auth-> _validateNickname() called");
+
+	if (!client.hasPassword())
 	{
 		log("vishh 1");
 		return false;
@@ -62,14 +73,31 @@ bool Auth::_validateNickname(Client& client, const std::string& cmd)
 		}
 	}
 	client.setNickname(cmd);
-	client.flipNickname();
+	client.markNicknameStatus(true);
 	return true;
 }
 
-// bool Auth::_validateUsername(Client& client, const std::string& cmd)
-// {
+//ta incompleto
+bool Auth::_validateUsername(Client& client, const std::string& cmd) const
+{
+	if (DEBUG_AUTH)
+		printDebug("Auth-> _validateUsername() called");
 
-// }
+	if (!client.hasPassword())
+	{
+		log("vishh 1");
+		return false;
+	}
+	else if (cmd.empty())
+	{
+		log("vishhh 2");
+		return false;
+	}
+	//fzr o parse do username
+	client.setUsername(cmd);
+	client.markUsernameStatus(true);
+	return true;
+}
 
 void Auth::handleLogin(Client& client, const std::string& cmd, const std::string& server_password)
 {
@@ -93,12 +121,13 @@ void Auth::handleLogin(Client& client, const std::string& cmd, const std::string
 		else
 			args = cmd.substr(arg_start);
 	}
-	if (command == "PASS")
+	//normalizar comando pra tudo uppercase
+	if (command == "PASS" || command == "pass")  //temporario
 		_validatePassword(client, args, server_password);
-	else if (command == "NICK")
+	else if (command == "NICK" || command == "nick")
 		_validateNickname(client, args);
-	// else if (command == "USER")
-	// 	_validateUsername();
+	// else if (command == "USER" || command == "user")
+	// 	_validateUsername(client, args);
 	// else
 	// 	log("vishhh");
 }
