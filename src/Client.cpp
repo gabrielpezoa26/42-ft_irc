@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 15:50:04 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 19:17:19 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ std::string Client::fetchCommand()
 
 	std::string::size_type pos;
 	std::string result;
-
 	pos = _input_buffer.find("\r\n");
 	if (pos == std::string::npos)
 	{
@@ -80,7 +79,6 @@ std::string Client::fetchCommand()
 	else
 	{
 		result = _input_buffer.substr(0, pos);
-		debugVar("result", result);
 		_input_buffer.erase(0, pos + 2); //fica +2 por causa do '\r\n'
 	}
 	return result;
@@ -109,17 +107,17 @@ std::string Client::getNickname() const { return _client_nickname; }
 std::string Client::getUsername() const { return _client_username; }
 int Client::getClientFd() const { return _client_fd; }
 
-bool Client::hasPassword() const { return _has_set_password; }
-bool Client::hasNickname() const { return _has_set_nickname; }
-bool Client::hasUsername() const { return _has_set_username; }
-
 void Client::setNickname(std::string given_nickname) { _client_nickname = given_nickname; }
 void Client::setUsername(std::string given_username) { _client_username = given_username; }
 void Client::setClientFd(int given_fd) { _client_fd = given_fd; }
 
+bool Client::hasPassword() const { return _has_set_password; }
+bool Client::hasNickname() const { return _has_set_nickname; }
+bool Client::hasUsername() const { return _has_set_username; }
 
 
-/* ---------- Auth ---------- */
+
+/* ---------- Authentication---------- */
 void Client::markPasswordStatus(bool value)
 {
 	if (DEBUG_CLIENT)
@@ -148,6 +146,7 @@ bool Client::isClientRegistered() const
 {
 	if (DEBUG_CLIENT)
 		printDebug("Client-> isClientRegistered() called");
+
 	if (!_has_set_password || !_has_set_nickname || !_has_set_username)
 		return false;
 	return true;

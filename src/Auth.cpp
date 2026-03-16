@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 12:14:41 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 18:20:29 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 19:26:59 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,15 @@ bool Auth::_validatePassword(Client& client, const std::string& cmd, const std::
 
 	if (cmd.empty())
 	{
-		log("empty password");
+		printError("empty password");
 		return false;
 	}
 	if (cmd != server_password)
 	{
-		log("incorrect password!");
+		printError("incorrect password!");
 		return false;
 	}
 	client.markPasswordStatus(true);
-	printDebug("senha deu bommm");
 	return true;
 }
 
@@ -55,12 +54,12 @@ bool Auth::_validateNickname(Client& client, const std::string& cmd) const
 
 	if (!client.hasPassword())
 	{
-		log("vishh 1");
+		printError("Error 1");
 		return false;
 	}
 	else if (cmd.empty())
 	{
-		log("vishhh 2");
+		printError("Error 2");
 		return false;
 	}
 	std::map<int, Client>::iterator it;
@@ -68,7 +67,7 @@ bool Auth::_validateNickname(Client& client, const std::string& cmd) const
 	{
 		if (it->second.getNickname() == cmd)
 		{
-			log("vishhh 3");
+			printError("Error 3");
 			return false;
 		}
 	}
@@ -85,15 +84,16 @@ bool Auth::_validateUsername(Client& client, const std::string& cmd) const
 
 	if (!client.hasPassword())
 	{
-		log("vishh 1");
+		printError("Error 4");
 		return false;
 	}
 	else if (cmd.empty())
 	{
-		log("vishhh 2");
+		printError("Error 5");
 		return false;
 	}
 	//fzr o parse do username
+	// ...
 	client.setUsername(cmd);
 	client.markUsernameStatus(true);
 	return true;
@@ -106,7 +106,6 @@ std::string Auth::_normalize(std::string& cmd)
 	return cmd;
 }
 
-//TODO: trocar msgs de erro
 void Auth::handleLogin(Client& client, const std::string& cmd, const std::string& server_password)
 {
 	if (DEBUG_AUTH)
@@ -130,7 +129,6 @@ void Auth::handleLogin(Client& client, const std::string& cmd, const std::string
 			args = cmd.substr(arg_start);
 	}
 	command = _normalize(command);
-	debugVar("command", command);  //apagar dps
 	if (command == "PASS")
 		_validatePassword(client, args, server_password);
 	else if (command == "NICK")
@@ -138,5 +136,5 @@ void Auth::handleLogin(Client& client, const std::string& cmd, const std::string
 	else if (command == "USER")
 		_validateUsername(client, args);
 	else
-		log("vishhh");
+		printError("nao eh comando");
 }

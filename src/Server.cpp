@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 14:37:35 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 19:31:53 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,6 @@ bool Server::_isValidPassword(const std::string &password)
 }
 
 /* ---------- Signals ---------- */
-
 bool Server::_continue_running = true;
 
 void Server::handleSignals(int signum)
@@ -140,7 +139,6 @@ void Server::setSocket()
 	memset(&_new_client_poll, 0, sizeof(_new_client_poll));
 	_new_client_poll.fd = _server_socket_fd;
 	_new_client_poll.events = POLLIN;
-
 	_vec_client_fds.push_back(_new_client_poll);
 }
 
@@ -156,7 +154,7 @@ void Server::run()
 		int poll_result = poll(&_vec_client_fds[0], _vec_client_fds.size(), -1);
 		if (poll_result == -1 && Server::_continue_running == true)
 		{
-			throw std::runtime_error("deu ruim");
+			throw std::runtime_error("Error on poll()");
 		}
 		for (size_t i = 0; i < _vec_client_fds.size(); i++)
 		{
@@ -175,7 +173,6 @@ void Server::run()
 	}
 	if (_server_socket_fd != -1)
 		close(_server_socket_fd);
-	log("\nsocket closeddd");
 }
 
 /* ---------- Client Handlers ---------- */
@@ -191,12 +188,12 @@ void Server::_handleNewConnection()
 	int client_socket = accept(_server_socket_fd, (struct sockaddr *)&_client_address, &len);
 	if (client_socket == -1)
 	{
-		log("vishhh no accept()");
+		log("Error on accept()");
 		return ;
 	}
 	if (fcntl(client_socket, F_SETFL, O_NONBLOCK) == -1)
 	{
-		log("vishh no fcntl()");
+		log("Error on fcntl()");
 		return ;
 	}
 	_new_client_poll.fd = client_socket;
@@ -206,7 +203,6 @@ void Server::_handleNewConnection()
 
 	client.setClientFd(client_socket);
 	_map_connected_clients[client_socket] = client;
-	printDebug("conexao deu bom");
 }
 
 //refatorar dps
@@ -218,7 +214,7 @@ void Server::_handleClientActivity(int client_fd)
 	std::map<int, Client>::iterator it = _map_connected_clients.find(client_fd);
 	if (it == _map_connected_clients.end())
 	{
-		log("vishhh: client not found in map");
+		log("Error: client not found in map");
 		return;
 	}
 	char client_message[1024];
@@ -228,15 +224,15 @@ void Server::_handleClientActivity(int client_fd)
 	{
 		std::string new_data(client_message, bytes_received);
 		it->second.appendInputBuffer(new_data);
-	while (true)
-	{
-		std::string extracted_cmd = it->second.fetchCommand();
-		if (extracted_cmd.empty())
-			break;
+		while (true)
+		{
+			std::string extracted_cmd = it->second.fetchCommand();
+			if (extracted_cmd.empty())
+				break;
 
-		_auth_handler.handleLogin(it->second, extracted_cmd, _server_password);
-		std::cout << "Client <" << client_fd << "> sent: [" << extracted_cmd << "]" << std::endl;
-	}
+			_auth_handler.handleLogin(it->second, extracted_cmd, _server_password);
+			std::cout << "Client <" << client_fd << "> sent: [" << extracted_cmd << "]" << std::endl;
+		}
 	}
 	else
 	{

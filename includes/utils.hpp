@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 10:42:42 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/11 12:12:55 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 19:18:56 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 void log(std::string message);
 void logColor(std::string message, std::string color);
 void printDebug(std::string message);
+void printError(std::string message);
 void printCurrentTime();
 
 template <typename T>
