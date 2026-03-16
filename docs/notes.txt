@@ -1,11 +1,17 @@
-16/03/2026
+atualizado 16/03/2026
 
 afazeres:
-	-> "login" (PASS, NICK, USER) etc
+	-> trocar msgs de erro
 
-		revisar encapsulamento    ok
+	-> terminar implementação _validateUsername()
 
-		terminar comandos PASS NICK USER
+	-> aplicar códigos de erro protocolo irc**
+
+
+
+
+
+
 
 
 

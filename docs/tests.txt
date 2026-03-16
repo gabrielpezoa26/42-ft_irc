@@ -1,4 +1,4 @@
-11/03/2026
+atualizado 16/03/2026
 
 testes pra rodar de vez em quando p ter ctz q nd quebrou rs
 
@@ -30,3 +30,15 @@ server:
 		-> digita qqr coisa, dá enter
 		-> dps de digitar várias msgs, aperta Ctrl + v, ctrl + m, Enter.
 			agora sim a msg é pra printar no server
+
+
+
+
+Auth:
+	-> testar qqr comando vazio
+
+	-> testar senha incorreta
+
+	-> testar NICK antes da senha
+
+	-> testar dois nicks iguais
