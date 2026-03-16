@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:56 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/12 12:04:04 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 13:08:10 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,13 +31,7 @@ class Client
 		std::string _input_buffer;
 		std::string _output_buffer;
 
-		void flipNickname();
-		void flipUsername();
-		void flipPass();
-		void flipAll();  //cpa n vai usar esse
-		bool isClientRegistered();
 
-		void _authClient();
 
 
 	public:
@@ -56,6 +50,13 @@ class Client
 		std::string getNickname();
 		std::string getUsername();
 		int getClientFd();
+
+		void flipNickname();
+		void flipUsername();
+		void flipPass();
+		void flipAll();  //cpa n vai usar esse
+		bool isClientRegistered();
+
 };
 
 #endif

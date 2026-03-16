@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 07:54:59 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 13:07:55 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,12 +155,4 @@ bool Client::isClientRegistered()
 	if (_has_nickname && _has_username && _has_pass)
 		return true;
 	return false;
-}
-
-
-void Client::_authClient()
-{
-	if (DEBUG_CLIENT)
-		printDebug("Client-> _authClient() called");
-
 }

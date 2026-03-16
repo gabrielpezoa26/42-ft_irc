@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 08:00:17 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 08:37:27 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 12:59:33 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ class Auth
 
 
 	public:
+		//TODO: forma canonica
 		Auth();
 		~Auth();
 
