@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/12 12:05:28 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 08:15:48 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 #include <vector>
 #include <map>
 #include "Client.hpp"
+#include "Auth.hpp"
 #include "utils.hpp"
 
 #define DEBUG_SERVER false
@@ -55,6 +56,8 @@ class Server
 		void setupSignals();
 		void _handleNewConnection();
 		void _handleClientActivity(int client_fd);
+
+		Auth _auth_handler;
 
 	public:
 		Server();

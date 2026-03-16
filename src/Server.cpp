@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/12 12:11:22 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 08:24:34 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,6 +233,8 @@ void Server::_handleClientActivity(int client_fd)
 			std::string extracted_cmd = it->second.fetchCommand();
 			if (extracted_cmd.empty())
 				break;
+			
+			_auth_handler.handleLogin(it->second, extracted_cmd, _server_password);
 			std::cout << "Client <" << client_fd << "> sent: [" << extracted_cmd << "]" << std::endl;
 		}
 	}
