@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 12:14:41 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 16:20:09 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 16:44:31 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,15 @@ bool Auth::_validateUsername(Client& client, const std::string& cmd) const
 	return true;
 }
 
+//  char upper = (char)std::toupper(lower);
+void Auth::_normalize(std::string& cmd)
+{
+	for(size_t i = 0; i < cmd.size(); i++)
+	{
+		// to upper etc etc
+	}
+}
+
 void Auth::handleLogin(Client& client, const std::string& cmd, const std::string& server_password)
 {
 	if (DEBUG_AUTH)
@@ -121,7 +130,9 @@ void Auth::handleLogin(Client& client, const std::string& cmd, const std::string
 		else
 			args = cmd.substr(arg_start);
 	}
-	//normalizar comando pra tudo uppercase
+
+	_normalize(command);
+
 	if (command == "PASS" || command == "pass")  //temporario
 		_validatePassword(client, args, server_password);
 	else if (command == "NICK" || command == "nick")
