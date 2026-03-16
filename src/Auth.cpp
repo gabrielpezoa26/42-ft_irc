@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 12:14:41 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 16:44:31 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 18:20:29 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,15 +99,14 @@ bool Auth::_validateUsername(Client& client, const std::string& cmd) const
 	return true;
 }
 
-//  char upper = (char)std::toupper(lower);
-void Auth::_normalize(std::string& cmd)
+std::string Auth::_normalize(std::string& cmd)
 {
-	for(size_t i = 0; i < cmd.size(); i++)
-	{
-		// to upper etc etc
-	}
+	for(size_t i = 0; i < cmd.length(); i++)
+		cmd[i] = std::toupper((unsigned char)cmd[i]);
+	return cmd;
 }
 
+//TODO: trocar msgs de erro
 void Auth::handleLogin(Client& client, const std::string& cmd, const std::string& server_password)
 {
 	if (DEBUG_AUTH)
@@ -130,15 +129,14 @@ void Auth::handleLogin(Client& client, const std::string& cmd, const std::string
 		else
 			args = cmd.substr(arg_start);
 	}
-
-	_normalize(command);
-
-	if (command == "PASS" || command == "pass")  //temporario
+	command = _normalize(command);
+	debugVar("command", command);  //apagar dps
+	if (command == "PASS")
 		_validatePassword(client, args, server_password);
-	else if (command == "NICK" || command == "nick")
+	else if (command == "NICK")
 		_validateNickname(client, args);
-	// else if (command == "USER" || command == "user")
-	// 	_validateUsername(client, args);
-	// else
-	// 	log("vishhh");
+	else if (command == "USER")
+		_validateUsername(client, args);
+	else
+		log("vishhh");
 }

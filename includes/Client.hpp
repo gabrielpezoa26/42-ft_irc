@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:56 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 15:50:14 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 17:38:03 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <string>
 #include "utils.hpp"
 
-#define DEBUG_CLIENT false
+#define DEBUG_CLIENT true
 
 class Client
 {

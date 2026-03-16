@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 08:00:17 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 16:43:09 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 18:17:24 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ class Auth
 		bool _validateNickname(Client& client, const std::string& cmd) const;
 		bool _validateUsername(Client& client, const std::string& cmd) const;
 		std::map<int, Client>& _existing_clients;
-		void _normalize(std::string& cmd);
+		std::string _normalize(std::string& cmd);
+		
 
 
 

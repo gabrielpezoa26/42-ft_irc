@@ -2,27 +2,14 @@
 
 afazeres:
 	-> "login" (PASS, NICK, USER) etc
-		comando PASS:
-		-> ver se a senha eh a certa
-		-> setar a flag
-		-> edge cases
 
-		comando NICK:
-		-> ver se o nick ja existe
-		-> seta a flag
+		revisar encapsulamento    ok
 
-		revisar encapsulamento
-
-		comando NICK:
-		-> ver se o user ja existe
-		-> seta a flag
+		terminar comandos PASS NICK USER
 
 
-		
 
-	->dps:
-		-> parser mensagem
-		-> dps disso em tese só fica faltando os Channels (ju)
+
 
 
 como testar:
