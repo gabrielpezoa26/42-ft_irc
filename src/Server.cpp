@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 08:24:34 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 14:37:35 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 
 /* ---------- Canonical Form ---------- */
 Server::Server()
-: _server_port(0), _server_password("default_password")
+: _server_port(0), _server_password("default_password"),_auth_handler(_map_connected_clients)
 {
 	if (DEBUG_SERVER)
 		printDebug("Server-> Default constructor called");
 }
 
 Server::Server(const Server& other)
-: _server_port(other._server_port), _server_password(other._server_password)
+: _server_port(other._server_port), _server_password(other._server_password), _auth_handler(_map_connected_clients)
 {
 	if (DEBUG_SERVER)
 		printDebug("Server-> Copy constructor called");
@@ -228,15 +228,15 @@ void Server::_handleClientActivity(int client_fd)
 	{
 		std::string new_data(client_message, bytes_received);
 		it->second.appendInputBuffer(new_data);
-		while (true)
-		{
-			std::string extracted_cmd = it->second.fetchCommand();
-			if (extracted_cmd.empty())
-				break;
-			
-			_auth_handler.handleLogin(it->second, extracted_cmd, _server_password);
-			std::cout << "Client <" << client_fd << "> sent: [" << extracted_cmd << "]" << std::endl;
-		}
+	while (true)
+	{
+		std::string extracted_cmd = it->second.fetchCommand();
+		if (extracted_cmd.empty())
+			break;
+
+		_auth_handler.handleLogin(it->second, extracted_cmd, _server_password);
+		std::cout << "Client <" << client_fd << "> sent: [" << extracted_cmd << "]" << std::endl;
+	}
 	}
 	else
 	{

@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 13:07:55 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 15:12:02 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 Client::Client()
  : _client_username("default_username"),
 _client_nickname("default_nickname"),
-_has_nickname(false),
-_has_username(false),
-_has_pass(false)
+_has_set_password(false),
+_has_set_nickname(false),
+_has_set_username(false)
 {
 	if (DEBUG_CLIENT)
 		printDebug("Client-> Default constructor called");
@@ -28,9 +28,9 @@ Client::Client(const Client& other)
  : _client_username(other._client_username),
 _client_nickname(other._client_nickname),
 _client_fd(other._client_fd),
-_has_nickname(other._has_nickname),
-_has_username(other._has_username),
-_has_pass(other._has_pass)
+_has_set_password(other._has_set_password),
+_has_set_nickname(other._has_set_nickname),
+_has_set_username(other._has_set_username)
 {
 	if (DEBUG_CLIENT)
 		printDebug("Client-> Copy constructor called");
@@ -54,9 +54,9 @@ Client& Client::operator=(const Client& other)
 		_client_username = other._client_username;
 		_client_nickname = other._client_nickname;
 		_client_fd = other._client_fd;
-		_has_nickname = other._has_nickname;
-		_has_username = other._has_username;
-		_has_pass = other._has_pass;
+		_has_set_nickname = other._has_set_nickname;
+		_has_set_username = other._has_set_username;
+		_has_set_password = other._has_set_password;
 	}
 	return *this;
 }
@@ -109,6 +109,9 @@ std::string Client::getNickname() { return _client_nickname; }
 std::string Client::getUsername() { return _client_username; }
 int Client::getClientFd() { return _client_fd; }
 
+bool Client::hasPass() { return _has_set_password; }
+bool Client::hasNickname() { return _has_set_nickname; }
+bool Client::hasUsername() { return _has_set_username; }
 
 void Client::setNickname(std::string given_nickname) { _client_nickname = given_nickname; }
 void Client::setUsername(std::string given_username) { _client_username = given_username; }
@@ -121,38 +124,28 @@ void Client::flipNickname()
 {
 	if (DEBUG_CLIENT)
 		printDebug("Client-> flipNickname() called");
-	_has_nickname = !_has_nickname;
+	_has_set_nickname = !_has_set_nickname;
 }
 
 void Client::flipUsername()
 {
 	if (DEBUG_CLIENT)
 		printDebug("Client-> flipUsername() called");
-	_has_username = !_has_username;
+	_has_set_username = !_has_set_username;
 }
 
 void Client::flipPass()
 {
 	if (DEBUG_CLIENT)
 		printDebug("Client-> flipPass() called");
-	_has_pass = !_has_pass;
-}
-
-void Client::flipAll()
-{
-	if (DEBUG_CLIENT)
-		printDebug("Client-> flipAll() called");
-
-	_has_nickname = !_has_nickname;
-	_has_username = !_has_username;
-	_has_pass = !_has_pass;
+	_has_set_password = !_has_set_password;
 }
 
 bool Client::isClientRegistered()
 {
 	if (DEBUG_CLIENT)
 		printDebug("Client-> isClientRegistered() called");
-	if (_has_nickname && _has_username && _has_pass)
+	if (_has_set_nickname && _has_set_username && _has_set_password)
 		return true;
 	return false;
 }

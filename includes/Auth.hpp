@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 08:00:17 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 12:59:33 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/16 14:41:25 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <string>
+#include <map>
 #include "Client.hpp"
 
 #define DEBUG_AUTH true
@@ -25,12 +26,12 @@ class Auth
 		bool _validatePassword(Client& client, const std::string& cmd, const std::string& server_password);
 		bool _validateNickname(Client& client, const std::string& cmd);
 		bool _validateUsername(Client& client, const std::string& cmd);
-
+		std::map<int, Client>& _existing_clients;
 
 
 	public:
-		//TODO: forma canonica
-		Auth();
+		//TODO: terminar forma canonica
+		Auth(std::map<int, Client>& clients_map);
 		~Auth();
 
 		void handleLogin(Client &client, const std::string &cmd, const std::string& server_password);

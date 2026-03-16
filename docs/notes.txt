@@ -7,6 +7,12 @@ afazeres:
 		-> setar a flag
 		-> código de erro
 		-> edge cases
+
+		comando NICK:
+		-> ver se o nick ja existe
+		-> seta a flag
+		-> *código de erro cpa
+
 		
 
 	->dps:
