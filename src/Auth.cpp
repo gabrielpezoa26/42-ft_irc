@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 12:14:41 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 19:26:59 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/17 08:49:53 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,26 +76,53 @@ bool Auth::_validateNickname(Client& client, const std::string& cmd) const
 	return true;
 }
 
-//ta incompleto
+//TODO: add códigos de erro protocolo irc
+//TODO: trocar msgs de erro
+//TODO: nome real usuario
 bool Auth::_validateUsername(Client& client, const std::string& cmd) const
 {
 	if (DEBUG_AUTH)
 		printDebug("Auth-> _validateUsername() called");
 
+	if (client.hasUsername())
+	{
+		log("USER rejected: already registered");
+		return false;
+	}
 	if (!client.hasPassword())
 	{
-		printError("Error 4");
+		log("USER rejected: must insert password first");
 		return false;
 	}
-	else if (cmd.empty())
+	if (cmd.empty())
 	{
-		printError("Error 5");
+		log("USER rejected: empty string");
 		return false;
 	}
-	//fzr o parse do username
-	// ...
-	client.setUsername(cmd);
+	std::string::size_type pos = 0;
+	int parameter_count = 0;
+	while (pos < cmd.length() && parameter_count < 4)
+	{
+		pos = cmd.find_first_not_of(' ', pos);
+		if (pos == std::string::npos)
+			break;
+		if (cmd[pos] == ':')
+		{
+			parameter_count++;
+			break;
+		}
+		pos = cmd.find(' ', pos);
+		parameter_count++;
+	}
+	if (parameter_count < 4)
+	{
+		log("USER rejected: not enough parameters");
+		return false;
+	}
+	std::string extracted_username = cmd.substr(0, cmd.find_first_of(' '));
+	client.setUsername(extracted_username);
 	client.markUsernameStatus(true);
+	
 	return true;
 }
 
