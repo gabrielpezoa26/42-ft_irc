@@ -42,3 +42,18 @@ Auth:
 	-> testar NICK antes da senha
 
 	-> testar dois nicks iguais
+
+
+
+
+exemplo de teste:
+
+	USER gcesar-n 0 * :Gabriel
+
+	JOIN #sao_paulo
+
+	PRIVMSG #sao_paulo :boa noite grupo, tudo bem?
+
+	PRIVMSG other_user :ooi tudo bem?
+
+	QUIT :vou sair aqui, até mais!

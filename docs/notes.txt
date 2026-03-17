@@ -1,21 +1,33 @@
-atualizado 16/03/2026
+atualizado 17/03/2026
 
 afazeres:
-	-> trocar msgs de erro
-
-	-> terminar implementação _validateUsername()
-
+	-> normalize() vai pro utils.hpp
 	-> aplicar códigos de erro protocolo irc**
 
 
 
 
+exemplo de comando USER:
 
+	USER gcesar-n 0 * :Gabriel
+	
+	gcesar-n         username
+	0                "modo", o 0 é meio q o padrão
+	*                o nome do server, tbm é meio que padrão
+	:Gabriel         o nome real da pessoa
+	
 
+exemplo de teste:
 
+	USER gcesar-n 0 * :Gabriel
 
+	JOIN #sao_paulo
 
+	PRIVMSG #sao_paulo :boa noite grupo, tudo bem?
 
+	PRIVMSG other_user :ooi tudo bem?
+
+	QUIT :vou sair aqui, até mais!
 
 
 como testar:
