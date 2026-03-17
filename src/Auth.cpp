@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 12:14:41 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/17 08:49:53 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/17 09:12:26 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ bool Auth::_validateNickname(Client& client, const std::string& cmd) const
 
 //TODO: add códigos de erro protocolo irc
 //TODO: trocar msgs de erro
-//TODO: nome real usuario
+//TODO: refatorar
 bool Auth::_validateUsername(Client& client, const std::string& cmd) const
 {
 	if (DEBUG_AUTH)
@@ -120,10 +120,28 @@ bool Auth::_validateUsername(Client& client, const std::string& cmd) const
 		return false;
 	}
 	std::string extracted_username = cmd.substr(0, cmd.find_first_of(' '));
-	client.setUsername(extracted_username);
-	client.markUsernameStatus(true);
-	
-	return true;
+	std::string extracted_realname = "";
+	std::string::size_type colon_pos = cmd.find(':');
+	if (colon_pos != std::string::npos)
+		{
+			extracted_realname = cmd.substr(colon_pos + 1);
+		}
+		else
+		{
+			std::string::size_type start = 0;
+			for (int i = 0; i < 3; i++)
+			{
+				start = cmd.find_first_not_of(' ', start);
+				start = cmd.find(' ', start);
+			}
+			start = cmd.find_first_not_of(' ', start);
+			if (start != std::string::npos)
+				extracted_realname = cmd.substr(start);
+		}
+		client.setUsername(extracted_username);
+		client.setRealName(extracted_realname);
+		client.markUsernameStatus(true);
+		return true;
 }
 
 std::string Auth::_normalize(std::string& cmd)
@@ -164,4 +182,7 @@ void Auth::handleLogin(Client& client, const std::string& cmd, const std::string
 		_validateUsername(client, args);
 	else
 		printError("nao eh comando");
+	debugVar("username", client.getUsername());
+	debugVar("nickname", client.getNickname());
+	debugVar("realname", client.getRealName());
 }

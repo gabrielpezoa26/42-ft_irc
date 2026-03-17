@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:56 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/17 08:50:01 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/17 09:07:33 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ class Client
 	private:
 		std::string _client_username;
 		std::string _client_nickname;
-		//nome real
+		std::string _client_real_name;
 		int _client_fd;
 		std::string _input_buffer;
 		std::string _output_buffer;
@@ -47,9 +47,11 @@ class Client
 
 		void setNickname(std::string given_nickname);
 		void setUsername(std::string given_username);
+		void setRealName(std::string given_real_name);
 		void setClientFd(int given_fd);
 		std::string getNickname() const;
 		std::string getUsername() const;
+		std::string getRealName() const;
 		int getClientFd() const;
 
 		void markPasswordStatus(bool value);
