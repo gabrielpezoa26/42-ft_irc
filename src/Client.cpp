@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/17 09:08:01 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/17 10:41:28 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,12 +105,12 @@ void Client::appendOutputBuffer(const std::string &out_to_append)
 /* ---------- Getters && Setters ---------- */
 std::string Client::getNickname() const { return _client_nickname; }
 std::string Client::getUsername() const { return _client_username; }
-std::string Client::getRealName() const { return _client_real_name; }
+std::string Client::getRealName() const { return _client_realname; }
 int Client::getClientFd() const { return _client_fd; }
 
 void Client::setNickname(std::string given_nickname) { _client_nickname = given_nickname; }
 void Client::setUsername(std::string given_username) { _client_username = given_username; }
-void Client::setRealName(std::string given_real_name) { _client_real_name = given_real_name; }
+void Client::setRealName(std::string given_real_name) { _client_realname = given_real_name; }
 void Client::setClientFd(int given_fd) { _client_fd = given_fd; }
 
 bool Client::hasPassword() const { return _has_set_password; }

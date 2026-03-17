@@ -1,7 +1,6 @@
 atualizado 17/03/2026
 
 afazeres:
-	-> normalize() vai pro utils.hpp
 	-> aplicar códigos de erro protocolo irc**
 
 

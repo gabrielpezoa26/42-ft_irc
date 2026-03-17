@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 12:14:41 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/17 09:12:26 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/17 10:43:26 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,27 +78,8 @@ bool Auth::_validateNickname(Client& client, const std::string& cmd) const
 
 //TODO: add códigos de erro protocolo irc
 //TODO: trocar msgs de erro
-//TODO: refatorar
-bool Auth::_validateUsername(Client& client, const std::string& cmd) const
+bool Auth::_isValidParameterAmount(const std::string& cmd) const
 {
-	if (DEBUG_AUTH)
-		printDebug("Auth-> _validateUsername() called");
-
-	if (client.hasUsername())
-	{
-		log("USER rejected: already registered");
-		return false;
-	}
-	if (!client.hasPassword())
-	{
-		log("USER rejected: must insert password first");
-		return false;
-	}
-	if (cmd.empty())
-	{
-		log("USER rejected: empty string");
-		return false;
-	}
 	std::string::size_type pos = 0;
 	int parameter_count = 0;
 	while (pos < cmd.length() && parameter_count < 4)
@@ -119,36 +100,59 @@ bool Auth::_validateUsername(Client& client, const std::string& cmd) const
 		log("USER rejected: not enough parameters");
 		return false;
 	}
+	return true;
+}
+
+void Auth::_extractInfo(Client& client, const std::string& cmd) const
+{
 	std::string extracted_username = cmd.substr(0, cmd.find_first_of(' '));
 	std::string extracted_realname = "";
 	std::string::size_type colon_pos = cmd.find(':');
 	if (colon_pos != std::string::npos)
+	{
+		extracted_realname = cmd.substr(colon_pos + 1);
+	}
+	else
+	{
+		std::string::size_type start = 0;
+		for (int i = 0; i < 3; i++)
 		{
-			extracted_realname = cmd.substr(colon_pos + 1);
-		}
-		else
-		{
-			std::string::size_type start = 0;
-			for (int i = 0; i < 3; i++)
-			{
-				start = cmd.find_first_not_of(' ', start);
-				start = cmd.find(' ', start);
-			}
 			start = cmd.find_first_not_of(' ', start);
-			if (start != std::string::npos)
-				extracted_realname = cmd.substr(start);
+			start = cmd.find(' ', start);
 		}
-		client.setUsername(extracted_username);
-		client.setRealName(extracted_realname);
-		client.markUsernameStatus(true);
-		return true;
+		start = cmd.find_first_not_of(' ', start);
+		if (start != std::string::npos)
+			extracted_realname = cmd.substr(start);
+	}
+	client.setUsername(extracted_username);
+	client.setRealName(extracted_realname);
 }
 
-std::string Auth::_normalize(std::string& cmd)
+bool Auth::_validateUsername(Client& client, const std::string& cmd) const
 {
-	for(size_t i = 0; i < cmd.length(); i++)
-		cmd[i] = std::toupper((unsigned char)cmd[i]);
-	return cmd;
+	if (DEBUG_AUTH)
+		printDebug("Auth-> _validateUsername() called");
+
+	if (client.hasUsername())
+	{
+		log("USER rejected: already registered");
+		return false;
+	}
+	if (!client.hasPassword())
+	{
+		log("USER rejected: must insert password first");
+		return false;
+	}
+	if (cmd.empty())
+	{
+		log("USER rejected: empty string");
+		return false;
+	}
+	if (!_isValidParameterAmount(cmd))
+		return false;
+	_extractInfo(client, cmd);
+	client.markUsernameStatus(true);
+	return true;
 }
 
 void Auth::handleLogin(Client& client, const std::string& cmd, const std::string& server_password)
@@ -173,7 +177,7 @@ void Auth::handleLogin(Client& client, const std::string& cmd, const std::string
 		else
 			args = cmd.substr(arg_start);
 	}
-	command = _normalize(command);
+	command = normalize(command);
 	if (command == "PASS")
 		_validatePassword(client, args, server_password);
 	else if (command == "NICK")

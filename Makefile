@@ -57,9 +57,6 @@ spam:
 val: all
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4444 senha123
 
-client:
-	c++ test_client.cpp -o client
-
 #rodar no bash normal, fora do vscode
 test:
 	gnome-terminal -- bash -c "make run; exec bash" &

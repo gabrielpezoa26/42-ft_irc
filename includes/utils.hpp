@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 10:42:42 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 19:18:56 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/17 10:42:50 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ void logColor(std::string message, std::string color);
 void printDebug(std::string message);
 void printError(std::string message);
 void printCurrentTime();
+std::string normalize(std::string& cmd);
 
 template <typename T>
 void debugVar(const std::string name, const T value)

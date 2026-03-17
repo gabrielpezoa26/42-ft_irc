@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/16 19:31:53 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/17 11:15:31 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,7 +205,7 @@ void Server::_handleNewConnection()
 	_map_connected_clients[client_socket] = client;
 }
 
-//refatorar dps
+//refatorar
 void Server::_handleClientActivity(int client_fd)
 {
 	if (DEBUG_SERVER)

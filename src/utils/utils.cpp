@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 10:42:08 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/17 08:25:53 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/17 10:21:35 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,11 @@ void printCurrentTime()
 	std::time_t current_time = std::time(0);
 	char* readable_current_time = std::ctime(&current_time);
 	std::cout << GREEN << readable_current_time << RESET;
+}
+
+std::string normalize(std::string& cmd)
+{
+	for(size_t i = 0; i < cmd.length(); i++)
+		cmd[i] = std::toupper((unsigned char)cmd[i]);
+	return cmd;
 }
