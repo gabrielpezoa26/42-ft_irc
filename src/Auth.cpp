@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 12:14:41 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/17 10:43:26 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/18 17:01:41 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,7 +186,12 @@ void Auth::handleLogin(Client& client, const std::string& cmd, const std::string
 		_validateUsername(client, args);
 	else
 		printError("nao eh comando");
-	debugVar("username", client.getUsername());
-	debugVar("nickname", client.getNickname());
-	debugVar("realname", client.getRealName());
+	if (client.isClientRegistered())
+	{
+		std::string welcome_msg = ":ft_irc 001 " + client.getNickname() + 
+			" :Welcome to the ft_irc Network, " + client.getNickname() + 
+			"!" + client.getUsername() + "@127.0.0.1\r\n";
+		
+		client.appendOutputBuffer(welcome_msg);
+	}
 }

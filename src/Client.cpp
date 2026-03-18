@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/17 10:41:28 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/18 16:44:16 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,8 @@ std::string Client::getNickname() const { return _client_nickname; }
 std::string Client::getUsername() const { return _client_username; }
 std::string Client::getRealName() const { return _client_realname; }
 int Client::getClientFd() const { return _client_fd; }
+const std::string& Client::getOutputBuffer() const { return _output_buffer; }
+
 
 void Client::setNickname(std::string given_nickname) { _client_nickname = given_nickname; }
 void Client::setUsername(std::string given_username) { _client_username = given_username; }
@@ -152,4 +154,10 @@ bool Client::isClientRegistered() const
 	if (!_has_set_password || !_has_set_nickname || !_has_set_username)
 		return false;
 	return true;
+}
+
+
+void Client::eraseOutputBuffer(int bytes_sent)
+{
+	_output_buffer.erase(0, bytes_sent);
 }

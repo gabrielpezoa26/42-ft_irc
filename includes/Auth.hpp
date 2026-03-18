@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 08:00:17 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/17 11:33:19 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/18 16:41:25 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include "Client.hpp"
 #include "utils.hpp"
 
-#define DEBUG_AUTH true
+#define DEBUG_AUTH false
 
 class Auth
 {

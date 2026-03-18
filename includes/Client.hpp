@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:56 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/17 10:41:28 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/18 16:41:20 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <string>
 #include "utils.hpp"
 
-#define DEBUG_CLIENT true
+#define DEBUG_CLIENT false
 
 class Client
 {
@@ -62,6 +62,9 @@ class Client
 		bool hasPassword() const;
 		bool hasNickname() const;
 		bool hasUsername() const;
+
+		const std::string& getOutputBuffer() const;
+		void eraseOutputBuffer(int bytes_sent);
 
 };
 

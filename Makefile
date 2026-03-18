@@ -55,7 +55,7 @@ spam:
 
 
 val: all
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4444 senha123
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --track-fds=yes ./$(NAME) 4444 senha123
 
 #rodar no bash normal, fora do vscode
 test:

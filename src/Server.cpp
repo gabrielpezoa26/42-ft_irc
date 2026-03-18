@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/17 11:15:31 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/18 16:51:57 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,20 @@ bool Server::_isValidPassword(const std::string &password)
 			return false;
 	}
 	return true;
+}
+
+void Server::_closeFds()
+{
+	for (std::map<int, Client>::iterator it = _map_connected_clients.begin(); it != _map_connected_clients.end(); ++it)
+	{
+		if (it->first != -1)
+			close(it->first);
+	}
+	_map_connected_clients.clear();
+	_vec_client_fds.clear();
+	if (_server_socket_fd != -1)
+		close(_server_socket_fd);
+	
 }
 
 /* ---------- Signals ---------- */
@@ -171,9 +185,10 @@ void Server::run()
 			}
 		}
 	}
-	if (_server_socket_fd != -1)
-		close(_server_socket_fd);
+	_closeFds();
 }
+
+
 
 /* ---------- Client Handlers ---------- */
 void Server::_handleNewConnection()

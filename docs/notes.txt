@@ -1,7 +1,9 @@
-atualizado 17/03/2026
+atualizado 18/03/2026
 
 afazeres:
-	-> aplicar códigos de erro protocolo irc**
+	-> msg de Welcome
+	-> implementar POLLOUT
+	-> msgs de erro IRC
 
 
 
