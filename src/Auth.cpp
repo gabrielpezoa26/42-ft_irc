@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 12:14:41 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/18 17:01:41 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/19 17:29:01 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ bool Auth::_validatePassword(Client& client, const std::string& cmd, const std::
 		printError("incorrect password!");
 		return false;
 	}
+	logColor("DEBUG: password is correct ", GREEN);
 	client.markPasswordStatus(true);
 	return true;
 }
@@ -71,6 +72,7 @@ bool Auth::_validateNickname(Client& client, const std::string& cmd) const
 			return false;
 		}
 	}
+	logColor("DEBUG: sucessfully set nickname", GREEN);
 	client.setNickname(cmd);
 	client.markNicknameStatus(true);
 	return true;
@@ -148,6 +150,7 @@ bool Auth::_validateUsername(Client& client, const std::string& cmd) const
 		log("USER rejected: empty string");
 		return false;
 	}
+	logColor("DEBUG: sucessfully set username", GREEN);
 	if (!_isValidParameterAmount(cmd))
 		return false;
 	_extractInfo(client, cmd);
@@ -188,9 +191,8 @@ void Auth::handleLogin(Client& client, const std::string& cmd, const std::string
 		printError("nao eh comando");
 	if (client.isClientRegistered())
 	{
-		std::string welcome_msg = ":ft_irc 001 " + client.getNickname() + 
-			" :Welcome to the ft_irc Network, " + client.getNickname() + 
-			"!" + client.getUsername() + "@127.0.0.1\r\n";
+		std::string welcome_msg = ":001 " + client.getNickname() + 
+			" :Welcome to ft_irc " + client.getNickname() + "! " + client.getUsername() + "@127.0.0.1\r\n";
 		
 		client.appendOutputBuffer(welcome_msg);
 	}

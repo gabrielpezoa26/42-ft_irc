@@ -21,16 +21,8 @@ parsing do argv:
 server:
 	-> roda make run
 		-> abre outro terminal, roda make nc
-		-> digita qqr coisa e dá Enter, o terminal do Server
-			tem q printar a mensagem
-
-
-	->roda make run
-	-> abre outro terminal, roda make nc-manual
-		-> digita qqr coisa, dá enter
-		-> dps de digitar várias msgs, aperta Ctrl + v, ctrl + m, Enter.
-			agora sim a msg é pra printar no server
-
+		-> pelo terminal do client, envia um comando em "partes",
+			igual explicado no pdf
 
 
 

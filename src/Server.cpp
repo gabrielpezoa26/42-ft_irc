@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/18 16:51:57 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/19 17:27:23 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ void Server::_closeFds()
 /* ---------- Signals ---------- */
 bool Server::_continue_running = true;
 
-void Server::handleSignals(int signum)
+void Server::_handleSignals(int signum)
 {
 	(void)signum;
 	Server::_continue_running = 0;
@@ -108,7 +108,7 @@ void Server::setupSignals()
 	struct sigaction sa;
 	
 	memset(&sa, 0, sizeof(sa));
-	sa.sa_handler = Server::handleSignals;
+	sa.sa_handler = Server::_handleSignals;
 	sa.sa_flags = 0;
 	sigemptyset(&sa.sa_mask);
 	sigaction(SIGINT, &sa, NULL);
@@ -156,6 +156,62 @@ void Server::setSocket()
 	_vec_client_fds.push_back(_new_client_poll);
 }
 
+void Server::_prepareEvents()
+{
+	for (size_t i = 0; i < _vec_client_fds.size(); i++)
+	{
+		if (_vec_client_fds[i].fd == _server_socket_fd)
+			continue;
+		
+		std::map<int, Client>::iterator it = _map_connected_clients.find(_vec_client_fds[i].fd);
+		if (it != _map_connected_clients.end())
+		{
+			if (!it->second.getOutputBuffer().empty())
+				_vec_client_fds[i].events = POLLIN | POLLOUT;
+			else
+				_vec_client_fds[i].events = POLLIN;
+		}
+	}
+}
+
+void Server::_handleClientWrite(int client_fd)
+{
+	std::map<int, Client>::iterator it = _map_connected_clients.find(client_fd);
+	if (it != _map_connected_clients.end())
+	{
+		const std::string& message = it->second.getOutputBuffer();
+		
+		ssize_t bytes_sent = send(it->first, message.c_str(), message.length(), 0);
+		if (bytes_sent > 0)
+		{
+			it->second.eraseOutputBuffer(bytes_sent);
+		}
+		else if (bytes_sent == -1)
+		{
+			printError("Failed to send data");
+		}
+	}
+}
+
+void Server::_processEvents()
+{
+	for (size_t i = 0; i < _vec_client_fds.size(); i++)
+	{
+		if (_vec_client_fds[i].revents & POLLIN)
+		{
+			if (_vec_client_fds[i].fd == _server_socket_fd)
+				_handleNewConnection();
+			else
+				_handleClientActivity(_vec_client_fds[i].fd);
+		}
+	
+		if (_vec_client_fds[i].revents & POLLOUT)
+		{
+			_handleClientWrite(_vec_client_fds[i].fd);
+		}
+	}
+}
+
 void Server::run()
 {
 	if (DEBUG_SERVER)
@@ -165,30 +221,16 @@ void Server::run()
 	setupSignals();
 	while (_continue_running)
 	{
+		_prepareEvents();
 		int poll_result = poll(&_vec_client_fds[0], _vec_client_fds.size(), -1);
 		if (poll_result == -1 && Server::_continue_running == true)
 		{
 			throw std::runtime_error("Error on poll()");
 		}
-		for (size_t i = 0; i < _vec_client_fds.size(); i++)
-		{
-			if (_vec_client_fds[i].revents & POLLIN)
-			{
-				if (_vec_client_fds[i].fd == _server_socket_fd)
-				{
-					_handleNewConnection();
-				}
-				else
-				{
-					_handleClientActivity(_vec_client_fds[i].fd);
-				}
-			}
-		}
+		_processEvents();
 	}
 	_closeFds();
 }
-
-
 
 /* ---------- Client Handlers ---------- */
 void Server::_handleNewConnection()
@@ -237,6 +279,8 @@ void Server::_handleClientActivity(int client_fd)
 	ssize_t bytes_received = recv(client_fd, client_message, sizeof(client_message) - 1, 0);
 	if (bytes_received > 0)
 	{
+		std::cout << BLUE << "DEBUG: recv() caught " << bytes_received << " bytes: [" << client_message << "]" << RESET << std::endl;
+		// logColor("DEBUG: recv", GREEN);
 		std::string new_data(client_message, bytes_received);
 		it->second.appendInputBuffer(new_data);
 		while (true)

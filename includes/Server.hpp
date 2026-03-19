@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/18 16:41:16 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/19 17:27:24 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,10 +53,14 @@ class Server
 		bool _isValidPort(const std::string &port);
 		bool _isValidPassword(const std::string &password);
 
-		static void handleSignals(int signum);
+		static void _handleSignals(int signum);
 		void setupSignals();
 		void _handleNewConnection();
 		void _handleClientActivity(int client_fd);
+
+		void _prepareEvents();
+		void _handleClientWrite(int client_fd);
+		void _processEvents();
 
 		void _closeFds();
 

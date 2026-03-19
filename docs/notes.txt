@@ -1,14 +1,16 @@
 atualizado 19/03/2026
 
 próx afazeres:
-	-> revisar lógica fechar FD do server e dos clients
-	-> msg de welcome qdo um client conecta    ok (falta o Server enviar de fato pro client)
-	-> implementar POLLOUT
-	-> msgs de erro IRC
+	-> revisar lógica do tcp (envio de comandos parciais)
+
+	-> revisar lógica fechar FD do server e dos clients     ok
+	-> msg de welcome qdo um client conecta    ok 
+	-> implementar POLLOUT   ok
+	-> msgs de erro protocolo IRC
 
 
 geral:
-	-> PING/PONG
+	-> implementar PING/PONG  (evita falso timeout)
 
 
 
@@ -23,7 +25,7 @@ exemplo de comando USER:
 	:Gabriel         o nome real da pessoa
 	
 
-exemplo de teste:
+exemplo de teste(dps de implementado os Channels):
 
 	USER gcesar-n 0 * :Gabriel
 
@@ -37,20 +39,10 @@ exemplo de teste:
 
 
 como testar:
-(a primeira forma já manda o "\r\n" no final de cada mensagem, ent o server entende que já chegou no final.
-na segunda forma, a gnt faz isso na mão.)
-	-> jeito 1:
-		-> roda make run
-		-> abre outro terminal, roda make nc
-			-> digita qqr coisa e dá Enter, o terminal do Server
-				tem q printar a mensagem
-
-	-> jeito2:
-		->roda make run
-		-> abre outro terminal, roda make nc-manual
-			-> digita qqr coisa, dá enter
-			-> dps de digitar várias msgs, aperta Ctrl + v, ctrl + m, Enter.
-				agora sim a msg é pra printar no server
+	-> roda make run
+	-> abre outro terminal, roda make nc
+		-> digita qqr coisa e dá Enter, o terminal do Server
+			tem q printar a mensagem
 
 
 formatação q eu to usando(inventei da minha cabeça rs)
