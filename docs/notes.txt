@@ -1,9 +1,14 @@
-atualizado 18/03/2026
+atualizado 19/03/2026
 
-afazeres:
-	-> msg de Welcome
+próx afazeres:
+	-> revisar lógica fechar FD do server e dos clients
+	-> msg de welcome qdo um client conecta    ok (falta o Server enviar de fato pro client)
 	-> implementar POLLOUT
 	-> msgs de erro IRC
+
+
+geral:
+	-> PING/PONG
 
 
 
