@@ -1,6 +1,6 @@
-atualizado 16/03/2026
+atualizado 24/03/2026
 
-testes pra rodar de vez em quando p ter ctz q nd quebrou rs
+testes manuais pra rodar de vez em quando p ter ctz q nd quebrou rs
 
 parsing do argv:
 	testes válidos:
@@ -49,3 +49,27 @@ exemplo de teste:
 	PRIVMSG other_user :ooi tudo bem?
 
 	QUIT :vou sair aqui, até mais!
+
+
+
+exemplo de comando USER:
+
+	USER gcesar-n 0 * :Gabriel
+	
+	gcesar-n         username
+	0                "modo", o 0 é meio q o padrão
+	*                o nome do server, tbm é meio que padrão
+	:Gabriel         o nome real da pessoa
+
+
+
+testar com o Irssi:
+
+- sudo apt install irssi      (deve vir a versao 1.4.x ou similar)
+
+- abre o irssi e roda:
+	- /connect -nocap 127.0.0.1 <port> <password>
+			obs: na versao das maquinas da 42 mto provavelmente n vai 
+			precisar do '-nocap'
+
+- usa "normal" pra enviar msgs etc (aí tem q ver na documentação deles rsrs)

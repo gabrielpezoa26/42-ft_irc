@@ -1,54 +1,17 @@
-atualizado 19/03/2026
+atualizado 24/03/2026
 
 próx afazeres:
 	-> revisar lógica do tcp (envio de comandos parciais)
-
-	-> revisar lógica fechar FD do server e dos clients     ok
-	-> msg de welcome qdo um client conecta    ok 
-	-> implementar POLLOUT   ok
-	-> msgs de erro protocolo IRC
-
+	-> implementar PING PONG (evita falso timeout)
 
 geral:
-	-> implementar PING/PONG  (evita falso timeout)
-
-
-
-
-exemplo de comando USER:
-
-	USER gcesar-n 0 * :Gabriel
-	
-	gcesar-n         username
-	0                "modo", o 0 é meio q o padrão
-	*                o nome do server, tbm é meio que padrão
-	:Gabriel         o nome real da pessoa
-	
-
-exemplo de teste(dps de implementado os Channels):
-
-	USER gcesar-n 0 * :Gabriel
-
-	JOIN #sao_paulo
-
-	PRIVMSG #sao_paulo :boa noite grupo, tudo bem?
-
-	PRIVMSG other_user :ooi tudo bem?
-
-	QUIT :vou sair aqui, até mais!
-
-
-como testar:
-	-> roda make run
-	-> abre outro terminal, roda make nc
-		-> digita qqr coisa e dá Enter, o terminal do Server
-			tem q printar a mensagem
+	-> msgs de erro protocolo IRC
 
 
 formatação q eu to usando(inventei da minha cabeça rs)
 	-> camelCase() pra funções
 	-> snake_case pra variáveis
-	-> _mangoLoko() ou _mango_loko pra atributos privados de classe
+	-> atributos privados de classe tds começam com _
 	-> evitando abreviações pq a memória do pai eh ruim
 	-> evitando funçao gigante
 
@@ -72,3 +35,5 @@ links:
 	https://medium.com/@afatir.ahmedfatir/small-irc-server-ft-irc-42-network-7cee848de6f9
 
 	https://modern.ircdocs.horse/
+
+	https://wirexsystems.com/resource/protocols/irc/
