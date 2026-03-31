@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/19 17:27:23 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/03/31 18:49:56 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -289,8 +289,8 @@ void Server::_handleClientActivity(int client_fd)
 			if (extracted_cmd.empty())
 				break;
 
-			_auth_handler.handleLogin(it->second, extracted_cmd, _server_password);
 			std::cout << "Client <" << client_fd << "> sent: [" << extracted_cmd << "]" << std::endl;
+			_routeCommand(it->second, extracted_cmd);
 		}
 	}
 	else
@@ -309,5 +309,50 @@ void Server::_handleClientActivity(int client_fd)
 				break;
 			}
 		}
+	}
+}
+
+void Server::_handlePingCommand(Client& client, const std::string& args)
+{
+	if (DEBUG_SERVER)
+		printDebug("Server-> _handlePingCommand() called");
+
+	if (args.empty())
+		client.appendOutputBuffer(":ft_irc 409 * :No origin specified\r\n");
+	else
+		client.appendOutputBuffer("PONG :" + args + "\r\n");
+}
+
+void Server::_routeCommand(Client& client, const std::string& cmd)
+{
+	if (DEBUG_SERVER)
+		printDebug("Server-> _routeCommand() called");
+
+	if (cmd.empty())
+		return;
+	std::string command;
+	std::string args;
+	std::string::size_type pos = cmd.find(' ');
+
+	if (pos == std::string::npos)
+	{
+		command = cmd;
+		args = "";
+	}
+	else
+	{
+		command = cmd.substr(0, pos);
+		std::string::size_type arg_start = cmd.find_first_not_of(' ', pos);
+		if (arg_start != std::string::npos)
+			args = cmd.substr(arg_start);
+	}
+	command = normalize(command);
+	if (command == "PING")
+		_handlePingCommand(client, args);
+	else if (!client.isClientRegistered())
+		_auth_handler.handleLogin(client, cmd, _server_password);
+	else
+	{
+		log("channelsss");
 	}
 }
