@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/31 18:49:18 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/01 14:26:35 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,12 +56,14 @@ class Server
 		static void _handleSignals(int signum);
 		void setupSignals();
 		void _handleNewConnection();
-		void _handleClientActivity(int client_fd);
+		bool _handleClientActivity(int client_fd);
+		void _disconnectClient(int client_fd);
 		void _routeCommand(Client& client, const std::string& cmd);
 		void _handlePingCommand(Client& client, const std::string& args);
 
 		void _prepareEvents();
 		void _handleClientWrite(int client_fd);
+		void _handlePrivmsg(Client& client, const std::string& args);
 		void _processEvents();
 
 		void _closeFds();

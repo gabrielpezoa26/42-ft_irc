@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/31 18:49:56 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/01 14:26:27 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,26 +192,36 @@ void Server::_handleClientWrite(int client_fd)
 		}
 	}
 }
-
 void Server::_processEvents()
 {
 	for (size_t i = 0; i < _vec_client_fds.size(); i++)
 	{
+		if (_vec_client_fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+		{
+			_disconnectClient(_vec_client_fds[i].fd);
+			i--; continue;
+		}
+
 		if (_vec_client_fds[i].revents & POLLIN)
 		{
 			if (_vec_client_fds[i].fd == _server_socket_fd)
 				_handleNewConnection();
 			else
-				_handleClientActivity(_vec_client_fds[i].fd);
+			{
+				if (!_handleClientActivity(_vec_client_fds[i].fd))
+				{
+					i--; // Compensate for vector shift
+					continue;
+				}
+			}
 		}
 	
-		if (_vec_client_fds[i].revents & POLLOUT)
+		if (i < _vec_client_fds.size() && (_vec_client_fds[i].revents & POLLOUT))
 		{
 			_handleClientWrite(_vec_client_fds[i].fd);
 		}
 	}
 }
-
 void Server::run()
 {
 	if (DEBUG_SERVER)
@@ -263,55 +273,38 @@ void Server::_handleNewConnection()
 }
 
 //refatorar
-void Server::_handleClientActivity(int client_fd)
+bool Server::_handleClientActivity(int client_fd)
 {
-	if (DEBUG_SERVER)
-		printDebug("Server-> _handleClientActivity called");
-
-	std::map<int, Client>::iterator it = _map_connected_clients.find(client_fd);
-	if (it == _map_connected_clients.end())
-	{
-		log("Error: client not found in map");
-		return;
-	}
 	char client_message[1024];
 	memset(client_message, 0, sizeof(client_message));
 	ssize_t bytes_received = recv(client_fd, client_message, sizeof(client_message) - 1, 0);
-	if (bytes_received > 0)
-	{
-		std::cout << BLUE << "DEBUG: recv() caught " << bytes_received << " bytes: [" << client_message << "]" << RESET << std::endl;
-		// logColor("DEBUG: recv", GREEN);
-		std::string new_data(client_message, bytes_received);
-		it->second.appendInputBuffer(new_data);
-		while (true)
-		{
-			std::string extracted_cmd = it->second.fetchCommand();
-			if (extracted_cmd.empty())
-				break;
 
-			std::cout << "Client <" << client_fd << "> sent: [" << extracted_cmd << "]" << std::endl;
-			_routeCommand(it->second, extracted_cmd);
-		}
-	}
-	else
+	if (bytes_received <= 0)
 	{
-		if (bytes_received == 0)
-			std::cout << "Client <" << client_fd << "> disconnected" << std::endl;
-		else
+		if (bytes_received != 0)
 			std::cerr << "Error: connection lost on client <" << client_fd << ">." << std::endl;
-		close(client_fd);
-		_map_connected_clients.erase(client_fd);
-		for (std::vector<struct pollfd>::iterator poll_it = _vec_client_fds.begin(); poll_it != _vec_client_fds.end(); ++poll_it)
-		{
-			if (poll_it->fd == client_fd)
-			{
-				_vec_client_fds.erase(poll_it);
-				break;
-			}
-		}
+		_disconnectClient(client_fd);
+		return false;
 	}
-}
+	std::string new_data(client_message, bytes_received);
+	std::map<int, Client>::iterator it = _map_connected_clients.find(client_fd);
+	if (it == _map_connected_clients.end()) return false;
 
+	it->second.appendInputBuffer(new_data);
+	while (true)
+	{
+		it = _map_connected_clients.find(client_fd);
+		if (it == _map_connected_clients.end())
+			return false;
+
+		std::string extracted_cmd = it->second.fetchCommand();
+		if (extracted_cmd.empty())
+			break;
+
+		_routeCommand(it->second, extracted_cmd);
+	}
+	return true;
+}
 void Server::_handlePingCommand(Client& client, const std::string& args)
 {
 	if (DEBUG_SERVER)
@@ -333,7 +326,6 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 	std::string command;
 	std::string args;
 	std::string::size_type pos = cmd.find(' ');
-
 	if (pos == std::string::npos)
 	{
 		command = cmd;
@@ -353,6 +345,79 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 		_auth_handler.handleLogin(client, cmd, _server_password);
 	else
 	{
-		log("channelsss");
+		if (command == "QUIT")
+			_disconnectClient(client.getClientFd());
+		else if (command == "PRIVMSG")
+			_handlePrivmsg(client, args);
+		else if (command == "NICK")
+			_auth_handler.handleLogin(client, cmd, _server_password);
+		else if (command == "JOIN" || command == "MODE" || command == "KICK" || command == "INVITE" || command == "TOPIC")
+			log("Routed " + command + " to Channel class (pending implementation)");
+		else
+			log("Unknown command or not handled: " + command);
+	}
+}
+
+void Server::_disconnectClient(int client_fd)
+{
+	if (DEBUG_SERVER)
+		printDebug("Server-> _disconnectClient() called");
+
+	std::cout << "Client <" << client_fd << "> disconnected" << std::endl;
+	close(client_fd);
+	_map_connected_clients.erase(client_fd);
+	for (std::vector<struct pollfd>::iterator poll_it = _vec_client_fds.begin(); poll_it != _vec_client_fds.end(); ++poll_it)
+	{
+		if (poll_it->fd == client_fd)
+		{
+			_vec_client_fds.erase(poll_it);
+			break;
+		}
+	}
+}
+
+void Server::_handlePrivmsg(Client& client, const std::string& args)
+{
+	if (DEBUG_SERVER)
+		printDebug("Server-> _handlePrivmsg() called");
+
+	if (args.empty())
+	{
+		client.appendOutputBuffer(":ft_irc 411 " + client.getNickname() + " :No recipient given (PRIVMSG)\r\n");
+		return;
+	}
+	std::string::size_type space_pos = args.find(' ');
+	if (space_pos == std::string::npos)
+	{
+		client.appendOutputBuffer(":ft_irc 412 " + client.getNickname() + " :No text to send\r\n");
+		return;
+	}
+	std::string target = args.substr(0, space_pos);
+	std::string message = args.substr(space_pos + 1);
+	if (!message.empty() && message[0] == ':')
+		message = message.substr(1);
+	std::string full_msg = ":" + client.getNickname() + "!" + client.getUsername() + "@127.0.0.1 PRIVMSG " + target + " :" + message + "\r\n";
+
+	if (target[0] == '#')
+	{
+		log("Routing PRIVMSG to channel " + target);
+	}
+	else
+	{
+		bool target_found = false;
+		for (std::map<int, Client>::iterator it = _map_connected_clients.begin(); it != _map_connected_clients.end(); ++it)
+		{
+			if (it->second.getNickname() == target)
+			{
+				it->second.appendOutputBuffer(full_msg);
+				target_found = true;
+				break;
+			}
+		}
+		
+		if (!target_found)
+		{
+			client.appendOutputBuffer(":ft_irc 401 " + client.getNickname() + " " + target + " :No such nick/channel\r\n");
+		}
 	}
 }
