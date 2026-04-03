@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/01 16:25:40 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/03 10:47:17 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@
 #include "Auth.hpp"
 #include "utils.hpp"
 
+// por algum motivo se a flag estiver ativa causa alguns erros
+// na lógica de disconnect
 #define DEBUG_SERVER false
 
 class Server

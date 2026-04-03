@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/01 22:52:00 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/03 10:31:48 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ Client::Client()
 _client_nickname("default_nickname"),
 _has_set_password(false),
 _has_set_nickname(false),
-_has_set_username(false)
+_has_set_username(false),
 _is_quitting(false)
 {
 	if (DEBUG_CLIENT)

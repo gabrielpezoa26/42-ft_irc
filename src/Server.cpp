@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/01 22:54:15 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/03 10:48:06 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,6 +194,8 @@ void Server::_handleClientWrite(int client_fd)
 }
 void Server::_processEvents()
 {
+	if (DEBUG_SERVER)
+		printDebug("Server-> _processEvents() called");
 	for (size_t i = 0; i < _vec_client_fds.size(); i++)
 	{
 		if (_vec_client_fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
@@ -273,14 +275,14 @@ void Server::_handleNewConnection()
 	_new_client_poll.events = POLLIN;
 	_new_client_poll.revents = 0;
 	_vec_client_fds.push_back(_new_client_poll);
-
 	client.setClientFd(client_socket);
 	_map_connected_clients[client_socket] = client;
 }
 
-//refatorar
 bool Server::_handleClientActivity(int client_fd)
 {
+	if (DEBUG_SERVER)
+		printDebug("Server-> _handleClientActivity() called");
 	char client_message[1024];
 	memset(client_message, 0, sizeof(client_message));
 	ssize_t bytes_received = recv(client_fd, client_message, sizeof(client_message) - 1, 0);
@@ -391,7 +393,6 @@ void Server::_handlePrivmsg(Client& client, const std::string& args)
 {
 	if (DEBUG_SERVER)
 		printDebug("Server-> _handlePrivmsg() called");
-
 	if (args.empty())
 	{
 		client.appendOutputBuffer(":ft_irc 411 " + client.getNickname() + " :No recipient given (PRIVMSG)\r\n");
@@ -411,22 +412,22 @@ void Server::_handlePrivmsg(Client& client, const std::string& args)
 
 	if (target[0] == '#')
 	{
+		// TODO: aqui chamaria a classe Channel
 		log("Routing PRIVMSG to channel " + target);
 	}
 	else
 	{
-		bool target_found = false;
+		bool flag_target_found = false;
 		for (std::map<int, Client>::iterator it = _map_connected_clients.begin(); it != _map_connected_clients.end(); ++it)
 		{
 			if (it->second.getNickname() == target)
 			{
 				it->second.appendOutputBuffer(full_msg);
-				target_found = true;
+				flag_target_found = true;
 				break;
 			}
 		}
-		
-		if (!target_found)
+		if (!flag_target_found)
 		{
 			client.appendOutputBuffer(":ft_irc 401 " + client.getNickname() + " " + target + " :No such nick/channel\r\n");
 		}
@@ -435,6 +436,8 @@ void Server::_handlePrivmsg(Client& client, const std::string& args)
 
 void Server::_handleQuitCommand(std::string args, Client client)
 {
+	if (DEBUG_SERVER)
+		printDebug("Server-> _handleQuitCommand() called");
 	std::string reason;
 	if (args.empty())
 		reason = "Leaving";
