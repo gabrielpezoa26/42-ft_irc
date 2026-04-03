@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/03 10:47:17 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/03 16:08:21 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ class Server
 		std::string _server_password;
 		static bool _continue_running;
 		int _server_socket_fd;
-		struct sockaddr_in _server_adress;
+		struct sockaddr_in _server_address;
 		struct sockaddr_in _client_address;
 
 		struct pollfd _new_client_poll;
@@ -58,11 +58,11 @@ class Server
 		static void _handleSignals(int signum);
 		void setupSignals();
 		void _handleNewConnection();
+		void _handleNickCommand(Client& client, const std::string& args);
 		bool _handleClientActivity(int client_fd);
 		void _disconnectClient(int client_fd);
 		void _routeCommand(Client& client, const std::string& cmd);
-		void _handlePingCommand(Client& client, const std::string& args);
-		void _handleQuitCommand(std::string args, Client client);
+		void _handleQuitCommand(std::string& args, Client& client);
 
 		void _prepareEvents();
 		void _handleClientWrite(int client_fd);

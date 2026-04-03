@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/03 10:48:06 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/03 16:08:17 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,10 +134,10 @@ void Server::setSocket()
 	if (DEBUG_SERVER)
 		printDebug("Server-> setSocket() called");
 
-	_server_adress.sin_family = AF_INET;
-	_server_adress.sin_port = htons(_server_port);
+	_server_address.sin_family = AF_INET;
+	_server_address.sin_port = htons(_server_port);
 	_server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-	_server_adress.sin_addr.s_addr = INADDR_ANY;
+	_server_address.sin_addr.s_addr = INADDR_ANY;
 	int flag = 1;
 
 	if (_server_socket_fd == -1)
@@ -146,7 +146,7 @@ void Server::setSocket()
 		throw std::runtime_error("Error while setting SO_REUSEADDR on main socket");
 	if (fcntl(_server_socket_fd, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("Error while setting O_NONBLOCK on main socket");
-	if (bind(_server_socket_fd, (struct sockaddr *)&_server_adress, sizeof(_server_adress)) == -1)
+	if (bind(_server_socket_fd, (struct sockaddr *)&_server_address, sizeof(_server_address)) == -1)
 		throw std::runtime_error("Error while binding socket");
 	if (listen(_server_socket_fd, SOMAXCONN) == -1)
 		throw std::runtime_error("Error while listen() call");
@@ -221,7 +221,7 @@ void Server::_processEvents()
 		{
 			_handleClientWrite(_vec_client_fds[i].fd);
 			std::map<int, Client>::iterator it = _map_connected_clients.find(_vec_client_fds[i].fd);
-			if (it != _map_connected_clients.end() && it->second.isQuitting() && it->second.getOutputBuffer().empty())
+			if (it != _map_connected_clients.end() && it->second.getIsQuitting() && it->second.getOutputBuffer().empty())
 			{
 				_disconnectClient(_vec_client_fds[i].fd);
 				i--;
@@ -314,17 +314,6 @@ bool Server::_handleClientActivity(int client_fd)
 	return true;
 }
 
-void Server::_handlePingCommand(Client& client, const std::string& args)
-{
-	if (DEBUG_SERVER)
-		printDebug("Server-> _handlePingCommand() called");
-
-	if (args.empty())
-		client.appendOutputBuffer(":ft_irc 409 * :No origin specified\r\n");
-	else
-		client.appendOutputBuffer("PONG :" + args + "\r\n");
-}
-
 void Server::_routeCommand(Client& client, const std::string& cmd)
 {
 	if (DEBUG_SERVER)
@@ -351,8 +340,21 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 	}
 	command = normalize(command);
 	if (command == "PING")
-		_handlePingCommand(client, args);
-	else if (!client.isClientRegistered())
+	{
+		if (args.empty())
+			client.appendOutputBuffer(":ft_irc 409 " + client.getNickname() + " :No origin specified\r\n");
+		else
+		{
+			std::string token = args;
+			if (!token.empty() && token[0] == ':')
+				token = token.substr(1);
+			client.appendOutputBuffer(":ft_irc PONG ft_irc :" + token + "\r\n");
+		}
+		return;
+	}
+	if (command == "PONG")
+		return;
+	if (!client.isClientRegistered())
 	{
 		_auth_handler.handleLogin(client, cmd, _server_password);
 	}
@@ -363,12 +365,38 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 		else if (command == "PRIVMSG")
 			_handlePrivmsg(client, args);
 		else if (command == "NICK")
-			_auth_handler.handleLogin(client, cmd, _server_password);
+			_handleNickCommand(client, args); // <-- novo
 		else if (command == "JOIN" || command == "MODE" || command == "KICK" || command == "INVITE" || command == "TOPIC")
 			log("Routed " + command + " to Channel class. TODO");
 		else
 			log("Unknown command: " + command);
 	}
+}
+
+void Server::_handleNickCommand(Client& client, const std::string& args)
+{
+	if (DEBUG_SERVER)
+		printDebug("Server-> _handleNickCommand() called");
+
+	if (args.empty())
+	{
+		client.appendOutputBuffer(":ft_irc 431 " + client.getNickname() + " :No nickname given\r\n");
+		return;
+	}
+	std::string new_nick = args;
+	if (!new_nick.empty() && new_nick[0] == ':')
+		new_nick = new_nick.substr(1);
+	for (std::map<int, Client>::iterator it = _map_connected_clients.begin(); it != _map_connected_clients.end(); ++it)
+	{
+		if (it->second.getNickname() == new_nick && it->first != client.getClientFd())
+		{
+			client.appendOutputBuffer(":ft_irc 433 " + client.getNickname() + " " + new_nick + " :Nickname is already in use\r\n");
+			return;
+		}
+	}
+	std::string old_nick = client.getNickname();
+	client.setNickname(new_nick);
+	client.appendOutputBuffer(":" + old_nick + "!" + client.getUsername() + "@127.0.0.1 NICK :" + new_nick + "\r\n");
 }
 
 void Server::_disconnectClient(int client_fd)
@@ -434,10 +462,11 @@ void Server::_handlePrivmsg(Client& client, const std::string& args)
 	}
 }
 
-void Server::_handleQuitCommand(std::string args, Client client)
+void Server::_handleQuitCommand(std::string& args, Client& client)
 {
 	if (DEBUG_SERVER)
 		printDebug("Server-> _handleQuitCommand() called");
+
 	std::string reason;
 	if (args.empty())
 		reason = "Leaving";
@@ -445,7 +474,8 @@ void Server::_handleQuitCommand(std::string args, Client client)
 		reason = args;
 	if (!reason.empty() && reason[0] == ':')
 		reason = reason.substr(1);
+
 	std::string error_msg = "ERROR :Closing Link: " + client.getNickname() + " (Quit: " + reason + ")\r\n";
-	client.appendOutputBuffer(error_msg);
-	client.setQuitting(true);
+	send(client.getClientFd(), error_msg.c_str(), error_msg.length(), 0);
+	_disconnectClient(client.getClientFd());
 }

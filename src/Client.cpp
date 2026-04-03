@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/03 10:31:48 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/03 15:42:03 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,9 @@ _client_nickname(other._client_nickname),
 _client_fd(other._client_fd),
 _has_set_password(other._has_set_password),
 _has_set_nickname(other._has_set_nickname),
-_has_set_username(other._has_set_username)
+_has_set_username(other._has_set_username),
+_is_quitting(false)
+
 {
 	if (DEBUG_CLIENT)
 		printDebug("Client-> Copy constructor called");
@@ -58,6 +60,7 @@ Client& Client::operator=(const Client& other)
 		_has_set_nickname = other._has_set_nickname;
 		_has_set_username = other._has_set_username;
 		_has_set_password = other._has_set_password;
+		_is_quitting = other._is_quitting;
 	}
 	return *this;
 }
@@ -120,7 +123,7 @@ bool Client::hasPassword() const { return _has_set_password; }
 bool Client::hasNickname() const { return _has_set_nickname; }
 bool Client::hasUsername() const { return _has_set_username; }
 
-bool Client::isQuitting() const { return _is_quitting; }
+bool Client::getIsQuitting() const { return _is_quitting; }
 void Client::setQuitting(bool value) { _is_quitting = value; }
 
 
@@ -161,7 +164,7 @@ bool Client::isClientRegistered() const
 }
 
 
-void Client::eraseOutputBuffer(int bytes_sent)
+void Client::eraseOutputBuffer(size_t bytes_sent)
 {
 	_output_buffer.erase(0, bytes_sent);
 }

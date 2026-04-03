@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:56 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/01 15:53:43 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/03 15:39:47 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,11 +64,11 @@ class Client
 		bool hasNickname() const;
 		bool hasUsername() const;
 
-		bool isQuitting() const;
+		bool getIsQuitting() const;
 		void setQuitting(bool value);
 
 		const std::string& getOutputBuffer() const;
-		void eraseOutputBuffer(int bytes_sent);
+		void eraseOutputBuffer(size_t bytes_sent);
 
 };
 
