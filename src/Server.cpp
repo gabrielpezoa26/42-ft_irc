@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/01 14:26:27 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/01 22:54:15 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,9 +199,9 @@ void Server::_processEvents()
 		if (_vec_client_fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
 		{
 			_disconnectClient(_vec_client_fds[i].fd);
-			i--; continue;
+			i--;
+			continue;
 		}
-
 		if (_vec_client_fds[i].revents & POLLIN)
 		{
 			if (_vec_client_fds[i].fd == _server_socket_fd)
@@ -210,15 +210,21 @@ void Server::_processEvents()
 			{
 				if (!_handleClientActivity(_vec_client_fds[i].fd))
 				{
-					i--; // Compensate for vector shift
+					i--;
 					continue;
 				}
 			}
 		}
-	
 		if (i < _vec_client_fds.size() && (_vec_client_fds[i].revents & POLLOUT))
 		{
 			_handleClientWrite(_vec_client_fds[i].fd);
+			std::map<int, Client>::iterator it = _map_connected_clients.find(_vec_client_fds[i].fd);
+			if (it != _map_connected_clients.end() && it->second.isQuitting() && it->second.getOutputBuffer().empty())
+			{
+				_disconnectClient(_vec_client_fds[i].fd);
+				i--;
+				continue;
+			}
 		}
 	}
 }
@@ -305,6 +311,7 @@ bool Server::_handleClientActivity(int client_fd)
 	}
 	return true;
 }
+
 void Server::_handlePingCommand(Client& client, const std::string& args)
 {
 	if (DEBUG_SERVER)
@@ -323,9 +330,11 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 
 	if (cmd.empty())
 		return;
+
 	std::string command;
 	std::string args;
 	std::string::size_type pos = cmd.find(' ');
+
 	if (pos == std::string::npos)
 	{
 		command = cmd;
@@ -342,19 +351,21 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 	if (command == "PING")
 		_handlePingCommand(client, args);
 	else if (!client.isClientRegistered())
+	{
 		_auth_handler.handleLogin(client, cmd, _server_password);
+	}
 	else
 	{
 		if (command == "QUIT")
-			_disconnectClient(client.getClientFd());
+			_handleQuitCommand(args, client);
 		else if (command == "PRIVMSG")
 			_handlePrivmsg(client, args);
 		else if (command == "NICK")
 			_auth_handler.handleLogin(client, cmd, _server_password);
 		else if (command == "JOIN" || command == "MODE" || command == "KICK" || command == "INVITE" || command == "TOPIC")
-			log("Routed " + command + " to Channel class (pending implementation)");
+			log("Routed " + command + " to Channel class. TODO");
 		else
-			log("Unknown command or not handled: " + command);
+			log("Unknown command: " + command);
 	}
 }
 
@@ -420,4 +431,18 @@ void Server::_handlePrivmsg(Client& client, const std::string& args)
 			client.appendOutputBuffer(":ft_irc 401 " + client.getNickname() + " " + target + " :No such nick/channel\r\n");
 		}
 	}
+}
+
+void Server::_handleQuitCommand(std::string args, Client client)
+{
+	std::string reason;
+	if (args.empty())
+		reason = "Leaving";
+	else
+		reason = args;
+	if (!reason.empty() && reason[0] == ':')
+		reason = reason.substr(1);
+	std::string error_msg = "ERROR :Closing Link: " + client.getNickname() + " (Quit: " + reason + ")\r\n";
+	client.appendOutputBuffer(error_msg);
+	client.setQuitting(true);
 }

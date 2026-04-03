@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:56 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/18 16:41:20 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/01 15:53:43 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ class Client
 		bool _has_set_password;
 		bool _has_set_nickname;
 		bool _has_set_username;
+		bool _is_quitting;
 
 
 
@@ -62,6 +63,9 @@ class Client
 		bool hasPassword() const;
 		bool hasNickname() const;
 		bool hasUsername() const;
+
+		bool isQuitting() const;
+		void setQuitting(bool value);
 
 		const std::string& getOutputBuffer() const;
 		void eraseOutputBuffer(int bytes_sent);

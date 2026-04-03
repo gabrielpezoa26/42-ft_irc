@@ -1,8 +1,12 @@
 atualizado 24/03/2026
 
 próx afazeres:
-	-> revisar lógica do tcp (envio de comandos parciais)
-	-> implementar PING PONG (evita falso timeout)
+	-> atualizar tests.txt
+	-> revisar lógica PING/PONG
+	-> revisar lógica QUIT
+	-> adicionar logs de debug nas funções novas
+	-> organizar arquivos
+
 
 geral:
 	-> msgs de erro protocolo IRC

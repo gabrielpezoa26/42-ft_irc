@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/18 16:44:16 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/01 22:52:00 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ _client_nickname("default_nickname"),
 _has_set_password(false),
 _has_set_nickname(false),
 _has_set_username(false)
+_is_quitting(false)
 {
 	if (DEBUG_CLIENT)
 		printDebug("Client-> Default constructor called");
@@ -118,6 +119,9 @@ void Client::setClientFd(int given_fd) { _client_fd = given_fd; }
 bool Client::hasPassword() const { return _has_set_password; }
 bool Client::hasNickname() const { return _has_set_nickname; }
 bool Client::hasUsername() const { return _has_set_username; }
+
+bool Client::isQuitting() const { return _is_quitting; }
+void Client::setQuitting(bool value) { _is_quitting = value; }
 
 
 
