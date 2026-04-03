@@ -1,6 +1,42 @@
-atualizado 24/03/2026
+atualizado em 03/04/2026
 
 testes manuais pra rodar de vez em quando p ter ctz q nd quebrou rs
+
+exemplo de teste:
+	-> roda make run em um terminal, esse vai ser o terminal do servidor
+	-> abre outro terminal e roda make nc, esse vai ser o terminal do client
+	-> faz a mesma coisa em outro terminal
+	-> entao vai ficar 1 terminal pro servidor, e 2 pra clients
+	-> fzr o login com senha, nick e user nos 2 clients
+	-> PRIVMSG <nick> <mensagem>
+	-> no outro client, é pra aparecer a mensagem recebida 
+
+
+
+
+
+
+
+exemplo de comando USER:
+	USER gcesar-n 0 * :Gabriel
+	
+	gcesar-n         username
+	0                "modo", o 0 é meio q o padrão
+	*                o nome do server, tbm é meio que padrão
+	:Gabriel         o nome real da pessoa
+
+
+
+testar com o Irssi:
+
+- sudo apt install irssi      (deve vir a versao 1.4.x ou similar)
+
+- abre o irssi e roda:
+	- /connect -nocap 127.0.0.1 <port> <password>
+			obs: na versao das maquinas da 42 mto provavelmente n vai 
+			precisar do '-nocap'
+
+- usa "normal" pra enviar msgs etc (aí tem q ver na documentação deles rsrs)
 
 parsing do argv:
 	testes válidos:
@@ -34,42 +70,3 @@ Auth:
 	-> testar NICK antes da senha
 
 	-> testar dois nicks iguais
-
-
-
-
-exemplo de teste:
-
-	USER gcesar-n 0 * :Gabriel
-
-	JOIN #sao_paulo
-
-	PRIVMSG #sao_paulo :boa noite grupo, tudo bem?
-
-	PRIVMSG other_user :ooi tudo bem?
-
-	QUIT :vou sair aqui, até mais!
-
-
-
-exemplo de comando USER:
-
-	USER gcesar-n 0 * :Gabriel
-	
-	gcesar-n         username
-	0                "modo", o 0 é meio q o padrão
-	*                o nome do server, tbm é meio que padrão
-	:Gabriel         o nome real da pessoa
-
-
-
-testar com o Irssi:
-
-- sudo apt install irssi      (deve vir a versao 1.4.x ou similar)
-
-- abre o irssi e roda:
-	- /connect -nocap 127.0.0.1 <port> <password>
-			obs: na versao das maquinas da 42 mto provavelmente n vai 
-			precisar do '-nocap'
-
-- usa "normal" pra enviar msgs etc (aí tem q ver na documentação deles rsrs)

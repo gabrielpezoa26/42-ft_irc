@@ -1,11 +1,11 @@
-atualizado 24/03/2026
+atualizado 03/04/2026
 
 próx afazeres:
-	-> atualizar tests.txt
+	-> atualizar tests.txt      ok
 	-> revisar lógica PING/PONG
 	-> revisar lógica QUIT
-	-> adicionar logs de debug nas funções novas
-	-> organizar arquivos
+	-> adicionar logs de debug
+	-> organizar arquivos*
 
 
 geral:
