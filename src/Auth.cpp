@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 12:14:41 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/04 15:11:04 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/04 15:50:33 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,31 +52,29 @@ bool Auth::_validatePassword(Client& client, const std::string& cmd, const std::
 	return true;
 }
 
-//TODO: add códigos de erro protocolo irc
-//TODO: trocar msgs de erro
 bool Auth::_validateNickname(Client& client, const std::string& cmd) const
 {
 	if (DEBUG_AUTH)
 		printDebug("Auth-> _validateNickname() called");
 
-	if (!client.hasPassword())
+	if (cmd.empty())
 	{
-		printError("Error 1");
+		client.appendOutputBuffer(":ft_irc 431 " + client.getNickname() + " :No nickname given\r\n");
 		return false;
 	}
-	else if (cmd.empty())
+	std::map<int, Client>::const_iterator it;
+	for (it = _existing_clients.begin(); it != _existing_clients.end(); ++it)
 	{
-		printError("Error 2");
-		return false;
-	}
-	std::map<int, Client>::iterator it;
-	for(it = _existing_clients.begin(); it != _existing_clients.end(); ++it)
-	{
-		if (it->second.getNickname() == cmd)
+		if (it->first != client.getClientFd() && it->second.getNickname() == cmd)
 		{
-			printError("Error 3");
+			client.appendOutputBuffer(":ft_irc 433 " + client.getNickname() + " " + cmd + " :Nickname is already in use\r\n");
 			return false;
 		}
+	}
+	if (client.isClientRegistered())
+	{
+		std::string nick_change_msg = ":" + client.getNickname() + "!" + client.getUsername() + "@127.0.0.1 NICK " + cmd + "\r\n";
+		client.appendOutputBuffer(nick_change_msg);
 	}
 	logColor("DEBUG: sucessfully set nickname", GREEN);
 	client.setNickname(cmd);
@@ -84,8 +82,6 @@ bool Auth::_validateNickname(Client& client, const std::string& cmd) const
 	return true;
 }
 
-//TODO: add códigos de erro protocolo irc
-//TODO: trocar msgs de erro
 bool Auth::_isValidParameterAmount(const std::string& cmd) const
 {
 	std::string::size_type pos = 0;

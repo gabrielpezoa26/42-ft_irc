@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/04 11:59:08 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/04 15:48:05 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -338,9 +338,9 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 	if (DEBUG_SERVER)
 		printDebug("Server-> _routeCommand() called");
 
+	std::string clean_cmd = trim(cmd);
 	if (cmd.empty())
 		return;
-
 	std::string command;
 	std::string args;
 	std::string::size_type pos = cmd.find(' ');
@@ -395,7 +395,11 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 		else if (command == "JOIN" || command == "KICK" || command == "INVITE" || command == "TOPIC")
 			log("Routed " + command + " to Channel class. TODO");
 		else
-			log("Unknown command: " + command);
+		{
+			std::string error_msg = ":ft_irc 421 " + client.getNickname() + " " + command + " :Unknown command\r\n";
+			client.appendOutputBuffer(error_msg);
+			log("Unknown command received: " + command);
+		}
 	}
 }
 
@@ -489,7 +493,6 @@ void Server::_handlePrivmsg(Client& client, const std::string& args)
 	}
 }
 
-
 void Server::_handleQuitCommand(std::string& args, Client& client)
 {
 	if (DEBUG_SERVER)
@@ -502,8 +505,7 @@ void Server::_handleQuitCommand(std::string& args, Client& client)
 		reason = args;
 	if (!reason.empty() && reason[0] == ':')
 		reason = reason.substr(1);
-
 	std::string error_msg = "ERROR :Closing Link: " + client.getNickname() + " (Quit: " + reason + ")\r\n";
-	send(client.getClientFd(), error_msg.c_str(), error_msg.length(), 0);
-	_disconnectClient(client.getClientFd());
+	client.appendOutputBuffer(error_msg);
+	client.setQuitting(true);
 }

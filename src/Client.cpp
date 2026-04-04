@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/03 15:42:03 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/04 15:30:05 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,24 +70,16 @@ Client& Client::operator=(const Client& other)
 /* ---------- Methods ---------- */
 std::string Client::fetchCommand()
 {
-	if (DEBUG_CLIENT)
-		printDebug("Client-> fetchCommand() called");
-
-	std::string::size_type pos;
-	std::string result;
-	pos = _input_buffer.find("\r\n");
+	std::string::size_type pos = _input_buffer.find("\n");
 	if (pos == std::string::npos)
-	{
-		result = "";
-	}
-	else
-	{
-		result = _input_buffer.substr(0, pos);
-		_input_buffer.erase(0, pos + 2); //fica +2 por causa do '\r\n'
-	}
+		return "";
+	std::string result = _input_buffer.substr(0, pos);
+	_input_buffer.erase(0, pos + 1);
+	if (!result.empty() && result[result.size() - 1] == '\r')
+		result.erase(result.size() - 1);
+
 	return result;
 }
-
 void Client::appendInputBuffer(const std::string &in_to_append)
 {
 	if (DEBUG_CLIENT)

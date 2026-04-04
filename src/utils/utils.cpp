@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 10:42:08 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/17 10:21:35 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/04 15:33:44 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,18 @@ std::string normalize(std::string& cmd)
 	for(size_t i = 0; i < cmd.length(); i++)
 		cmd[i] = std::toupper((unsigned char)cmd[i]);
 	return cmd;
+}
+
+std::string trim(const std::string& str)
+{
+	std::string result = str;
+	std::string::size_type pos = result.find_last_not_of(" \t\r\n");
+	if (pos != std::string::npos)
+		result.erase(pos + 1);
+	else
+		result.clear();
+	pos = result.find_first_not_of(" \t\r\n");
+	if (pos != std::string::npos)
+		result.erase(0, pos);
+	return result;
 }
