@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 12:14:41 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/04 15:50:33 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/04 17:48:23 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ bool Auth::_validatePassword(Client& client, const std::string& cmd, const std::
 	{
 		printError("empty password");
 		client.appendOutputBuffer(":ft_irc 461 * PASS :Not enough parameters\r\n");
-		client.setQuitting(true);
 		return false;
 	}
 	
@@ -43,7 +42,6 @@ bool Auth::_validatePassword(Client& client, const std::string& cmd, const std::
 	{
 		printError("incorrect password!");
 		client.appendOutputBuffer(":ft_irc 464 * :Password incorrect\r\n");
-		client.setQuitting(true);
 		return false;
 	}
 
@@ -192,7 +190,6 @@ void Auth::handleLogin(Client& client, const std::string& cmd, const std::string
 		if (!client.hasPassword())
 		{
 			client.appendOutputBuffer(":ft_irc 451 * :You have not registered (PASS required first)\r\n");
-			client.setQuitting(true);
 			return;
 		}
 
@@ -204,17 +201,15 @@ void Auth::handleLogin(Client& client, const std::string& cmd, const std::string
 	else
 	{
 		client.appendOutputBuffer(":ft_irc 451 * :You have not registered\r\n");
-		client.setQuitting(true);
 		return;
 	}
 	if (!was_already_registered && client.isClientRegistered())
 	{
 		std::string welcome = ":ft_irc 001 " + client.getNickname() + 
-		                      " :Welcome to the ft_irc network " + 
-		                      client.getNickname() + "!" + client.getUsername() + 
-		                      "@127.0.0.1\r\n";
+			 " :Welcome to the ft_irc network " + 
+			client.getNickname() + "!" + client.getUsername() + 
+			"@127.0.0.1\r\n";
 		
 		client.appendOutputBuffer(welcome);
-		logColor("DEBUG: Client registration complete. Sent 001 Welcome.", PURPLE);
 	}
 }

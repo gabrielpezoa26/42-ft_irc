@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/04 15:48:05 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/04 17:37:00 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,11 +181,11 @@ void Server::_handleClientWrite(int client_fd)
 	{
 		const std::string& message = it->second.getOutputBuffer();
 		
-		std::cerr << "DEBUG WRITE [fd=" << client_fd << "] buffer='" << message << "'" << std::endl;
+		std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] buffer='" << message << "'" << RESET <<std::endl;
 		
 		ssize_t bytes_sent = send(it->first, message.c_str(), message.length(), 0);
 		
-		std::cerr << "DEBUG WRITE [fd=" << client_fd << "] bytes_sent=" << bytes_sent << std::endl;
+		std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] bytes_sent=" << bytes_sent << RESET << std::endl;
 		
 		if (bytes_sent > 0)
 			it->second.eraseOutputBuffer(bytes_sent);
@@ -294,7 +294,7 @@ bool Server::_handleClientActivity(int client_fd)
 	if (bytes_received > 0)
 	{
 		std::string raw(client_message, bytes_received);
-		std::cerr << "RAW RECV [" << client_fd << "]: ";
+		std::cout << PURPLE << "RAW RECV [" << client_fd << "]: " << RESET;
 		for (size_t i = 0; i < raw.size(); i++)
 		{
 			if (raw[i] == '\r')
