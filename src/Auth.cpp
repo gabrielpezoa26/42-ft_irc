@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 12:14:41 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/19 17:29:01 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/04 15:11:04 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,13 +34,19 @@ bool Auth::_validatePassword(Client& client, const std::string& cmd, const std::
 	if (cmd.empty())
 	{
 		printError("empty password");
+		client.appendOutputBuffer(":ft_irc 461 * PASS :Not enough parameters\r\n");
+		client.setQuitting(true);
 		return false;
 	}
+	
 	if (cmd != server_password)
 	{
 		printError("incorrect password!");
+		client.appendOutputBuffer(":ft_irc 464 * :Password incorrect\r\n");
+		client.setQuitting(true);
 		return false;
 	}
+
 	logColor("DEBUG: password is correct ", GREEN);
 	client.markPasswordStatus(true);
 	return true;
@@ -162,10 +168,11 @@ void Auth::handleLogin(Client& client, const std::string& cmd, const std::string
 {
 	if (DEBUG_AUTH)
 		printDebug("Auth-> handleLogin() called");
-	
+
 	std::string command;
 	std::string args;
 	std::string::size_type pos = cmd.find(' ');
+
 	if (pos == std::string::npos)
 	{
 		command = cmd;
@@ -175,25 +182,43 @@ void Auth::handleLogin(Client& client, const std::string& cmd, const std::string
 	{
 		command = cmd.substr(0, pos);
 		std::string::size_type arg_start = cmd.find_first_not_of(' ', pos);
-		if (arg_start == std::string::npos)
-			args = "";
-		else
+		if (arg_start != std::string::npos)
 			args = cmd.substr(arg_start);
 	}
 	command = normalize(command);
+	bool was_already_registered = client.isClientRegistered();
 	if (command == "PASS")
 		_validatePassword(client, args, server_password);
-	else if (command == "NICK")
-		_validateNickname(client, args);
-	else if (command == "USER")
-		_validateUsername(client, args);
-	else
-		printError("nao eh comando");
-	if (client.isClientRegistered())
+	else if (command == "CAP")
+		return;
+	else if (command == "NICK" || command == "USER")
 	{
-		std::string welcome_msg = ":001 " + client.getNickname() + 
-			" :Welcome to ft_irc " + client.getNickname() + "! " + client.getUsername() + "@127.0.0.1\r\n";
+		if (!client.hasPassword())
+		{
+			client.appendOutputBuffer(":ft_irc 451 * :You have not registered (PASS required first)\r\n");
+			client.setQuitting(true);
+			return;
+		}
+
+		if (command == "NICK")
+			_validateNickname(client, args);
+		else if (command == "USER")
+			_validateUsername(client, args);
+	}
+	else
+	{
+		client.appendOutputBuffer(":ft_irc 451 * :You have not registered\r\n");
+		client.setQuitting(true);
+		return;
+	}
+	if (!was_already_registered && client.isClientRegistered())
+	{
+		std::string welcome = ":ft_irc 001 " + client.getNickname() + 
+		                      " :Welcome to the ft_irc network " + 
+		                      client.getNickname() + "!" + client.getUsername() + 
+		                      "@127.0.0.1\r\n";
 		
-		client.appendOutputBuffer(welcome_msg);
+		client.appendOutputBuffer(welcome);
+		logColor("DEBUG: Client registration complete. Sent 001 Welcome.", PURPLE);
 	}
 }

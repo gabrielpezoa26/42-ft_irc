@@ -38,8 +38,6 @@ re: fclean all
 run: all
 	./$(NAME) 4444 senha123
 
-
-
 kill:
 	killall -9 $(NAME) || true
 
