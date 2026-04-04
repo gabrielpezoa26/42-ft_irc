@@ -1,10 +1,19 @@
 atualizado 03/04/2026
 
 próx afazeres:
+	-> testar:
+		-> tentar nick já em uso
+		-> trocar de nick
+		-> msg para nick que não existe
+		-> PRIVMSG sem mensagem
+		-> PRIVMSG sem "target"
+		-> /quit no Irssi
+		-> fechar o client
+		-> 3 clients
+		-> desconecta um client e testa dnv os outros dois
+
+
 	-> atualizar tests.txt      ok
-	-> revisar lógica PING/PONG
-	-> revisar lógica QUIT
-	-> adicionar logs de debug
 	-> organizar arquivos*
 
 
