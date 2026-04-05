@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 08:00:17 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/03/19 17:17:37 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/04 23:00:23 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,10 @@ class Auth
 
 		bool _isValidParameterAmount(const std::string& cmd) const;
 		void _extractInfo(Client& client, const std::string& cmd) const;
+		void _parseCommand(const std::string& cmd, std::string& command, std::string& args) const;
+		void _sendWelcomeMessage(Client& client) const;
+
+
 	public:
 		//TODO: terminar forma canonica
 		Auth(std::map<int, Client>& clients_map);

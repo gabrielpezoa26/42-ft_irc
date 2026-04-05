@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/04 17:37:00 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/04 23:23:25 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -306,6 +306,7 @@ bool Server::_handleClientActivity(int client_fd)
 		}
 		std::cerr << std::endl;
 	}
+	// fim do DEBUG
 	if (bytes_received <= 0)
 	{
 		if (bytes_received != 0)
@@ -333,73 +334,92 @@ bool Server::_handleClientActivity(int client_fd)
 	return true;
 }
 
+void Server::_splitCommand(const std::string& cmd, std::string& command, std::string& args)
+{
+	std::string clean_cmd = trim(cmd);
+	if (clean_cmd.empty())
+		return;
+
+	std::string::size_type pos = clean_cmd.find(' ');
+	if (pos == std::string::npos)
+	{
+		command = normalize(clean_cmd);
+		args = "";
+	}
+	else
+	{
+		std::string tmp_cmd = clean_cmd.substr(0, pos);
+		command = normalize(tmp_cmd);
+		std::string::size_type arg_start = clean_cmd.find_first_not_of(' ', pos);
+		if (arg_start != std::string::npos)
+			args = clean_cmd.substr(arg_start);
+	}
+}
+
+void Server::_handlePingCommand(Client& client, const std::string& args)
+{
+	if (args.empty())
+	{
+		client.appendOutputBuffer(":ft_irc 409 " + client.getNickname() + " :No origin specified\r\n");
+		return;
+	}
+	std::string token = args;
+	if (token[0] == ':')
+		token = token.substr(1);
+	client.appendOutputBuffer(":ft_irc PONG ft_irc :" + token + "\r\n");
+}
+
+void Server::_handleModeCommand(Client& client, const std::string& args)
+{
+	if (args == client.getNickname() || args.find(client.getNickname()) == 0)
+	{
+		client.appendOutputBuffer(":ft_irc 221 " + client.getNickname() + " +i\r\n");
+	}
+	else
+	{
+		// aq entra os channels juu
+		log("Routed MODE to Channel class. TODO");
+	}
+}
+
 void Server::_routeCommand(Client& client, const std::string& cmd)
 {
 	if (DEBUG_SERVER)
 		printDebug("Server-> _routeCommand() called");
 
-	std::string clean_cmd = trim(cmd);
-	if (cmd.empty())
-		return;
 	std::string command;
 	std::string args;
-	std::string::size_type pos = cmd.find(' ');
-
-	if (pos == std::string::npos)
-	{
-		command = cmd;
-		args = "";
-	}
-	else
-	{
-		command = cmd.substr(0, pos);
-		std::string::size_type arg_start = cmd.find_first_not_of(' ', pos);
-		if (arg_start != std::string::npos)
-			args = cmd.substr(arg_start);
-	}
-	command = normalize(command);
-	if (command == "PING")
-	{
-		if (args.empty())
-			client.appendOutputBuffer(":ft_irc 409 " + client.getNickname() + " :No origin specified\r\n");
-		else
-		{
-			std::string token = args;
-			if (!token.empty() && token[0] == ':')
-				token = token.substr(1);
-			client.appendOutputBuffer(":ft_irc PONG ft_irc :" + token + "\r\n");
-		}
+	_splitCommand(cmd, command, args);
+	if (command.empty())
 		return;
-	}
+	if (command == "PING")
+		return _handlePingCommand(client, args);
 	if (command == "PONG")
 		return;
 	if (!client.isClientRegistered())
 	{
 		_auth_handler.handleLogin(client, cmd, _server_password);
+		return;
 	}
+	if (command == "QUIT")
+		_handleQuitCommand(args, client);
+	else if (command == "PRIVMSG")
+		_handlePrivmsg(client, args);
+	else if (command == "NICK")
+		_handleNickCommand(client, args);
+	else if (command == "PASS" || command == "USER")
+	{
+		std::string err = ":ft_irc 462 " + client.getNickname() + " :Unauthorized command (already registered)\r\n";
+		client.appendOutputBuffer(err);
+	}
+	else if (command == "MODE")
+		_handleModeCommand(client, args);
+	else if (command == "JOIN" || command == "KICK" || command == "INVITE" || command == "TOPIC")
+		log("Routed " + command + " to Channel class. TODO");
 	else
 	{
-		if (command == "QUIT")
-			_handleQuitCommand(args, client);
-		else if (command == "PRIVMSG")
-			_handlePrivmsg(client, args);
-		else if (command == "NICK")
-			_handleNickCommand(client, args);
-		else if (command == "MODE")
-		{
-			if (args == client.getNickname() || args.find(client.getNickname()) == 0)
-				client.appendOutputBuffer(":ft_irc 221 " + client.getNickname() + " +i\r\n");
-			else
-				log("Routed MODE to Channel class. TODO");
-		}
-		else if (command == "JOIN" || command == "KICK" || command == "INVITE" || command == "TOPIC")
-			log("Routed " + command + " to Channel class. TODO");
-		else
-		{
-			std::string error_msg = ":ft_irc 421 " + client.getNickname() + " " + command + " :Unknown command\r\n";
-			client.appendOutputBuffer(error_msg);
-			log("Unknown command received: " + command);
-		}
+		client.appendOutputBuffer(":ft_irc 421 " + client.getNickname() + " " + command + " :Unknown command\r\n");
+		log("Unknown command received: " + command);
 	}
 }
 

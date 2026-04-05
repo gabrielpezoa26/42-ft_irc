@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/03 16:08:21 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/04 23:02:24 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,7 @@
 #include "Auth.hpp"
 #include "utils.hpp"
 
-// por algum motivo se a flag estiver ativa causa alguns erros
-// na lógica de disconnect
-#define DEBUG_SERVER false
+#define DEBUG_SERVER true
 
 class Server
 {
@@ -61,6 +59,9 @@ class Server
 		void _handleNickCommand(Client& client, const std::string& args);
 		bool _handleClientActivity(int client_fd);
 		void _disconnectClient(int client_fd);
+		void _splitCommand(const std::string& cmd, std::string& command, std::string& args);
+		void _handlePingCommand(Client& client, const std::string& args);
+		void _handleModeCommand(Client& client, const std::string& args);
 		void _routeCommand(Client& client, const std::string& cmd);
 		void _handleQuitCommand(std::string& args, Client& client);
 
