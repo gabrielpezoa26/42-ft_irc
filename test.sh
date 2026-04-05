@@ -180,9 +180,3 @@ echo -e "${GREEN}PASSOU: $PASS_COUNT${NC}"
 echo -e "${RED}FALHOU: $FAIL_COUNT${NC}"
 echo -e "${CYAN}TOTAL:  $((PASS_COUNT + FAIL_COUNT))${NC}"
 echo -e "${CYAN}================================${NC}"
-
-if [ $FAIL_COUNT -eq 0 ]; then
-	echo -e "\n${GREEN}Todos os testes passaram!${NC}"
-else
-	echo -e "\n${YELLOW}Corrija os testes que falharam antes da avaliação.${NC}"
-fi

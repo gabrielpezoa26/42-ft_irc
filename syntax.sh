@@ -106,7 +106,3 @@ echo -e "${GREEN}PASSOU: $PASS_COUNT${NC}"
 echo -e "${RED}FALHOU: $FAIL_COUNT${NC}"
 echo -e "${CYAN}TOTAL:  $((PASS_COUNT + FAIL_COUNT))${NC}"
 echo -e "${CYAN}================================${NC}"
-
-if [ $FAIL_COUNT -eq 0 ]; then
-    echo -e "${GREEN}Resilience check complete. Everything looks solid!${NC}"
-fi
