@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/15 17:23:27 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/15 18:50:24 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 #include "Client.hpp"
 #include "Auth.hpp"
 #include "utils.hpp"
+#include "Channel.hpp"
 
 #define DEBUG_SERVER false
 
@@ -52,6 +53,8 @@ class Server
 		Auth _auth_handler;
 		bool _isValidPort(const std::string &port);
 		bool _isValidPassword(const std::string &password);
+		// std::map<std::string, Channel> _channels;
+
 
 		static void _handleSignals(int signum);
 		void setupSignals();

@@ -1,16 +1,18 @@
 atualizado 15/04/2026
 
 próx afazeres:
+	-> revisar testes de edge case no código atual
 	-> aumentar cobertura de testes .sh
 	-> testar melhor com o Irssi
 	-> Channels
+		-> "conectar" a classe no código
 		-> validar forma canônica
 		-> comando JOIN
 
 
 
 geral:
-	-> organizar arquivos*
+	-> dividir Server.cpp em vários arquivos**
 
 
 formatação q eu to usando(inventei da minha cabeça rs)

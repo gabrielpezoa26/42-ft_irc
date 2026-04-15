@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 17:19:43 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/15 18:34:53 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/15 19:32:26 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,10 @@ class Channel
 		Channel(const Channel& other);
 		~Channel();
 		Channel& operator=(const Channel& other);
+
+		void addClient(Client* client);
+		void removeClient(int client_fd);
+		bool hasClient(int client_fd) const;
 };
 
 #endif

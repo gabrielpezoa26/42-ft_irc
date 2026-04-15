@@ -1,20 +1,25 @@
-atualizado em 03/04/2026
+atualizado em 15/04/2026
 
-testes manuais pra rodar de vez em quando p ter ctz q nd quebrou rs
+testes auto pra rodar de vez em quando p ter ctz q nd quebrou rs
+	-> roda make run
+	-> abre outro terminal, e roda um arquivo .sh (./test.sh   por exemplo)
 
-exemplo de teste:
+
+
+
+
+exemplo de teste manual:
 	-> roda make run em um terminal, esse vai ser o terminal do servidor
 	-> abre outro terminal e roda make nc, esse vai ser o terminal do client
 	-> faz a mesma coisa em outro terminal
 	-> entao vai ficar 1 terminal pro servidor, e 2 pra clients
 	-> fzr o login com senha, nick e user nos 2 clients
+		pass <senha>
+		nick <seu_nick>
+		user <seu_user> 0 * <:seu_nome_real>
 	-> PRIVMSG <nick> <mensagem>
+	-> "dividir" a mensagem com ctrl + D, testa lógica do tcp
 	-> no outro client, é pra aparecer a mensagem recebida 
-
-
-
-
-
 
 
 exemplo de comando USER:
@@ -33,40 +38,7 @@ testar com o Irssi:
 
 - abre o irssi e roda:
 	- /connect -nocap 127.0.0.1 <port> <password>
-			obs: na versao das maquinas da 42 mto provavelmente n vai 
-			precisar do '-nocap'
+			obs: na versao das maquinas da 42 mto provavelmente n
+			precisa do '-nocap'
 
 - usa "normal" pra enviar msgs etc (aí tem q ver na documentação deles rsrs)
-
-parsing do argv:
-	testes válidos:
-		./ircserv 4444 senha123
-
-	inválidos:
-		./ircserv -4444 senha123
-
-		./ircserv 44o4 senha 123
-
-		./ircserv 4444 senhçççç
-
-		./ircserv 4444 ""
-		
-		./ircserv "" ""
-
-
-server:
-	-> roda make run
-		-> abre outro terminal, roda make nc
-		-> pelo terminal do client, envia um comando em "partes",
-			igual explicado no pdf
-
-
-
-Auth:
-	-> testar qqr comando vazio
-
-	-> testar senha incorreta
-
-	-> testar NICK antes da senha
-
-	-> testar dois nicks iguais
