@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/04 23:02:24 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/15 17:23:27 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@
 #include "Auth.hpp"
 #include "utils.hpp"
 
-#define DEBUG_SERVER true
+#define DEBUG_SERVER false
 
 class Server
 {
@@ -75,9 +75,9 @@ class Server
 
 	public:
 		Server();
-		Server(const Server& other); //cpa n vai precisar
+		Server(const Server& other);
 		~Server();
-		Server& operator=(const Server& other); //cpa n vai precisar
+		Server& operator=(const Server& other);
 
 		void init(char **argv);
 		void setSocket();

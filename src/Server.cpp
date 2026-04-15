@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/04 23:23:25 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/15 17:18:25 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,13 +180,12 @@ void Server::_handleClientWrite(int client_fd)
 	if (it != _map_connected_clients.end())
 	{
 		const std::string& message = it->second.getOutputBuffer();
-		
+		//DEBUG
 		std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] buffer='" << message << "'" << RESET <<std::endl;
 		
 		ssize_t bytes_sent = send(it->first, message.c_str(), message.length(), 0);
-		
+		//DEBUG
 		std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] bytes_sent=" << bytes_sent << RESET << std::endl;
-		
 		if (bytes_sent > 0)
 			it->second.eraseOutputBuffer(bytes_sent);
 		else if (bytes_sent == -1)
@@ -316,19 +315,17 @@ bool Server::_handleClientActivity(int client_fd)
 	}
 	std::string new_data(client_message, bytes_received);
 	std::map<int, Client>::iterator it = _map_connected_clients.find(client_fd);
-	if (it == _map_connected_clients.end()) return false;
-
+	if (it == _map_connected_clients.end())
+		return false;
 	it->second.appendInputBuffer(new_data);
 	while (true)
 	{
 		it = _map_connected_clients.find(client_fd);
 		if (it == _map_connected_clients.end())
 			return false;
-
 		std::string extracted_cmd = it->second.fetchCommand();
 		if (extracted_cmd.empty())
 			break;
-
 		_routeCommand(it->second, extracted_cmd);
 	}
 	return true;
@@ -377,7 +374,7 @@ void Server::_handleModeCommand(Client& client, const std::string& args)
 	}
 	else
 	{
-		// aq entra os channels juu
+		// channels*
 		log("Routed MODE to Channel class. TODO");
 	}
 }
@@ -525,7 +522,7 @@ void Server::_handleQuitCommand(std::string& args, Client& client)
 		reason = args;
 	if (!reason.empty() && reason[0] == ':')
 		reason = reason.substr(1);
-	std::string error_msg = "ERROR :Closing Link: " + client.getNickname() + " (Quit: " + reason + ")\r\n";
+	std::string error_msg = "Closing Link: " + client.getNickname() + " (Quit: " + reason + ")\r\n";
 	client.appendOutputBuffer(error_msg);
 	client.setQuitting(true);
 }
