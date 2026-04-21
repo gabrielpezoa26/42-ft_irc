@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 17:23:42 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/15 19:43:07 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/04/20 22:16:49 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ Channel::~Channel()
 
 
 /* ---------- Methods ---------- */
-
 Channel& Channel::operator=(const Channel& other)
 {
 	if (DEBUG_CHANNEL)

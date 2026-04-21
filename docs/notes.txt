@@ -1,8 +1,7 @@
-atualizado 15/04/2026
+atualizado 20/04/2026
 
 próx afazeres:
-	-> revisar testes de edge case no código atual
-	-> aumentar cobertura de testes .sh
+	-> revisar full_test.sh
 	-> testar melhor com o Irssi
 	-> Channels
 		-> "conectar" a classe no código
@@ -12,7 +11,9 @@ próx afazeres:
 
 
 geral:
-	-> dividir Server.cpp em vários arquivos**
+
+
+
 
 
 formatação q eu to usando(inventei da minha cabeça rs)

@@ -1,6 +1,7 @@
 atualizado em 15/04/2026
 
 testes auto pra rodar de vez em quando p ter ctz q nd quebrou rs
+	-> chmod +x <nome_do_teste>
 	-> roda make run
 	-> abre outro terminal, e roda um arquivo .sh (./test.sh   por exemplo)
 
