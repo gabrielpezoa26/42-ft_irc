@@ -1,16 +1,16 @@
-atualizado 20/04/2026
+atualizado 05/05/2026
 
 próx afazeres:
-	-> revisar full_test.sh
-	-> testar melhor com o Irssi
-	-> Channels
+	geral:
+		-> testar melhor com o Irssi
+
+	
+	-Channel:
 		-> "conectar" a classe no código
-		-> validar forma canônica
-		-> comando JOIN
+		-> join / broadcast()
+		-> mode
+		-> kick
 
-
-
-geral:
 
 
 

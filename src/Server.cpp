@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/15 17:18:25 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/05 18:42:17 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -411,8 +411,8 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 	}
 	else if (command == "MODE")
 		_handleModeCommand(client, args);
-	else if (command == "JOIN" || command == "KICK" || command == "INVITE" || command == "TOPIC")
-		log("Routed " + command + " to Channel class. TODO");
+	else if (command == "JOIN"/* || command == "KICK" || command == "INVITE" || command == "TOPIC"*/)
+		_handleJoinCommand(client, args);
 	else
 	{
 		client.appendOutputBuffer(":ft_irc 421 " + client.getNickname() + " " + command + " :Unknown command\r\n");
@@ -525,4 +525,22 @@ void Server::_handleQuitCommand(std::string& args, Client& client)
 	std::string error_msg = "Closing Link: " + client.getNickname() + " (Quit: " + reason + ")\r\n";
 	client.appendOutputBuffer(error_msg);
 	client.setQuitting(true);
+}
+
+void Server::_handleJoinCommand(Client& client, const std::string& args)
+{
+	std::string channel_name = args.substr(0, args.find(' '));
+	std::string password = "";
+	
+	size_t space_pos = args.find(' ');
+	if (space_pos != std::string::npos)
+		password = args.substr(space_pos + 1);
+	if (_map_channels.find(channel_name) == _map_channels.end())
+		_map_channels[channel_name] = Channel(channel_name);
+	if (!_map_channels[channel_name].join(&client, password))
+	{
+		client.appendOutputBuffer(":ft_irc 475 " + client.getNickname() 
+			+ " " + channel_name + " :Cannot join channel\r\n");
+		return;
+	}
 }

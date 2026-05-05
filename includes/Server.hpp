@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/15 18:50:24 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/05 18:23:15 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ class Server
 		struct pollfd _new_client_poll;
 		std::vector<struct pollfd> _vec_client_fds;
 		std::map<int, Client> _map_connected_clients;
+		std::map<std::string, Channel> _map_channels;
 
 		Auth _auth_handler;
 		bool _isValidPort(const std::string &port);
@@ -67,6 +68,8 @@ class Server
 		void _handleModeCommand(Client& client, const std::string& args);
 		void _routeCommand(Client& client, const std::string& cmd);
 		void _handleQuitCommand(std::string& args, Client& client);
+		void _handleJoinCommand(Client& client, const std::string& args);
+
 
 		void _prepareEvents();
 		void _handleClientWrite(int client_fd);
