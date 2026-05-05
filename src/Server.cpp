@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/05 18:42:17 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/05 19:22:20 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -454,7 +454,23 @@ void Server::_disconnectClient(int client_fd)
 	std::cout << "Client <" << client_fd << "> disconnected" << std::endl;
 	close(client_fd);
 	_map_connected_clients.erase(client_fd);
-	for (std::vector<struct pollfd>::iterator poll_it = _vec_client_fds.begin(); poll_it != _vec_client_fds.end(); ++poll_it)
+	for (std::map<std::string, Channel>::iterator it = _map_channels.begin();
+		 it != _map_channels.end(); ++it)
+	{
+		if (it->second.hasClient(client_fd))
+		{
+			it->second.removeClient(client_fd);
+			if (it->second.isEmpty())
+			{
+				_map_channels.erase(it);
+				it = _map_channels.begin();
+				if (it == _map_channels.end())
+					break;
+			}
+		}
+	}
+	for (std::vector<struct pollfd>::iterator poll_it = _vec_client_fds.begin(); 
+		 poll_it != _vec_client_fds.end(); ++poll_it)
 	{
 		if (poll_it->fd == client_fd)
 		{
@@ -463,6 +479,7 @@ void Server::_disconnectClient(int client_fd)
 		}
 	}
 }
+
 
 void Server::_handlePrivmsg(Client& client, const std::string& args)
 {

@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 17:23:42 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/05 18:49:05 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/05 19:37:25 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ Channel::Channel(const Channel& other)
 : _channel_name(other._channel_name),
 _channel_topic(other._channel_topic),
 _map_connect_clients(other._map_connect_clients),
-_operators(other._operators),
-_invited(other._invited),
+_channel_operators(other._channel_operators),
+_invited_clients(other._invited_clients),
 _channel_password(other._channel_password),
 _is_invite_only(other._is_invite_only),
 _is_topic_restricted(other._is_topic_restricted),
@@ -58,8 +58,8 @@ Channel::~Channel()
 	if (DEBUG_CHANNEL)
 		printDebug("Channel-> Destructor called");
 	_map_connect_clients.clear();
-	_operators.clear();
-	_invited.clear();
+	_channel_operators.clear();
+	_invited_clients.clear();
 }
 
 Channel& Channel::operator=(const Channel& other)
@@ -72,8 +72,8 @@ Channel& Channel::operator=(const Channel& other)
 		_channel_name = other._channel_name;
 		_channel_topic = other._channel_topic;
 		_map_connect_clients = other._map_connect_clients;
-		_operators = other._operators;
-		_invited = other._invited;
+		_channel_operators = other._channel_operators;
+		_invited_clients = other._invited_clients;
 		_channel_password = other._channel_password;
 		_is_invite_only = other._is_invite_only;
 		_is_topic_restricted = other._is_topic_restricted;
@@ -93,8 +93,8 @@ void Channel::addClient(Client* client)
 void Channel::removeClient(int client_fd)
 {
 	_map_connect_clients.erase(client_fd);
-	_operators.erase(client_fd);
-	_invited.erase(client_fd);
+	_channel_operators.erase(client_fd);
+	_invited_clients.erase(client_fd);
 	if (DEBUG_CHANNEL)
 		std::cout << "Channel-> Client removed (fd=" << client_fd << ")" << std::endl;
 }
@@ -127,27 +127,27 @@ void Channel::broadcastExcept(int sender_fd, const std::string& message)
 
 void Channel::setOperator(int client_fd)
 {
-	_operators.insert(client_fd);
+	_channel_operators.insert(client_fd);
 }
 
 bool Channel::isOperator(int client_fd) const
 {
-	return _operators.find(client_fd) != _operators.end();
+	return _channel_operators.find(client_fd) != _channel_operators.end();
 }
 
 void Channel::removeOperator(int client_fd)
 {
-	_operators.erase(client_fd);
+	_channel_operators.erase(client_fd);
 }
 
 void Channel::inviteClient(int client_fd)
 {
-	_invited.insert(client_fd);
+	_invited_clients.insert(client_fd);
 }
 
 bool Channel::isInvited(int client_fd) const
 {
-	return _invited.find(client_fd) != _invited.end();
+	return _invited_clients.find(client_fd) != _invited_clients.end();
 }
 
 std::string Channel::getTopic() const

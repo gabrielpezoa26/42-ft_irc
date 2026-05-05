@@ -10,6 +10,7 @@ próx afazeres:
 		-> join / broadcast()
 		-> mode
 		-> kick
+		-> invite
 
 
 
