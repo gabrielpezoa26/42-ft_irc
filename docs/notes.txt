@@ -6,8 +6,7 @@ próx afazeres:
 
 	
 	-Channel:
-		-> "conectar" a classe no código
-		-> join / broadcast()
+		-> consertar erros de comandos existentes
 		-> mode
 		-> kick
 		-> invite

@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/05 19:22:20 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/07 18:24:34 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,16 @@
 
 /* ---------- Canonical Form ---------- */
 Server::Server()
-: _server_port(0), _server_password("default_password"),_auth_handler(_map_connected_clients)
+: _server_port(0), _server_password("default_password"),_auth_handler(_map_connected_clients), 
+  _command_handler(_map_connected_clients, _map_channels)
 {
 	if (DEBUG_SERVER)
 		printDebug("Server-> Default constructor called");
 }
 
 Server::Server(const Server& other)
-: _server_port(other._server_port), _server_password(other._server_password), _auth_handler(_map_connected_clients)
+: _server_port(other._server_port), _server_password(other._server_password), _auth_handler(_map_connected_clients),
+  _command_handler(_map_connected_clients, _map_channels)
 {
 	if (DEBUG_SERVER)
 		printDebug("Server-> Copy constructor called");
@@ -353,32 +355,6 @@ void Server::_splitCommand(const std::string& cmd, std::string& command, std::st
 	}
 }
 
-void Server::_handlePingCommand(Client& client, const std::string& args)
-{
-	if (args.empty())
-	{
-		client.appendOutputBuffer(":ft_irc 409 " + client.getNickname() + " :No origin specified\r\n");
-		return;
-	}
-	std::string token = args;
-	if (token[0] == ':')
-		token = token.substr(1);
-	client.appendOutputBuffer(":ft_irc PONG ft_irc :" + token + "\r\n");
-}
-
-void Server::_handleModeCommand(Client& client, const std::string& args)
-{
-	if (args == client.getNickname() || args.find(client.getNickname()) == 0)
-	{
-		client.appendOutputBuffer(":ft_irc 221 " + client.getNickname() + " +i\r\n");
-	}
-	else
-	{
-		// channels*
-		log("Routed MODE to Channel class. TODO");
-	}
-}
-
 void Server::_routeCommand(Client& client, const std::string& cmd)
 {
 	if (DEBUG_SERVER)
@@ -387,63 +363,47 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 	std::string command;
 	std::string args;
 	_splitCommand(cmd, command, args);
+	
 	if (command.empty())
 		return;
+	
 	if (command == "PING")
-		return _handlePingCommand(client, args);
+		return _command_handler.handlePing(client, args);
+	
 	if (command == "PONG")
 		return;
+	
 	if (!client.isClientRegistered())
 	{
 		_auth_handler.handleLogin(client, cmd, _server_password);
 		return;
 	}
+	
 	if (command == "QUIT")
-		_handleQuitCommand(args, client);
-	else if (command == "PRIVMSG")
-		_handlePrivmsg(client, args);
+		_command_handler.handleQuit(client, args);
 	else if (command == "NICK")
-		_handleNickCommand(client, args);
+		_command_handler.handleNick(client, args);
 	else if (command == "PASS" || command == "USER")
-	{
-		std::string err = ":ft_irc 462 " + client.getNickname() + " :Unauthorized command (already registered)\r\n";
-		client.appendOutputBuffer(err);
-	}
-	else if (command == "MODE")
-		_handleModeCommand(client, args);
-	else if (command == "JOIN"/* || command == "KICK" || command == "INVITE" || command == "TOPIC"*/)
-		_handleJoinCommand(client, args);
+		client.appendOutputBuffer(":ft_irc 462 " + client.getNickname() 
+			+ " :Unauthorized command (already registered)\r\n");
+	else if (command == "JOIN")
+		_command_handler.handleJoin(client, args);
+	else if (command == "PRIVMSG")
+		_command_handler.handlePrivmsg(client, args);
+	// else if (command == "TOPIC")
+	// 	_command_handler.handleTopic(client, args);
+	// else if (command == "MODE")
+	// 	_command_handler.handleMode(client, args);
+	// else if (command == "KICK")
+	// 	_command_handler.handleKick(client, args);
+	// else if (command == "INVITE")
+	// 	_command_handler.handleInvite(client, args);
 	else
 	{
-		client.appendOutputBuffer(":ft_irc 421 " + client.getNickname() + " " + command + " :Unknown command\r\n");
+		client.appendOutputBuffer(":ft_irc 421 " + client.getNickname() 
+			+ " " + command + " :Unknown command\r\n");
 		log("Unknown command received: " + command);
 	}
-}
-
-void Server::_handleNickCommand(Client& client, const std::string& args)
-{
-	if (DEBUG_SERVER)
-		printDebug("Server-> _handleNickCommand() called");
-
-	if (args.empty())
-	{
-		client.appendOutputBuffer(":ft_irc 431 " + client.getNickname() + " :No nickname given\r\n");
-		return;
-	}
-	std::string new_nick = args;
-	if (!new_nick.empty() && new_nick[0] == ':')
-		new_nick = new_nick.substr(1);
-	for (std::map<int, Client>::iterator it = _map_connected_clients.begin(); it != _map_connected_clients.end(); ++it)
-	{
-		if (it->second.getNickname() == new_nick && it->first != client.getClientFd())
-		{
-			client.appendOutputBuffer(":ft_irc 433 " + client.getNickname() + " " + new_nick + " :Nickname is already in use\r\n");
-			return;
-		}
-	}
-	std::string old_nick = client.getNickname();
-	client.setNickname(new_nick);
-	client.appendOutputBuffer(":" + old_nick + "!" + client.getUsername() + "@127.0.0.1 NICK :" + new_nick + "\r\n");
 }
 
 void Server::_disconnectClient(int client_fd)
@@ -477,87 +437,5 @@ void Server::_disconnectClient(int client_fd)
 			_vec_client_fds.erase(poll_it);
 			break;
 		}
-	}
-}
-
-
-void Server::_handlePrivmsg(Client& client, const std::string& args)
-{
-	if (DEBUG_SERVER)
-		printDebug("Server-> _handlePrivmsg() called");
-	if (args.empty())
-	{
-		client.appendOutputBuffer(":ft_irc 411 " + client.getNickname() + " :No recipient given (PRIVMSG)\r\n");
-		return;
-	}
-	std::string::size_type space_pos = args.find(' ');
-	if (space_pos == std::string::npos)
-	{
-		client.appendOutputBuffer(":ft_irc 412 " + client.getNickname() + " :No text to send\r\n");
-		return;
-	}
-	std::string target = args.substr(0, space_pos);
-	std::string message = args.substr(space_pos + 1);
-	if (!message.empty() && message[0] == ':')
-		message = message.substr(1);
-	std::string full_msg = ":" + client.getNickname() + "!" + client.getUsername() + "@127.0.0.1 PRIVMSG " + target + " :" + message + "\r\n";
-
-	if (target[0] == '#')
-	{
-		// TODO: aqui chamaria a classe Channel
-		log("Routing PRIVMSG to channel " + target);
-	}
-	else
-	{
-		bool flag_target_found = false;
-		for (std::map<int, Client>::iterator it = _map_connected_clients.begin(); it != _map_connected_clients.end(); ++it)
-		{
-			if (it->second.getNickname() == target)
-			{
-				it->second.appendOutputBuffer(full_msg);
-				_handleClientWrite(it->first);
-				flag_target_found = true;
-				break;
-			}
-		}
-		if (!flag_target_found)
-		{
-			client.appendOutputBuffer(":ft_irc 401 " + client.getNickname() + " " + target + " :No such nick/channel\r\n");
-		}
-	}
-}
-
-void Server::_handleQuitCommand(std::string& args, Client& client)
-{
-	if (DEBUG_SERVER)
-		printDebug("Server-> _handleQuitCommand() called");
-
-	std::string reason;
-	if (args.empty())
-		reason = "Leaving";
-	else
-		reason = args;
-	if (!reason.empty() && reason[0] == ':')
-		reason = reason.substr(1);
-	std::string error_msg = "Closing Link: " + client.getNickname() + " (Quit: " + reason + ")\r\n";
-	client.appendOutputBuffer(error_msg);
-	client.setQuitting(true);
-}
-
-void Server::_handleJoinCommand(Client& client, const std::string& args)
-{
-	std::string channel_name = args.substr(0, args.find(' '));
-	std::string password = "";
-	
-	size_t space_pos = args.find(' ');
-	if (space_pos != std::string::npos)
-		password = args.substr(space_pos + 1);
-	if (_map_channels.find(channel_name) == _map_channels.end())
-		_map_channels[channel_name] = Channel(channel_name);
-	if (!_map_channels[channel_name].join(&client, password))
-	{
-		client.appendOutputBuffer(":ft_irc 475 " + client.getNickname() 
-			+ " " + channel_name + " :Cannot join channel\r\n");
-		return;
 	}
 }
