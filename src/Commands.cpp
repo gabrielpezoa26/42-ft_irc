@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:22:43 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/07 18:22:15 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/07 18:44:12 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,11 @@ void Commands::handleJoin(Client& client, const std::string& args)
 
 	channel_name = trim(channel_name);
 	password = trim(password);
+	if (channel_name.empty() || channel_name[0] != '#')
+	{
+		client.appendOutputBuffer(":ft_irc 403 " + client.getNickname() + " " + channel_name + " :No such channel\r\n");
+		return;
+	}
 	if (!this->join(&client, channel_name, password))
 	{
 		client.appendOutputBuffer(":ft_irc 475 " + client.getNickname() 
@@ -93,22 +98,22 @@ void Commands::handlePrivmsg(Client& client, const std::string& args)
 	
 	if (!message.empty() && message[0] == ':')
 		message = message.substr(1);
+
+	if (message.empty())
+	{
+		client.appendOutputBuffer(":ft_irc 412 " + client.getNickname() + " :No text to send\r\n");
+		return;
+	}
 	target = trim(target);
 	std::string full_msg = ":" + client.getNickname() + "!" + client.getUsername() + "@127.0.0.1 PRIVMSG " + target + " :" + message + "\r\n";
-
 	if (target[0] == '#')
 	{
 		std::map<std::string, Channel>::iterator it = _map_channels.find(target);
-		if (it != _map_channels.end())
-		{
-			it->second.broadcastExcept(client.getClientFd(), full_msg);
-		}
+		if (it == _map_channels.end() || !it->second.hasClient(client.getClientFd()))
+			client.appendOutputBuffer(":ft_irc 404 " + client.getNickname() + " " + target + " :Cannot send to channel\r\n");
 		else
-		{
-			client.appendOutputBuffer(":ft_irc 401 " + client.getNickname() + " " + target + " :No such nick/channel\r\n");
-		}
-	}
-	else
+			it->second.broadcastExcept(client.getClientFd(), full_msg);
+	}	else
 	{
 		bool flag_target_found = false;
 		for (std::map<int, Client>::iterator it = _map_connected_clients.begin(); it != _map_connected_clients.end(); ++it)
@@ -164,7 +169,7 @@ void Commands::handleNick(Client& client, const std::string& args)
 	}
 	std::string old_nick = client.getNickname();
 	client.setNickname(new_nick);
-	client.appendOutputBuffer(":" + old_nick + "!" + client.getUsername() + "@127.0.0.1 NICK :" + new_nick + "\r\n");
+	client.appendOutputBuffer(":" + old_nick + "!" + client.getUsername() + "@127.0.0.1 NICK " + new_nick + "\r\n");
 }
 
 void Commands::handlePing(Client& client, const std::string& args)
