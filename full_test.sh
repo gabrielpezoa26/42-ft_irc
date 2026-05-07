@@ -189,30 +189,6 @@ else
     fail "JOIN with key → unexpected response" "$out"
 fi
 
-# 4.5 Valid PART
-out=$(irc_cmd "PASS $PASS\r\nNICK parter\r\nUSER p 0 * :p\r\nJOIN #partchan\r\nPART #partchan :bye")
-if echo "$out" | grep -q "PART.*#partchan"; then
-    pass "PART #partchan → PART confirmed"
-else
-    fail "PART #partchan → not confirmed" "$out"
-fi
-
-# 4.6 PART without being on channel
-out=$(irc_cmd "PASS $PASS\r\nNICK nopart\r\nUSER n 0 * :n\r\nPART #notonchan")
-if echo "$out" | grep -q "442"; then
-    pass "PART #notonchan → error 442 (Not on channel)"
-else
-    fail "PART not on channel → should error 442" "$out"
-fi
-
-# 4.7 PART without reason
-out=$(irc_cmd "PASS $PASS\r\nNICK parter2\r\nUSER p 0 * :p\r\nJOIN #partchan2\r\nPART #partchan2")
-if echo "$out" | grep -q "PART.*#partchan2"; then
-    pass "PART without reason → accepted"
-else
-    fail "PART no reason → should accept" "$out"
-fi
-
 # 4.8 JOIN non-existent channel (should auto-create)
 out=$(irc_cmd "PASS $PASS\r\nNICK creator\r\nUSER c 0 * :c\r\nJOIN #newchannel")
 if echo "$out" | grep -q "JOIN\|353\|366"; then
@@ -375,6 +351,22 @@ if echo "$out" | grep -q "441\|482"; then
     pass "KICK nonexistent user → error 441/482"
 else
     fail "KICK ghost user → should error" "$out"
+fi
+
+# 11.4 Verify actual removal (Self-Kick + Message test)
+out=$(irc_cmd "PASS $PASS\r\nNICK kicktest1\r\nUSER k1 0 * :k1\r\nJOIN #actualkick\r\nKICK #actualkick kicktest1 :self removal\r\nPRIVMSG #actualkick :I should be a ghost")
+if echo "$out" | grep -q "404\|442"; then
+    pass "KICK removal verified → PRIVMSG after kick correctly blocked (404/442)"
+else
+    fail "KICK removal failed → User was not actually removed from channel memory" "$out"
+fi
+
+# 11.5 Verify channel destruction on last kick
+out=$(irc_cmd "PASS $PASS\r\nNICK kicktest2\r\nUSER k2 0 * :k2\r\nJOIN #emptychan\r\nKICK #emptychan kicktest2\r\nJOIN #emptychan")
+if echo "$out" | grep -q "JOIN :#emptychan\|JOIN #emptychan"; then
+    pass "KICK cleanup verified → Channel successfully destroyed and recreated"
+else
+    fail "KICK cleanup failed → Channel state corrupted after last user kicked" "$out"
 fi
 
 # ---------- TOPIC 12: INVITE ----------

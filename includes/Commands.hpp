@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:22:54 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/07 18:19:31 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/07 20:17:05 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ class Commands
 		void handleNick(Client& client, const std::string& args);
 		void handlePing(Client& client, const std::string& args);
 		void handleMode(Client& client, const std::string& args);
+		void handleKick(Client& client, const std::string& args);
 
 
 };

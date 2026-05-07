@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:22:43 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/07 18:44:12 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/07 20:41:48 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,6 @@ void Commands::handlePrivmsg(Client& client, const std::string& args)
 		client.appendOutputBuffer(":ft_irc 412 " + client.getNickname() + " :No text to send\r\n");
 		return;
 	}
-
 	std::string target = args.substr(0, space_pos);
 	std::string message = args.substr(space_pos + 1);
 	
@@ -113,7 +112,8 @@ void Commands::handlePrivmsg(Client& client, const std::string& args)
 			client.appendOutputBuffer(":ft_irc 404 " + client.getNickname() + " " + target + " :Cannot send to channel\r\n");
 		else
 			it->second.broadcastExcept(client.getClientFd(), full_msg);
-	}	else
+	}
+	else
 	{
 		bool flag_target_found = false;
 		for (std::map<int, Client>::iterator it = _map_connected_clients.begin(); it != _map_connected_clients.end(); ++it)
@@ -187,6 +187,7 @@ void Commands::handlePing(Client& client, const std::string& args)
 	client.appendOutputBuffer(":ft_irc PONG ft_irc :" + token + "\r\n");
 }
 
+// TODO: dá falso positivo no tester, tem que terminar d implementar
 void Commands::handleMode(Client& client, const std::string& args)
 {
 	if (args.empty())
@@ -216,5 +217,97 @@ void Commands::handleMode(Client& client, const std::string& args)
 	else
 	{
 		client.appendOutputBuffer(":ft_irc 502 " + client.getNickname() + " :Cannot change mode for other users\r\n");
+	}
+}
+
+static bool parseKickArgs(const std::string& args, std::string& channel_name, std::string& target_user, std::string& reason)
+{
+	size_t first_space = args.find(' ');
+	if (first_space == std::string::npos)
+		return false;
+
+	channel_name = trim(args.substr(0, first_space));
+
+	size_t second_space = args.find(' ', first_space + 1);
+	if (second_space != std::string::npos)
+	{
+		target_user = trim(args.substr(first_space + 1, second_space - first_space - 1));
+		reason = args.substr(second_space + 1);
+		
+		if (!reason.empty() && reason[0] == ':')
+			reason = reason.substr(1);
+	}
+	else
+	{
+		target_user = trim(args.substr(first_space + 1));
+		reason = "Kicked";
+	}
+
+	return true;
+}
+
+static int getTargetFd(Channel& channel, const std::string& target_user)
+{
+	std::map<int, Client*> chan_clients = channel.getClients();
+	for (std::map<int, Client*>::iterator cit = chan_clients.begin(); cit != chan_clients.end(); ++cit)
+	{
+		if (cit->second->getNickname() == target_user)
+			return cit->first;
+	}
+	return -1;
+}
+
+void Commands::handleKick(Client& client, const std::string& args)
+{
+	if (args.empty())
+	{
+		client.appendOutputBuffer(":ft_irc 461 " + client.getNickname() + " KICK :Not enough parameters\r\n");
+		return;
+	}
+
+	std::string channel_name, target_user, reason;
+
+	if (!parseKickArgs(args, channel_name, target_user, reason))
+	{
+		client.appendOutputBuffer(":ft_irc 461 " + client.getNickname() + " KICK :Not enough parameters\r\n");
+		return;
+	}
+
+	std::map<std::string, Channel>::iterator it = _map_channels.find(channel_name);
+	if (it == _map_channels.end())
+	{
+		client.appendOutputBuffer(":ft_irc 403 " + client.getNickname() + " " + channel_name + " :No such channel\r\n");
+		return;
+	}
+
+	Channel& channel = it->second;
+
+	if (!channel.hasClient(client.getClientFd()))
+	{
+		client.appendOutputBuffer(":ft_irc 442 " + client.getNickname() + " " + channel_name + " :You're not on that channel\r\n");
+		return;
+	}
+
+	if (!channel.isOperator(client.getClientFd()))
+	{
+		client.appendOutputBuffer(":ft_irc 482 " + client.getNickname() + " " + channel_name + " :You're not channel operator\r\n");
+		return;
+	}
+
+	int target_fd = getTargetFd(channel, target_user);
+	if (target_fd == -1)
+	{
+		client.appendOutputBuffer(":ft_irc 441 " + client.getNickname() + " " + target_user + " " + channel_name + " :They aren't on that channel\r\n");
+		return;
+	}
+
+	std::string kick_msg = ":" + client.getNickname() + "!" + client.getUsername() + "@127.0.0.1 KICK " + channel_name + " " + target_user + " :" + reason + "\r\n";
+	
+	channel.broadcast(kick_msg);
+	channel.removeClient(target_fd);
+
+	if (channel.isEmpty())
+	{
+		_map_channels.erase(it);
 	}
 }

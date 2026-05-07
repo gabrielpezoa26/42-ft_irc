@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 17:19:43 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/05 19:37:25 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/07 20:36:14 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,8 @@ class Channel
 		void removeClient(int client_fd);
 		bool hasClient(int client_fd) const;
 
-		bool join(Client* client, const std::string& password = "");
-		bool canJoin(Client* client, const std::string& password = "") const;
+		bool join(Client* client, const std::string& password);
+		bool canJoin(Client* client, const std::string& password) const;
 
 		void broadcast(const std::string& message);
 		void broadcastExcept(int sender_fd, const std::string& message);
