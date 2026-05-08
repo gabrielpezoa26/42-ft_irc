@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:22:43 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/07 20:50:14 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/07 21:19:17 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -266,13 +266,11 @@ void Commands::handleKick(Client& client, const std::string& args)
 	}
 
 	std::string channel_name, target_user, reason;
-
 	if (!parseKickArgs(args, channel_name, target_user, reason))
 	{
 		client.appendOutputBuffer(":ft_irc 461 " + client.getNickname() + " KICK :Not enough parameters\r\n");
 		return;
 	}
-
 	std::map<std::string, Channel>::iterator it = _map_channels.find(channel_name);
 	if (it == _map_channels.end())
 	{
@@ -281,19 +279,16 @@ void Commands::handleKick(Client& client, const std::string& args)
 	}
 
 	Channel& channel = it->second;
-
 	if (!channel.hasClient(client.getClientFd()))
 	{
 		client.appendOutputBuffer(":ft_irc 442 " + client.getNickname() + " " + channel_name + " :You're not on that channel\r\n");
 		return;
 	}
-
 	if (!channel.isOperator(client.getClientFd()))
 	{
 		client.appendOutputBuffer(":ft_irc 482 " + client.getNickname() + " " + channel_name + " :You're not channel operator\r\n");
 		return;
 	}
-
 	int target_fd = getTargetFd(channel, target_user);
 	if (target_fd == -1)
 	{
@@ -302,7 +297,6 @@ void Commands::handleKick(Client& client, const std::string& args)
 	}
 
 	std::string kick_msg = ":" + client.getNickname() + "!" + client.getUsername() + "@127.0.0.1 KICK " + channel_name + " " + target_user + " :" + reason + "\r\n";
-	
 	channel.broadcast(kick_msg);
 	channel.removeClient(target_fd);
 
@@ -310,4 +304,32 @@ void Commands::handleKick(Client& client, const std::string& args)
 	{
 		_map_channels.erase(it);
 	}
+}
+
+void Commands::handlePart(Client& client, const std::string& args)
+{
+	if (args.empty())
+	{
+		client.appendOutputBuffer(":ft_irc 461 " + client.getNickname() + " PART :Not enough parameters\r\n");
+		return;
+	}
+
+	std::string channel_name = trim(args.substr(0, args.find(' ')));
+	std::map<std::string, Channel>::iterator it = _map_channels.find(channel_name);
+	if (it == _map_channels.end())
+	{
+		client.appendOutputBuffer(":ft_irc 403 " + client.getNickname() + " " + channel_name + " :No such channel\r\n");
+		return;
+	}
+	Channel& channel = it->second;
+	if (!channel.hasClient(client.getClientFd()))
+	{
+		client.appendOutputBuffer(":ft_irc 442 " + client.getNickname() + " " + channel_name + " :You're not on that channel\r\n");
+		return;
+	}
+	std::string part_msg = ":" + client.getNickname() + "!" + client.getUsername() + "@127.0.0.1 PART " + channel_name + "\r\n";
+	channel.broadcast(part_msg);
+	channel.removeClient(client.getClientFd());
+	if (channel.isClientMapEmpty())
+		_map_channels.erase(it);
 }

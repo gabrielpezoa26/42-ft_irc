@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/07 20:46:38 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/07 21:08:52 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -387,6 +387,8 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 		_command_handler.handleJoin(client, args);
 	else if (command == "PRIVMSG")
 		_command_handler.handlePrivmsg(client, args);
+	else if (command == "PART")
+		_command_handler.handlePart(client, args);
 	// else if (command == "TOPIC")
 	// 	_command_handler.handleTopic(client, args);
 	else if (command == "MODE")

@@ -222,6 +222,13 @@ else
     fail "PART no reason → should accept" "$out"
 fi
 
+out=$(irc_cmd "PASS $PASS\r\nNICK creator\r\nUSER c 0 * :c\r\nJOIN #existing\r\nNICK sneaky\r\nPART #existing")
+if echo "$out" | grep -q "442"; then
+    pass "PART #existing (not joined) → correctly gave 442"
+else
+    fail "PART not joined → expected 442" "$out"
+fi
+
 # ---------- TOPIC 5: CHANNEL TOPIC ----------
 section "TOPIC 5: CHANNEL TOPIC"
 
