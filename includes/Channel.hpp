@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 17:19:43 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/07 20:36:14 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/07 20:46:38 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,8 +80,8 @@ class Channel
 
 		std::string getChannelName() const;
 		size_t getClientCount() const;
-		bool isEmpty() const;
-		std::map<int, Client*> getClients() const;
+		bool isClientMapEmpty() const;
+		std::map<int, Client*> getClientsMap() const;
 		std::vector<std::string> getClientNicknames() const;
 };
 

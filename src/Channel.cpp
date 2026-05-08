@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 17:23:42 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/07 20:43:02 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/07 20:47:01 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,40 +125,19 @@ void Channel::broadcastExcept(int sender_fd, const std::string& message)
 	}
 }
 
-void Channel::setOperator(int client_fd)
-{
-	_channel_operators.insert(client_fd);
-}
+void Channel::setOperator(int client_fd) { _channel_operators.insert(client_fd); }
 
-bool Channel::isOperator(int client_fd) const
-{
-	return _channel_operators.find(client_fd) != _channel_operators.end();
-}
+bool Channel::isOperator(int client_fd) const { return _channel_operators.find(client_fd) != _channel_operators.end(); }
 
-void Channel::removeOperator(int client_fd)
-{
-	_channel_operators.erase(client_fd);
-}
+void Channel::removeOperator(int client_fd) { _channel_operators.erase(client_fd); }
 
-void Channel::inviteClient(int client_fd)
-{
-	_invited_clients.insert(client_fd);
-}
+void Channel::inviteClient(int client_fd) { _invited_clients.insert(client_fd); }
 
-bool Channel::isInvited(int client_fd) const
-{
-	return _invited_clients.find(client_fd) != _invited_clients.end();
-}
+bool Channel::isInvited(int client_fd) const { return _invited_clients.find(client_fd) != _invited_clients.end(); }
 
-std::string Channel::getTopic() const
-{
-	return _channel_topic;
-}
+std::string Channel::getTopic() const { return _channel_topic; }
 
-void Channel::setTopic(const std::string& topic)
-{
-	_channel_topic = topic;
-}
+void Channel::setTopic(const std::string& topic) { _channel_topic = topic; }
 
 bool Channel::canChangeTopic(int client_fd) const
 {
@@ -167,65 +146,29 @@ bool Channel::canChangeTopic(int client_fd) const
 	return true;
 }
 
-void Channel::setPassword(const std::string& password)
-{
-	_channel_password = password;
-}
+void Channel::setPassword(const std::string& password) { _channel_password = password; }
 
-std::string Channel::getPassword() const
-{
-	return _channel_password;
-}
+std::string Channel::getPassword() const { return _channel_password; }
 
-void Channel::setInviteOnly(bool flag)
-{
-	_is_invite_only = flag;
-}
+void Channel::setInviteOnly(bool flag) { _is_invite_only = flag; }
 
-bool Channel::getInviteOnly() const
-{
-	return _is_invite_only;
-}
+bool Channel::getInviteOnly() const { return _is_invite_only; }
 
-void Channel::setTopicRestricted(bool flag)
-{
-	_is_topic_restricted = flag;
-}
+void Channel::setTopicRestricted(bool flag) { _is_topic_restricted = flag; }
 
-bool Channel::getTopicRestricted() const
-{
-	return _is_topic_restricted;
-}
+bool Channel::getTopicRestricted() const { return _is_topic_restricted; }
 
-void Channel::setUserLimit(int limit)
-{
-	_user_limit = limit;
-}
+void Channel::setUserLimit(int limit) { _user_limit = limit; }
 
-int Channel::getUserLimit() const
-{
-	return _user_limit;
-}
+int Channel::getUserLimit() const { return _user_limit; }
 
-std::string Channel::getChannelName() const
-{
-	return _channel_name;
-}
+std::string Channel::getChannelName() const { return _channel_name; }
 
-size_t Channel::getClientCount() const
-{
-	return _map_connect_clients.size();
-}
+size_t Channel::getClientCount() const { return _map_connect_clients.size(); }
 
-bool Channel::isEmpty() const
-{
-	return _map_connect_clients.empty();
-}
+bool Channel::isClientMapEmpty() const { return _map_connect_clients.empty(); }
 
-std::map<int, Client*> Channel::getClients() const
-{
-	return _map_connect_clients;
-}
+std::map<int, Client*> Channel::getClientsMap() const { return _map_connect_clients; }
 
 std::vector<std::string> Channel::getClientNicknames() const
 {

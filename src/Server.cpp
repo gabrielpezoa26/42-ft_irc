@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/07 20:09:57 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/07 20:46:38 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -417,7 +417,7 @@ void Server::_disconnectClient(int client_fd)
 		if (it->second.hasClient(client_fd))
 		{
 			it->second.removeClient(client_fd);
-			if (it->second.isEmpty())
+			if (it->second.isClientMapEmpty())
 			{
 				_map_channels.erase(it);
 				it = _map_channels.begin();

@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:22:43 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/07 20:41:48 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/07 20:50:14 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ Commands::~Commands()
 		printDebug("Commands-> Destructor called");
 }
 
-bool Commands::join(Client* client, const std::string& channel_name, const std::string& password)
+bool Commands::routeJoin(Client* client, const std::string& channel_name, const std::string& password)
 {
 	if (!client)
 		return false;
@@ -71,7 +71,7 @@ void Commands::handleJoin(Client& client, const std::string& args)
 		client.appendOutputBuffer(":ft_irc 403 " + client.getNickname() + " " + channel_name + " :No such channel\r\n");
 		return;
 	}
-	if (!this->join(&client, channel_name, password))
+	if (!this->routeJoin(&client, channel_name, password))
 	{
 		client.appendOutputBuffer(":ft_irc 475 " + client.getNickname() 
 			+ " " + channel_name + " :Cannot join channel\r\n");
@@ -248,7 +248,7 @@ static bool parseKickArgs(const std::string& args, std::string& channel_name, st
 
 static int getTargetFd(Channel& channel, const std::string& target_user)
 {
-	std::map<int, Client*> chan_clients = channel.getClients();
+	std::map<int, Client*> chan_clients = channel.getClientsMap();
 	for (std::map<int, Client*>::iterator cit = chan_clients.begin(); cit != chan_clients.end(); ++cit)
 	{
 		if (cit->second->getNickname() == target_user)
@@ -306,7 +306,7 @@ void Commands::handleKick(Client& client, const std::string& args)
 	channel.broadcast(kick_msg);
 	channel.removeClient(target_fd);
 
-	if (channel.isEmpty())
+	if (channel.isClientMapEmpty())
 	{
 		_map_channels.erase(it);
 	}

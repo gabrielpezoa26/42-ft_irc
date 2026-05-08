@@ -197,6 +197,31 @@ else
     fail "JOIN new channel → should auto-create" "$out"
 fi
 
+
+# 4.5 Valid PART
+out=$(irc_cmd "PASS $PASS\r\nNICK parter\r\nUSER p 0 * :p\r\nJOIN #partchan\r\nPART #partchan :bye")
+if echo "$out" | grep -q "PART.*#partchan"; then
+    pass "PART #partchan → PART confirmed"
+else
+    fail "PART #partchan → not confirmed" "$out"
+fi
+
+# 4.6 PART without being on channel
+out=$(irc_cmd "PASS $PASS\r\nNICK nopart\r\nUSER n 0 * :n\r\nPART #notonchan")
+if echo "$out" | grep -q "442"; then
+    pass "PART #notonchan → error 442 (Not on channel)"
+else
+    fail "PART not on channel → should error 442" "$out"
+fi
+
+# 4.7 PART without reason
+out=$(irc_cmd "PASS $PASS\r\nNICK parter2\r\nUSER p 0 * :p\r\nJOIN #partchan2\r\nPART #partchan2")
+if echo "$out" | grep -q "PART.*#partchan2"; then
+    pass "PART without reason → accepted"
+else
+    fail "PART no reason → should accept" "$out"
+fi
+
 # ---------- TOPIC 5: CHANNEL TOPIC ----------
 section "TOPIC 5: CHANNEL TOPIC"
 
@@ -474,6 +499,43 @@ if [ -n "$out" ]; then
 else
     fail "Trailing spaces → unexpected response" "$out"
 fi
+
+
+# 14.6 Command Fragmentation (TCP Streaming Test)
+# This checks if your buffer correctly stores "PA" until "SS" arrives.
+section "TOPIC 15: BUFFER & FRAGMENTATION"
+out=$({ echo -n "PA"; sleep 0.2; echo -n "SS $PASS"; echo -ne "\r\n"; echo "NICK frag"; echo "USER f 0 * :f"; } | nc -C "$HOST" "$PORT" -w 2)
+if has_welcome "$out"; then
+    pass "Fragmented PASS command → handled correctly"
+else
+    fail "Fragmentation → buffer failed to reconstruct command" "$out"
+fi
+
+# 14.7 Invite-Only Join Restriction
+out=$(irc_cmd "PASS $PASS\r\nNICK invtest\r\nUSER i 0 * :i\r\nJOIN #invonly\r\nMODE #invonly +i\r\nPART #invonly\r\nJOIN #invonly")
+if echo "$out" | grep -q "473"; then
+    pass "JOIN +i channel without invite → correctly blocked (473)"
+else
+    fail "JOIN +i channel → allowed unauthorized join" "$out"
+fi
+
+# 14.8 Channel Key Restriction
+out=$(irc_cmd "PASS $PASS\r\nNICK keytest\r\nUSER k 0 * :k\r\nJOIN #secret pass123\r\nMODE #secret +k wrongpass\r\nPART #secret\r\nJOIN #secret pass123")
+if echo "$out" | grep -q "475"; then
+    pass "JOIN #secret with wrong key → correctly blocked (475)"
+else
+    fail "JOIN #secret → password check failed" "$out"
+fi
+
+
+
+# Stress Test: Hammer the server with connections that open and close instantly
+# info "Stress testing: 20 rapid connections..."
+# for i in {1..20}; do
+#     nc -z "$HOST" "$PORT" &
+# done
+# wait
+# pass "Stress test finished → server still alive?"
 
 # ---------- RESULTS ----------
 echo -e "\n${CYAN}================================${NC}"
