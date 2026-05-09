@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/04 15:30:05 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/08 23:56:06 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,6 @@ bool Client::isClientRegistered() const
 		return false;
 	return true;
 }
-
 
 void Client::eraseOutputBuffer(size_t bytes_sent)
 {

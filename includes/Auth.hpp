@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 08:00:17 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/04 23:00:23 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/09 00:30:01 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,10 @@ class Auth
 
 
 	public:
-		//TODO: terminar forma canonica
 		Auth(std::map<int, Client>& clients_map);
 		~Auth();
 
 		void handleLogin(Client &client, const std::string &cmd, const std::string& server_password);
-
 };
 
 #endif

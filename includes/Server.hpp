@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/07 18:10:02 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/09 00:08:30 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@
 #include "Channel.hpp"
 #include "Commands.hpp"
 
-#define DEBUG_SERVER false
+#define DEBUG_SERVER true
 
 class Server
 {
@@ -56,26 +56,19 @@ class Server
 		Commands _command_handler;
 		bool _isValidPort(const std::string &port);
 		bool _isValidPassword(const std::string &password);
-		// std::map<std::string, Channel> _channels;
 
 
 		static void _handleSignals(int signum);
 		void setupSignals();
 		void _handleNewConnection();
-		// void _handleNickCommand(Client& client, const std::string& args);
 		bool _handleClientActivity(int client_fd);
 		void _disconnectClient(int client_fd);
 		void _splitCommand(const std::string& cmd, std::string& command, std::string& args);
-		void _handlePingCommand(Client& client, const std::string& args);
-		void _handleModeCommand(Client& client, const std::string& args);
 		void _routeCommand(Client& client, const std::string& cmd);
-		// void _handleQuitCommand(std::string& args, Client& client);
-		// void _handleJoinCommand(Client& client, const std::string& args);
 
 
 		void _prepareEvents();
 		void _handleClientWrite(int client_fd);
-		// void _handlePrivmsg(Client& client, const std::string& args);
 		void _processEvents();
 
 		void _closeFds();

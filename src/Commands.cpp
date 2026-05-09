@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:22:43 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/08 23:44:11 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/08 23:50:20 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ Commands::Commands(const Commands& other)
 	if (DEBUG_COMMANDS)
 		printDebug("Commands-> Copy constructor called");
 }
- 
+
 Commands::~Commands()
 {
 	if (DEBUG_COMMANDS)

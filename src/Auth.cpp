@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 12:14:41 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/04 23:21:54 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/09 00:08:55 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,18 +31,16 @@ bool Auth::_validatePassword(Client& client, const std::string& cmd, const std::
 
 	if (cmd.empty())
 	{
-		printError("empty password");
 		client.appendOutputBuffer(":ft_irc 461 * PASS :Not enough parameters\r\n");
 		return false;
 	}
 	if (cmd != server_password)
 	{
-		printError("incorrect password!");
 		client.appendOutputBuffer(":ft_irc 464 * :Password incorrect\r\n");
 		return false;
 	}
-
-	logColor("DEBUG: password is correct ", GREEN);
+	if (DEBUG_AUTH)
+		printDebug("DEBUG: password is correct ");
 	client.markPasswordStatus(true);
 	return true;
 }
@@ -84,7 +82,8 @@ bool Auth::_validateNickname(Client& client, const std::string& cmd) const
 		std::string nick_change_msg = ":" + client.getNickname() + "!" + client.getUsername() + "@127.0.0.1 NICK :" + cmd + "\r\n";
 		client.appendOutputBuffer(nick_change_msg);
 	}
-	logColor("DEBUG: successfully set nickname", GREEN);
+	if (DEBUG_AUTH)
+		printDebug("DEBUG: successfully set nickname");
 	client.setNickname(cmd);
 	client.markNicknameStatus(true);
 	return true;
@@ -166,7 +165,8 @@ bool Auth::_validateUsername(Client& client, const std::string& cmd) const
 		log("USER rejected: empty string");
 		return false;
 	}
-	logColor("DEBUG: sucessfully set username", GREEN);
+	if (DEBUG_AUTH)
+		printDebug("DEBUG: sucessfully set username");
 	if (!_isValidParameterAmount(cmd))
 		return false;
 	_extractInfo(client, cmd);

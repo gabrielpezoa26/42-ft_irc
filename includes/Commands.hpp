@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:22:54 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/08 18:37:55 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/08 23:53:21 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,16 +25,14 @@
 class Commands
 {
 	private:
-		std::map<int, Client>&		_map_connected_clients;
-		std::map<std::string, Channel>&	_map_channels;
+		std::map<int, Client>& _map_connected_clients;
+		std::map<std::string, Channel>& _map_channels;
  
-		std::string		_trim(const std::string& str) const;
- 
+
 	public:
 		Commands(std::map<int, Client>& clients, std::map<std::string, Channel>& channels);
 		Commands(const Commands& other);
 		~Commands();
-		Commands& operator=(const Commands& other);
  
 		bool routeJoin(Client* client, const std::string& channel_name, const std::string& password);
 

@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/07 21:08:52 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/09 00:32:05 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ bool Server::_isValidPort(const std::string &port)
 	if (!atoi(temp.c_str()) || atoi(temp.c_str()) < 0 || atol(temp.c_str()) > std::numeric_limits<int>::max())
 		return false;
 	_server_port = atoi(temp.c_str());
-	if (_server_port < 1024 || _server_port > 65535)  // tem q tratar se n falha na htons() ou bind()
+	if (_server_port < 1024 || _server_port > 65535)
 		return false;
 	return true;
 }
@@ -182,12 +182,13 @@ void Server::_handleClientWrite(int client_fd)
 	if (it != _map_connected_clients.end())
 	{
 		const std::string& message = it->second.getOutputBuffer();
-		//DEBUG
-		std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] buffer='" << message << "'" << RESET <<std::endl;
+		if (DEBUG_SERVER)
+			std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] buffer='" << message << "'" << RESET <<std::endl;
 		
 		ssize_t bytes_sent = send(it->first, message.c_str(), message.length(), 0);
-		//DEBUG
-		std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] bytes_sent=" << bytes_sent << RESET << std::endl;
+
+		if (DEBUG_SERVER)
+			std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] bytes_sent=" << bytes_sent << RESET << std::endl;
 		if (bytes_sent > 0)
 			it->second.eraseOutputBuffer(bytes_sent);
 		else if (bytes_sent == -1)
@@ -247,7 +248,7 @@ void Server::run()
 		int poll_result = poll(&_vec_client_fds[0], _vec_client_fds.size(), -1);
 		if (poll_result == -1 && Server::_continue_running == true)
 		{
-			throw std::runtime_error("Error on poll()");
+			throw std::runtime_error("Error while polling");
 		}
 		_processEvents();
 	}
@@ -308,6 +309,7 @@ bool Server::_handleClientActivity(int client_fd)
 		std::cerr << std::endl;
 	}
 	// fim do DEBUG
+
 	if (bytes_received <= 0)
 	{
 		if (bytes_received != 0)
@@ -335,6 +337,8 @@ bool Server::_handleClientActivity(int client_fd)
 
 void Server::_splitCommand(const std::string& cmd, std::string& command, std::string& args)
 {
+	if (DEBUG_SERVER)
+		printDebug("Server-> _splitCommand() called");
 	std::string clean_cmd = trim(cmd);
 	if (clean_cmd.empty())
 		return;
@@ -355,6 +359,7 @@ void Server::_splitCommand(const std::string& cmd, std::string& command, std::st
 	}
 }
 
+// TODO: revisar lógica
 void Server::_routeCommand(Client& client, const std::string& cmd)
 {
 	if (DEBUG_SERVER)
@@ -366,7 +371,6 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 	
 	if (command.empty())
 		return;
-	
 	if (command == "PING")
 		return _command_handler.handlePing(client, args);
 	if (command == "PONG")
