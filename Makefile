@@ -8,6 +8,7 @@ OBJ_DIR = objects
 
 SRC_DIR = src
 UTILS_DIR = $(SRC_DIR)/utils
+COMMANDS_DIR = $(SRC_DIR)/commands
 
 SRCS = $(SRC_DIR)/main.cpp \
 		$(SRC_DIR)/Server.cpp \
@@ -15,7 +16,15 @@ SRCS = $(SRC_DIR)/main.cpp \
 		$(SRC_DIR)/Auth.cpp \
 		$(SRC_DIR)/Channel.cpp \
 		$(SRC_DIR)/Commands.cpp \
-		$(UTILS_DIR)/utils.cpp
+		$(UTILS_DIR)/utils.cpp \
+		$(COMMANDS_DIR)/join.cpp \
+		$(COMMANDS_DIR)/kick.cpp \
+		$(COMMANDS_DIR)/mode.cpp \
+		$(COMMANDS_DIR)/nick.cpp \
+		$(COMMANDS_DIR)/part.cpp \
+		$(COMMANDS_DIR)/ping.cpp \
+		$(COMMANDS_DIR)/privmsg.cpp \
+		$(COMMANDS_DIR)/quit.cpp \
 
 OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
 
