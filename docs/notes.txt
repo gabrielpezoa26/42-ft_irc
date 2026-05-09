@@ -6,8 +6,8 @@ próx afazeres:
 
 	
 	-Channel:
-		-> consertar erros de comandos existentes
 		-> dividir Commands.cpp em um arquivo pra cada comando
+		-> consertar erros de comandos existentes
 		-> mode
 		-> kick
 		-> invite

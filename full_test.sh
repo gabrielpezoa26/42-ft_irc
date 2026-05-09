@@ -334,7 +334,7 @@ else
     fail "MODE query → should respond" "$out"
 fi
 
-# 10.2 Set user mode (+i, +w, etc)
+# 10.2 Set user mode (+i)
 out=$(irc_cmd "PASS $PASS\r\nNICK modesetter\r\nUSER m 0 * :m\r\nMODE modesetter +i")
 if echo "$out" | grep -q "221\|MODE"; then
     pass "MODE modesetter +i → accepted"
@@ -350,14 +350,77 @@ else
     fail "MODE channel query → should respond" "$out"
 fi
 
-# 10.4 Set channel mode (requires ops)
-out=$(irc_cmd "PASS $PASS\r\nNICK modeopset\r\nUSER m 0 * :m\r\nJOIN #modetest\r\nMODE #modetest +m")
-if echo "$out" | grep -q "MODE\|482"; then
-    pass "MODE #modetest +m → accepted or 482 (not ops)"
+# 10.4 MODE +i set and confirmed
+out=$(irc_cmd "PASS $PASS\r\nNICK modeop_i\r\nUSER m 0 * :m\r\nJOIN #modechan_i\r\nMODE #modechan_i +i")
+if echo "$out" | grep -q "MODE.*+i"; then
+    pass "MODE #modechan_i +i → invite-only set and confirmed"
 else
-    fail "MODE channel set → unexpected response" "$out"
+    fail "MODE +i → should confirm mode change" "$out"
 fi
 
+# 10.5 MODE +t set and confirmed
+out=$(irc_cmd "PASS $PASS\r\nNICK modeop_t\r\nUSER m 0 * :m\r\nJOIN #modechan_t\r\nMODE #modechan_t +t")
+if echo "$out" | grep -q "MODE.*+t"; then
+    pass "MODE #modechan_t +t → topic restriction set and confirmed"
+else
+    fail "MODE +t → should confirm mode change" "$out"
+fi
+
+# 10.6 MODE +t blocks non-op topic change (single connection)
+out=$(irc_cmd "PASS $PASS\r\nNICK modeop_t3\r\nUSER m 0 * :m\r\nJOIN #modechan_t3\r\nMODE #modechan_t3 +t\r\nTOPIC #modechan_t3 :new topic")
+if echo "$out" | grep -q "TOPIC\|332"; then
+    pass "MODE +t → op can still change topic after setting +t"
+else
+    fail "MODE +t → op should be able to change topic" "$out"
+fi
+
+# 10.7 MODE +k set and confirmed
+out=$(irc_cmd "PASS $PASS\r\nNICK modeop_k\r\nUSER m 0 * :m\r\nJOIN #modechan_k\r\nMODE #modechan_k +k secret")
+if echo "$out" | grep -q "MODE.*+k"; then
+    pass "MODE #modechan_k +k → password set and confirmed"
+else
+    fail "MODE +k → should confirm mode change" "$out"
+fi
+
+# 10.8 MODE +l set and confirmed
+out=$(irc_cmd "PASS $PASS\r\nNICK modeop_l\r\nUSER m 0 * :m\r\nJOIN #modechan_l\r\nMODE #modechan_l +l 5")
+if echo "$out" | grep -q "MODE.*+l"; then
+    pass "MODE #modechan_l +l 5 → user limit set and confirmed"
+else
+    fail "MODE +l → should confirm mode change" "$out"
+fi
+
+# 10.9 MODE +o set and confirmed
+out=$(irc_cmd "PASS $PASS\r\nNICK modeop_o\r\nUSER m 0 * :m\r\nJOIN #modechan_o\r\nMODE #modechan_o +o modeop_o")
+if echo "$out" | grep -q "MODE.*+o"; then
+    pass "MODE #modechan_o +o → operator privilege granted and confirmed"
+else
+    fail "MODE +o → should confirm operator change" "$out"
+fi
+
+# 10.11 MODE -i remove invite-only
+out=$(irc_cmd "PASS $PASS\r\nNICK modeop_ri\r\nUSER m 0 * :m\r\nJOIN #modechan_ri\r\nMODE #modechan_ri +i\r\nMODE #modechan_ri -i")
+if echo "$out" | grep -q "MODE.*-i"; then
+    pass "MODE #modechan_ri -i → invite-only removed and confirmed"
+else
+    fail "MODE -i → should confirm mode removal" "$out"
+fi
+
+# 10.12 MODE -k remove password
+out=$(irc_cmd "PASS $PASS\r\nNICK modeop_rk\r\nUSER m 0 * :m\r\nJOIN #modechan_rk\r\nMODE #modechan_rk +k secret\r\nMODE #modechan_rk -k")
+if echo "$out" | grep -q "MODE.*-k"; then
+    pass "MODE #modechan_rk -k → password removed and confirmed"
+else
+    fail "MODE -k → should confirm password removal" "$out"
+fi
+
+# 10.13 MODE -l remove user limit
+out=$(irc_cmd "PASS $PASS\r\nNICK modeop_rl\r\nUSER m 0 * :m\r\nJOIN #modechan_rl\r\nMODE #modechan_rl +l 5\r\nMODE #modechan_rl -l")
+if echo "$out" | grep -q "MODE.*-l"; then
+    pass "MODE #modechan_rl -l → user limit removed and confirmed"
+else
+    fail "MODE -l → should confirm limit removal" "$out"
+fi
 # ---------- TOPIC 11: KICK ----------
 section "TOPIC 11: KICK COMMAND"
 

@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:22:54 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/07 21:09:02 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/08 18:37:55 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <stdlib.h>
 #include "Client.hpp"
 #include "Channel.hpp"
 
