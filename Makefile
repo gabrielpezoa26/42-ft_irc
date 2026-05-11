@@ -25,6 +25,8 @@ SRCS = $(SRC_DIR)/main.cpp \
 		$(COMMANDS_DIR)/ping.cpp \
 		$(COMMANDS_DIR)/privmsg.cpp \
 		$(COMMANDS_DIR)/quit.cpp \
+		$(COMMANDS_DIR)/topic.cpp \
+		$(COMMANDS_DIR)/invite.cpp 
 
 OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
 

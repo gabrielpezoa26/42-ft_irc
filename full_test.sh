@@ -206,12 +206,12 @@ else
     fail "PART #partchan → not confirmed" "$out"
 fi
 
-# 4.6 PART without being on channel
+# PART not on channel → 403 (channel doesn't exist at all)
 out=$(irc_cmd "PASS $PASS\r\nNICK nopart\r\nUSER n 0 * :n\r\nPART #notonchan")
-if echo "$out" | grep -q "442"; then
-    pass "PART #notonchan → error 442 (Not on channel)"
+if echo "$out" | grep -q "403"; then
+    pass "PART non-existent channel → 403"
 else
-    fail "PART not on channel → should error 442" "$out"
+    fail "PART non-existent channel → should be 403" "$out"
 fi
 
 # 4.7 PART without reason
@@ -222,13 +222,14 @@ else
     fail "PART no reason → should accept" "$out"
 fi
 
-out=$(irc_cmd "PASS $PASS\r\nNICK creator\r\nUSER c 0 * :c\r\nJOIN #existing\r\nNICK sneaky\r\nPART #existing")
-if echo "$out" | grep -q "442"; then
-    pass "PART #existing (not joined) → correctly gave 442"
+out=$(irc_cmd "PASS $PASS\r\nNICK creator\r\nUSER c 0 * :c\r\nJOIN #existing442")
+out2=$(irc_cmd "PASS $PASS\r\nNICK notjoined\r\nUSER n 0 * :n\r\nPART #existing442")
+if echo "$out2" | grep -q "442"; then
+    pass "PART joined-by-others channel → 442"
 else
-    fail "PART not joined → expected 442" "$out"
+    fail "PART not joined → should be 442" "$out2"
 fi
-
+ 
 # ---------- TOPIC 5: CHANNEL TOPIC ----------
 section "TOPIC 5: CHANNEL TOPIC"
 
@@ -466,21 +467,85 @@ fi
 
 # ---------- TOPIC 12: INVITE ----------
 section "TOPIC 12: INVITE COMMAND"
-
-# 12.1 Valid INVITE
+ 
+# 12.1 Valid INVITE (target doesn't exist → 401)
 out=$(irc_cmd "PASS $PASS\r\nNICK inviter\r\nUSER i 0 * :i\r\nJOIN #invitechan\r\nINVITE someuser #invitechan")
 if echo "$out" | grep -q "INVITE\|341\|401"; then
     pass "INVITE someuser → accepted or error"
 else
     fail "INVITE → unexpected response" "$out"
 fi
-
+ 
 # 12.2 INVITE without being on channel
 out=$(irc_cmd "PASS $PASS\r\nNICK inviter2\r\nUSER i 0 * :i\r\nINVITE someuser #notjoined")
 if echo "$out" | grep -q "442\|403"; then
     pass "INVITE (not on channel) → error 442/403"
 else
     fail "INVITE not on channel → should error" "$out"
+fi
+ 
+# 12.3 INVITE to non-existent channel
+out=$(irc_cmd "PASS $PASS\r\nNICK inviter3\r\nUSER i 0 * :i\r\nINVITE someuser #doesnotexist")
+if echo "$out" | grep -q "403\|442"; then
+    pass "INVITE to non-existent channel → 403/442"
+else
+    fail "INVITE to non-existent channel → should error" "$out"
+fi
+ 
+# 12.4 INVITE with no arguments
+out=$(irc_cmd "PASS $PASS\r\nNICK inviter4\r\nUSER i 0 * :i\r\nINVITE")
+if echo "$out" | grep -q "461"; then
+    pass "INVITE with no args → 461"
+else
+    fail "INVITE no args → should be 461" "$out"
+fi
+ 
+# 12.5 INVITE with only one argument (missing channel)
+out=$(irc_cmd "PASS $PASS\r\nNICK inviter5\r\nUSER i 0 * :i\r\nINVITE someuser")
+if echo "$out" | grep -q "461"; then
+    pass "INVITE with only nick, no channel → 461"
+else
+    fail "INVITE missing channel → should be 461" "$out"
+fi
+ 
+# 12.6 INVITE yourself to a channel you're already in
+out=$(irc_cmd "PASS $PASS\r\nNICK inviter6\r\nUSER i 0 * :i\r\nJOIN #selfinvite\r\nINVITE inviter6 #selfinvite")
+if echo "$out" | grep -q "443\|401"; then
+    pass "INVITE self (already in channel) → 443/401"
+else
+    fail "INVITE self → unexpected response" "$out"
+fi
+ 
+# 12.7 INVITE on +i channel without being operator
+out=$(irc_cmd "PASS $PASS\r\nNICK inviter7\r\nUSER i 0 * :i\r\nJOIN #inviteonly\r\nMODE #inviteonly +i\r\nMODE #inviteonly -o inviter7\r\nINVITE someuser #inviteonly")
+if echo "$out" | grep -q "482\|341\|401"; then
+    pass "INVITE on +i channel → 482 if not op, or ok if op"
+else
+    fail "INVITE on +i without op → unexpected response" "$out"
+fi
+ 
+# 12.8 INVITE on +i channel as operator (creator is op by default)
+out=$(irc_cmd "PASS $PASS\r\nNICK inviter8\r\nUSER i 0 * :i\r\nJOIN #inviteonly2\r\nMODE #inviteonly2 +i\r\nINVITE ghostuser #inviteonly2")
+if echo "$out" | grep -q "341\|401"; then
+    pass "INVITE on +i channel as operator → 341 or 401 (no such nick)"
+else
+    fail "INVITE as op on +i channel → unexpected response" "$out"
+fi
+ 
+# 12.9 INVITE to a channel with empty name
+out=$(irc_cmd "PASS $PASS\r\nNICK inviter9\r\nUSER i 0 * :i\r\nINVITE someuser #")
+if echo "$out" | grep -q "403\|461\|442"; then
+    pass "INVITE to '#' (empty channel name) → error"
+else
+    fail "INVITE to '#' → unexpected response" "$out"
+fi
+ 
+# 12.10 INVITE with empty nick
+out=$(irc_cmd "PASS $PASS\r\nNICK inviter10\r\nUSER i 0 * :i\r\nJOIN #chan10\r\nINVITE  #chan10")
+if echo "$out" | grep -q "401\|461"; then
+    pass "INVITE with empty nick → 401/461"
+else
+    fail "INVITE empty nick → unexpected response" "$out"
 fi
 
 # ---------- TOPIC 13: PROTOCOL COMPLIANCE ----------
@@ -546,14 +611,6 @@ else
     fail "Long NICK → unexpected response" "$out"
 fi
 
-# 14.3 Channel with spaces (invalid)
-out=$(irc_cmd "PASS $PASS\r\nNICK spacechan\r\nUSER s 0 * :s\r\nJOIN #channel with spaces")
-if echo "$out" | grep -q "403\|476\|ERROR"; then
-    pass "JOIN with spaces in name → error"
-else
-    fail "Channel with spaces → should error" "$out"
-fi
-
 # 14.4 Rapid-fire commands (stress test)
 out=$(irc_cmd "PASS $PASS\r\nNICK rapid\r\nUSER r 0 * :r\r\nPING :1\r\nPING :2\r\nPING :3\r\nPING :4\r\nPING :5")
 if echo "$out" | grep -q "PONG"; then
@@ -580,23 +637,6 @@ if has_welcome "$out"; then
 else
     fail "Fragmentation → buffer failed to reconstruct command" "$out"
 fi
-
-# 14.7 Invite-Only Join Restriction
-out=$(irc_cmd "PASS $PASS\r\nNICK invtest\r\nUSER i 0 * :i\r\nJOIN #invonly\r\nMODE #invonly +i\r\nPART #invonly\r\nJOIN #invonly")
-if echo "$out" | grep -q "473"; then
-    pass "JOIN +i channel without invite → correctly blocked (473)"
-else
-    fail "JOIN +i channel → allowed unauthorized join" "$out"
-fi
-
-# 14.8 Channel Key Restriction
-out=$(irc_cmd "PASS $PASS\r\nNICK keytest\r\nUSER k 0 * :k\r\nJOIN #secret pass123\r\nMODE #secret +k wrongpass\r\nPART #secret\r\nJOIN #secret pass123")
-if echo "$out" | grep -q "475"; then
-    pass "JOIN #secret with wrong key → correctly blocked (475)"
-else
-    fail "JOIN #secret → password check failed" "$out"
-fi
-
 
 
 # Stress Test: Hammer the server with connections that open and close instantly

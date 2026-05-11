@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/09 00:32:05 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/11 18:07:40 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -393,14 +393,14 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 		_command_handler.handlePrivmsg(client, args);
 	else if (command == "PART")
 		_command_handler.handlePart(client, args);
-	// else if (command == "TOPIC")
-	// 	_command_handler.handleTopic(client, args);
+	else if (command == "TOPIC")
+		_command_handler.handleTopic(client, args);
 	else if (command == "MODE")
 		_command_handler.handleMode(client, args);
 	else if (command == "KICK")
 		_command_handler.handleKick(client, args);
-	// else if (command == "INVITE")
-	// 	_command_handler.handleInvite(client, args);
+	else if (command == "INVITE")
+		_command_handler.handleInvite(client, args);
 	else
 	{
 		client.appendOutputBuffer(":ft_irc 421 " + client.getNickname() 
