@@ -39,6 +39,7 @@ testar com o Irssi:
 
 - abre o irssi e roda:
 	- /connect -nocap 127.0.0.1 <port> <password>
+	- /connect -nocap 127.0.0.1 4444 senha123
 			obs: na versao das maquinas da 42 mto provavelmente n
 			precisa do '-nocap'
 

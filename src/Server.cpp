@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/11 18:07:40 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/16 17:45:42 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,13 +255,11 @@ void Server::run()
 	_closeFds();
 }
 
-/* ---------- Client Handlers ---------- */
 void Server::_handleNewConnection()
 {
 	if (DEBUG_SERVER)
 		printDebug("Server-> _handleNewConnection() called");
 
-	Client client;
 	socklen_t len = sizeof(_client_address);
 	memset(&_client_address, 0, sizeof(_client_address));
 
@@ -269,17 +267,22 @@ void Server::_handleNewConnection()
 	if (client_socket == -1)
 	{
 		log("Error on accept()");
-		return ;
+		return;
 	}
+
 	if (fcntl(client_socket, F_SETFL, O_NONBLOCK) == -1)
 	{
 		log("Error on fcntl()");
-		return ;
+		close(client_socket);
+		return;
 	}
+
 	_new_client_poll.fd = client_socket;
 	_new_client_poll.events = POLLIN;
 	_new_client_poll.revents = 0;
 	_vec_client_fds.push_back(_new_client_poll);
+
+	Client client;
 	client.setClientFd(client_socket);
 	_map_connected_clients[client_socket] = client;
 }

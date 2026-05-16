@@ -6,14 +6,12 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 17:23:42 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/07 21:31:33 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/16 17:06:05 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "../includes/Channel.hpp"
 
-/* ---------- Canonical Form ---------- */
 Channel::Channel()
 : _channel_name("default_name"),
 _channel_topic(""),
@@ -104,7 +102,6 @@ bool Channel::hasClient(int client_fd) const
 	return _map_connect_clients.find(client_fd) != _map_connect_clients.end();
 }
 
-/* ---------- Broadcasting ---------- */
 void Channel::broadcast(const std::string& message)
 {
 	for (std::map<int, Client*>::iterator it = _map_connect_clients.begin();
@@ -189,14 +186,37 @@ bool Channel::canJoin(Client* client, const std::string& password) const
 
 	if (this->hasClient(client->getClientFd()))
 		return false;
+
+	if (this->isInvited(client->getClientFd()))
+	{
+		if (_user_limit > 0 && (int)_map_connect_clients.size() >= _user_limit)
+			return false;
+		return true;
+	}
+
+	if (_is_invite_only)
+		return false;
+
 	if (!_channel_password.empty() && _channel_password != password)
 		return false;
-	if (_is_invite_only && !this->isInvited(client->getClientFd()))
-		return false;
+
 	if (_user_limit > 0 && (int)_map_connect_clients.size() >= _user_limit)
 		return false;
+
 	return true;
 }
+
+// bool Channel::canJoin(Client* client, const std::string& password) const
+// {
+//           if (!client)
+//                     return false;
+
+//           if (this->hasClient(client->getClientFd()))
+//                     return false;
+
+// 	log(password);
+//           return true;
+// }
 
 bool Channel::join(Client* client, const std::string& password)
 {
@@ -204,6 +224,12 @@ bool Channel::join(Client* client, const std::string& password)
 		return false;
 	if (!this->canJoin(client, password))
 		return false;
+	
+	if (this->isInvited(client->getClientFd()))
+	{
+		_invited_clients.erase(client->getClientFd());
+	}
+
 	this->addClient(client);
 	if (_map_connect_clients.size() == 1)
 		this->setOperator(client->getClientFd());
