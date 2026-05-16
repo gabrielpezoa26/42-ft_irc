@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 17:23:42 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/16 17:06:05 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/16 18:05:44 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,40 +206,38 @@ bool Channel::canJoin(Client* client, const std::string& password) const
 	return true;
 }
 
-// bool Channel::canJoin(Client* client, const std::string& password) const
-// {
-//           if (!client)
-//                     return false;
-
-//           if (this->hasClient(client->getClientFd()))
-//                     return false;
-
-// 	log(password);
-//           return true;
-// }
-
 bool Channel::join(Client* client, const std::string& password)
 {
 	if (!client)
 		return false;
 	if (!this->canJoin(client, password))
 		return false;
-	
+
 	if (this->isInvited(client->getClientFd()))
-	{
 		_invited_clients.erase(client->getClientFd());
-	}
 
 	this->addClient(client);
 	if (_map_connect_clients.size() == 1)
 		this->setOperator(client->getClientFd());
+
 	std::string join_msg = ":" + client->getNickname() + "!" + client->getUsername()
 		+ "@127.0.0.1 JOIN " + _channel_name + "\r\n";
 	this->broadcast(join_msg);
-	std::string topic_msg = ":ft_irc 332 " + client->getNickname() 
-		+ " " + _channel_name + " :" + _channel_topic + "\r\n";
-	client->appendOutputBuffer(topic_msg);
-	std::string names_msg = ":ft_irc 353 " + client->getNickname() + " = " 
+
+	if (!_channel_topic.empty())
+	{
+		std::string topic_msg = ":ft_irc 332 " + client->getNickname()
+			+ " " + _channel_name + " :" + _channel_topic + "\r\n";
+		client->appendOutputBuffer(topic_msg);
+	}
+	else
+	{
+		std::string no_topic_msg = ":ft_irc 331 " + client->getNickname()
+			+ " " + _channel_name + " :No topic is set\r\n";
+		client->appendOutputBuffer(no_topic_msg);
+	}
+
+	std::string names_msg = ":ft_irc 353 " + client->getNickname() + " = "
 		+ _channel_name + " :";
 	for (std::map<int, Client*>::iterator it = _map_connect_clients.begin();
 		 it != _map_connect_clients.end(); ++it)
@@ -254,7 +252,8 @@ bool Channel::join(Client* client, const std::string& password)
 	}
 	names_msg += "\r\n";
 	client->appendOutputBuffer(names_msg);
-	std::string eol_msg = ":ft_irc 366 " + client->getNickname() 
+
+	std::string eol_msg = ":ft_irc 366 " + client->getNickname()
 		+ " " + _channel_name + " :End of NAMES list\r\n";
 	client->appendOutputBuffer(eol_msg);
 
