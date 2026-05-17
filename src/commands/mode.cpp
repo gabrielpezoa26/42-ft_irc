@@ -6,12 +6,11 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/08 23:34:11 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/16 16:48:40 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/17 00:08:26 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Commands.hpp"
-// TODO: revisar funcionalidade & refatorar
 
 static int getTargetFd(Channel& channel, const std::string& target_user)
 {

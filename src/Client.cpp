@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/08 23:56:06 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/17 00:53:49 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,5 +157,8 @@ bool Client::isClientRegistered() const
 
 void Client::eraseOutputBuffer(size_t bytes_sent)
 {
+	if (DEBUG_CLIENT)
+		printDebug("Client-> eraseOutputBuffer() called");
+
 	_output_buffer.erase(0, bytes_sent);
 }

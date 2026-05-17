@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/16 17:45:42 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/17 00:53:24 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,12 +182,12 @@ void Server::_handleClientWrite(int client_fd)
 	if (it != _map_connected_clients.end())
 	{
 		const std::string& message = it->second.getOutputBuffer();
-		if (DEBUG_SERVER)
+		if (DEBUG_WRITE)
 			std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] buffer='" << message << "'" << RESET <<std::endl;
 		
 		ssize_t bytes_sent = send(it->first, message.c_str(), message.length(), 0);
 
-		if (DEBUG_SERVER)
+		if (DEBUG_WRITE)
 			std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] bytes_sent=" << bytes_sent << RESET << std::endl;
 		if (bytes_sent > 0)
 			it->second.eraseOutputBuffer(bytes_sent);
@@ -295,24 +295,24 @@ bool Server::_handleClientActivity(int client_fd)
 	memset(client_message, 0, sizeof(client_message));
 	ssize_t bytes_received = recv(client_fd, client_message, sizeof(client_message) - 1, 0);
 
-	//DEBUG
-	if (bytes_received > 0)
+	if (DEBUG_RECV)
 	{
-		std::string raw(client_message, bytes_received);
-		std::cout << PURPLE << "RAW RECV [" << client_fd << "]: " << RESET;
-		for (size_t i = 0; i < raw.size(); i++)
+		if (bytes_received > 0)
 		{
-			if (raw[i] == '\r')
-				std::cerr << "\\r";
-			else if (raw[i] == '\n')
-				std::cerr << "\\n";
-		else
-			std::cerr << raw[i];
+			std::string raw(client_message, bytes_received);
+			std::cout << PURPLE << "RAW RECV [" << client_fd << "]: " << RESET;
+			for (size_t i = 0; i < raw.size(); i++)
+			{
+				if (raw[i] == '\r')
+					std::cerr << "\\r";
+				else if (raw[i] == '\n')
+					std::cerr << "\\n";
+			else
+				std::cerr << raw[i];
+			}
+			std::cerr << std::endl;
 		}
-		std::cerr << std::endl;
 	}
-	// fim do DEBUG
-
 	if (bytes_received <= 0)
 	{
 		if (bytes_received != 0)
@@ -404,6 +404,11 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 		_command_handler.handleKick(client, args);
 	else if (command == "INVITE")
 		_command_handler.handleInvite(client, args);
+	else if (command == "WHOIS")
+	{
+		client.appendOutputBuffer(":ft_irc 318 " + client.getNickname() 
+		+ " " + args + " :End of WHOIS list\r\n");
+	}
 	else
 	{
 		client.appendOutputBuffer(":ft_irc 421 " + client.getNickname() 

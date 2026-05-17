@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/16 17:16:15 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/17 00:57:36 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@
 #include "Commands.hpp"
 
 #define DEBUG_SERVER false
+#define DEBUG_RECV true
+#define DEBUG_WRITE false
 
 class Server
 {
@@ -66,11 +68,9 @@ class Server
 		void _splitCommand(const std::string& cmd, std::string& command, std::string& args);
 		void _routeCommand(Client& client, const std::string& cmd);
 
-
 		void _prepareEvents();
 		void _handleClientWrite(int client_fd);
 		void _processEvents();
-
 		void _closeFds();
 
 

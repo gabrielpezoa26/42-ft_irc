@@ -1,18 +1,17 @@
-atualizado 05/05/2026
+atualizado 17/05/2026
 
 próx afazeres:
 	geral:
-		-> testar melhor com o Irssi
-
-	
-	-Channel:
-		-> dividir Commands.cpp em um arquivo pra cada comando
-		-> consertar erros de comandos existentes
-		-> mode
-		-> kick
-		-> invite
+		-> terminar de testar com o Irssi
+		-> testar edge cases com irssi
+		-> log info no console do server
+		-> revisar logs de debug nas classes
 
 
+	finalizar:
+		-> README.md
+		-> apagar arquivos de teste
+		-> apagar pasta docs/
 
 
 

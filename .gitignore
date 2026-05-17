@@ -1,6 +1,6 @@
 .vscode/
 *.o
+tutorial_irssi.txt
 
 #binaries
 ircserv
-client

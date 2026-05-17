@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 17:19:43 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/07 20:46:38 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/17 00:27:47 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,10 @@ class Channel
 		std::set<int> _invited_clients;
 
 
-		std::string _channel_password;  // +k
-		bool _is_invite_only;  // +i
-		bool _is_topic_restricted;  // +t
-		int _user_limit;  // +l
+		std::string _channel_password;
+		bool _is_invite_only;
+		bool _is_topic_restricted;
+		int _user_limit;
 
 
 	public:
