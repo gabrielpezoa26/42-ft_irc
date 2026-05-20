@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/17 00:57:36 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/19 20:11:44 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,8 @@
 #include "Channel.hpp"
 #include "Commands.hpp"
 
+#define LOG_CONSOLE true
 #define DEBUG_SERVER false
-#define DEBUG_RECV true
-#define DEBUG_WRITE false
 
 class Server
 {

@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/17 00:53:24 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/19 21:28:08 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,9 @@ bool Server::_isValidPassword(const std::string &password)
 
 void Server::_closeFds()
 {
+	if (DEBUG_SERVER)
+		printDebug("Server-> _closeFds() called");
+
 	for (std::map<int, Client>::iterator it = _map_connected_clients.begin(); it != _map_connected_clients.end(); ++it)
 	{
 		if (it->first != -1)
@@ -160,6 +163,8 @@ void Server::setSocket()
 
 void Server::_prepareEvents()
 {
+	if (DEBUG_SERVER)
+		printDebug("Server-> _prepareEvents() called");
 	for (size_t i = 0; i < _vec_client_fds.size(); i++)
 	{
 		if (_vec_client_fds[i].fd == _server_socket_fd)
@@ -178,16 +183,19 @@ void Server::_prepareEvents()
 
 void Server::_handleClientWrite(int client_fd)
 {
+	if (DEBUG_SERVER)
+		printDebug("Server-> _handleClientWrite() called");
+
 	std::map<int, Client>::iterator it = _map_connected_clients.find(client_fd);
 	if (it != _map_connected_clients.end())
 	{
 		const std::string& message = it->second.getOutputBuffer();
-		if (DEBUG_WRITE)
+		if (LOG_CONSOLE)
 			std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] buffer='" << message << "'" << RESET <<std::endl;
 		
 		ssize_t bytes_sent = send(it->first, message.c_str(), message.length(), 0);
 
-		if (DEBUG_WRITE)
+		if (LOG_CONSOLE)
 			std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] bytes_sent=" << bytes_sent << RESET << std::endl;
 		if (bytes_sent > 0)
 			it->second.eraseOutputBuffer(bytes_sent);
@@ -246,10 +254,9 @@ void Server::run()
 	{
 		_prepareEvents();
 		int poll_result = poll(&_vec_client_fds[0], _vec_client_fds.size(), -1);
-		if (poll_result == -1 && Server::_continue_running == true)
-		{
+		if (poll_result == -1 && Server::_continue_running == true) 
 			throw std::runtime_error("Error while polling");
-		}
+
 		_processEvents();
 	}
 	_closeFds();
@@ -295,7 +302,7 @@ bool Server::_handleClientActivity(int client_fd)
 	memset(client_message, 0, sizeof(client_message));
 	ssize_t bytes_received = recv(client_fd, client_message, sizeof(client_message) - 1, 0);
 
-	if (DEBUG_RECV)
+	if (LOG_CONSOLE)
 	{
 		if (bytes_received > 0)
 		{
@@ -362,7 +369,6 @@ void Server::_splitCommand(const std::string& cmd, std::string& command, std::st
 	}
 }
 
-// TODO: revisar lógica
 void Server::_routeCommand(Client& client, const std::string& cmd)
 {
 	if (DEBUG_SERVER)

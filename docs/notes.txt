@@ -1,15 +1,12 @@
-atualizado 17/05/2026
+atualizado 19/05/2026
 
 próx afazeres:
 	geral:
-		-> terminar de testar com o Irssi
 		-> testar edge cases com irssi
-		-> log info no console do server
-		-> revisar logs de debug nas classes
+		-> README.md
 
 
 	finalizar:
-		-> README.md
 		-> apagar arquivos de teste
 		-> apagar pasta docs/
 

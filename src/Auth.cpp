@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 12:14:41 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/09 00:08:55 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/19 20:03:49 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 Auth::Auth(std::map<int, Client>& clients_map) : _existing_clients(clients_map) 
 {
 	if (DEBUG_AUTH)
+		
 		printDebug("Auth-> Default constructor called");
 }
 
@@ -91,6 +92,8 @@ bool Auth::_validateNickname(Client& client, const std::string& cmd) const
 
 bool Auth::_isValidParameterAmount(const std::string& cmd) const
 {
+	if (DEBUG_AUTH)
+		printDebug("Auth-> _isValidParameterAmount() called");
 	std::string::size_type pos = 0;
 	int parameter_count = 0;
 	while (pos < cmd.length() && parameter_count < 4)
@@ -116,6 +119,9 @@ bool Auth::_isValidParameterAmount(const std::string& cmd) const
 
 void Auth::_extractInfo(Client& client, const std::string& cmd) const
 {
+	if (DEBUG_AUTH)
+		printDebug("Auth-> _extractInfo() called");
+
 	std::string extracted_username = cmd.substr(0, cmd.find_first_of(' '));
 	std::string extracted_realname = "";
 	std::string::size_type colon_pos = cmd.find(':');
@@ -176,6 +182,8 @@ bool Auth::_validateUsername(Client& client, const std::string& cmd) const
 
 void Auth::_parseCommand(const std::string& cmd, std::string& command, std::string& args) const
 {
+	if (DEBUG_AUTH)
+		printDebug("Auth-> _parseCommand() called");
 	std::string clean_cmd = trim(cmd);
 	if (clean_cmd.empty())
 		return;
@@ -207,7 +215,7 @@ void Auth::_sendWelcomeMessage(Client& client) const
 void Auth::handleLogin(Client& client, const std::string& raw_line, const std::string& server_password)
 {
 	if (DEBUG_AUTH)
-	printDebug("Auth-> handleLogin() called");
+		printDebug("Auth-> handleLogin() called");
 
 	std::string command;
 	std::string args;

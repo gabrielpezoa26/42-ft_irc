@@ -6,31 +6,19 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 10:42:08 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/04/04 15:33:44 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/19 21:30:53 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/utils.hpp"
 
-void log(std::string message)
-{
-	std::cout << message << std::endl;
-}
+void log(std::string message) { std::cout << message << std::endl; }
 
-void logColor(std::string message, std::string color)
-{
-	std::cout << color << message << RESET << std::endl;
-}
+void logColor(std::string message, std::string color) { std::cout << color << message << RESET << std::endl; }
 
-void printDebug(std::string message)
-{
-	std::cout << PURPLE << message << RESET << std::endl;
-}
+void printDebug(std::string message) { std::cout << PURPLE << message << RESET << std::endl; }
 
-void printError(std::string message)
-{
-	std::cout << RED << message << RESET << std::endl;
-}
+void printError(std::string message) { std::cout << RED << message << RESET << std::endl; }
 
 void printCurrentTime()
 {

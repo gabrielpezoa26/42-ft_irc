@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/17 00:53:49 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/19 19:53:55 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ _has_set_password(other._has_set_password),
 _has_set_nickname(other._has_set_nickname),
 _has_set_username(other._has_set_username),
 _is_quitting(false)
-
 {
 	if (DEBUG_CLIENT)
 		printDebug("Client-> Copy constructor called");
@@ -70,6 +69,9 @@ Client& Client::operator=(const Client& other)
 /* ---------- Methods ---------- */
 std::string Client::fetchCommand()
 {
+	if (DEBUG_CLIENT)
+		printDebug("Client-> fetchCommand() called");
+
 	std::string::size_type pos = _input_buffer.find("\n");
 	if (pos == std::string::npos)
 		return "";

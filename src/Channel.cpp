@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 17:23:42 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/16 18:05:44 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/19 21:21:26 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,9 @@ Channel& Channel::operator=(const Channel& other)
 
 void Channel::addClient(Client* client)
 {
+	if (DEBUG_CHANNEL)
+		printDebug("Channel-> addClient() called");
+
 	if (client != NULL)
 	{
 		_map_connect_clients[client->getClientFd()] = client;
@@ -90,20 +93,24 @@ void Channel::addClient(Client* client)
 
 void Channel::removeClient(int client_fd)
 {
+	if (DEBUG_CHANNEL)
+		printDebug("Channel-> removeClient() called");
 	_map_connect_clients.erase(client_fd);
 	_channel_operators.erase(client_fd);
 	_invited_clients.erase(client_fd);
-	if (DEBUG_CHANNEL)
-		std::cout << "Channel-> Client removed (fd=" << client_fd << ")" << std::endl;
 }
 
 bool Channel::hasClient(int client_fd) const
 {
+	if (DEBUG_CHANNEL)
+		printDebug("Channel-> hasClient() called");
 	return _map_connect_clients.find(client_fd) != _map_connect_clients.end();
 }
 
 void Channel::broadcast(const std::string& message)
 {
+	if (DEBUG_CHANNEL)
+		printDebug("Channel-> broadcast() called");
 	for (std::map<int, Client*>::iterator it = _map_connect_clients.begin();
 		 it != _map_connect_clients.end(); ++it)
 	{
@@ -114,6 +121,8 @@ void Channel::broadcast(const std::string& message)
 
 void Channel::broadcastExcept(int sender_fd, const std::string& message)
 {
+	if (DEBUG_CHANNEL)
+		printDebug("Channel-> broadcastExcept() called");
 	for (std::map<int, Client*>::iterator it = _map_connect_clients.begin();
 		 it != _map_connect_clients.end(); ++it)
 	{
@@ -138,6 +147,8 @@ void Channel::setTopic(const std::string& topic) { _channel_topic = topic; }
 
 bool Channel::canChangeTopic(int client_fd) const
 {
+	if (DEBUG_CHANNEL)
+		printDebug("Channel-> canChangeTopic() called");
 	if (_is_topic_restricted && !this->isOperator(client_fd))
 		return false;
 	return true;
@@ -169,6 +180,8 @@ std::map<int, Client*> Channel::getClientsMap() const { return _map_connect_clie
 
 std::vector<std::string> Channel::getClientNicknames() const
 {
+	if (DEBUG_CHANNEL)
+		printDebug("Channel-> getClientNicknames() called");
 	std::vector<std::string> nicks;
 	for (std::map<int, Client*>::const_iterator it = _map_connect_clients.begin();
 		 it != _map_connect_clients.end(); ++it)
@@ -181,6 +194,8 @@ std::vector<std::string> Channel::getClientNicknames() const
 
 bool Channel::canJoin(Client* client, const std::string& password) const
 {
+	if (DEBUG_CHANNEL)
+		printDebug("Channel-> canJoin() called");
 	if (!client)
 		return false;
 
@@ -208,6 +223,8 @@ bool Channel::canJoin(Client* client, const std::string& password) const
 
 bool Channel::join(Client* client, const std::string& password)
 {
+	if (DEBUG_CHANNEL)
+		printDebug("Channel-> join() called");
 	if (!client)
 		return false;
 	if (!this->canJoin(client, password))
@@ -237,8 +254,7 @@ bool Channel::join(Client* client, const std::string& password)
 		client->appendOutputBuffer(no_topic_msg);
 	}
 
-	std::string names_msg = ":ft_irc 353 " + client->getNickname() + " = "
-		+ _channel_name + " :";
+	std::string names_msg = ":ft_irc 353 " + client->getNickname() + " = " + _channel_name + " :";
 	for (std::map<int, Client*>::iterator it = _map_connect_clients.begin();
 		 it != _map_connect_clients.end(); ++it)
 	{
@@ -256,6 +272,5 @@ bool Channel::join(Client* client, const std::string& password)
 	std::string eol_msg = ":ft_irc 366 " + client->getNickname()
 		+ " " + _channel_name + " :End of NAMES list\r\n";
 	client->appendOutputBuffer(eol_msg);
-
 	return true;
 }
