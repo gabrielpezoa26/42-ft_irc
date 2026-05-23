@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/08 23:31:13 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/16 15:55:41 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/22 22:18:01 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,11 @@ void Commands::handlePrivmsg(Client& client, const std::string& args)
 	}
 	target = trim(target);
 	std::string full_msg = ":" + client.getNickname() + "!" + client.getUsername() + "@127.0.0.1 PRIVMSG " + target + " :" + message + "\r\n";
+	
 	if (target[0] == '#')
 	{
 		std::map<std::string, Channel>::iterator it = _map_channels.find(target);
-		if (it == _map_channels.end() || !it->second.hasClient(client.getClientFd()))
+		if (it == _map_channels.end())
 			client.appendOutputBuffer(":ft_irc 404 " + client.getNickname() + " " + target + " :Cannot send to channel\r\n");
 		else
 			it->second.broadcastExcept(client.getClientFd(), full_msg);

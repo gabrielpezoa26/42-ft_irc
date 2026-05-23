@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/19 21:28:08 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/22 21:48:55 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -410,10 +410,10 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 		_command_handler.handleKick(client, args);
 	else if (command == "INVITE")
 		_command_handler.handleInvite(client, args);
-	else if (command == "WHOIS")
+	else if (command == "WHO")
 	{
-		client.appendOutputBuffer(":ft_irc 318 " + client.getNickname() 
-		+ " " + args + " :End of WHOIS list\r\n");
+		client.appendOutputBuffer(":ft_irc 315 " + client.getNickname()
+		+ " " + args + " :End of WHO list\r\n");
 	}
 	else
 	{
@@ -422,31 +422,34 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 		log("Unknown command received: " + command);
 	}
 }
-
 void Server::_disconnectClient(int client_fd)
 {
 	if (DEBUG_SERVER)
 		printDebug("Server-> _disconnectClient() called");
 
-	std::cout << "Client <" << client_fd << "> disconnected" << std::endl;
+	std::map<int, Client>::iterator client_it = _map_connected_clients.find(client_fd);
+	std::string nick = "unknown";
+	if (client_it != _map_connected_clients.end())
+		nick = client_it->second.getNickname();
+	std::cout << "Client disconnected: fd=" << client_fd << " nick=" << nick << std::endl;
 	close(client_fd);
 	_map_connected_clients.erase(client_fd);
 	for (std::map<std::string, Channel>::iterator it = _map_channels.begin();
-		 it != _map_channels.end(); ++it)
+		 it != _map_channels.end();)
 	{
 		if (it->second.hasClient(client_fd))
 		{
 			it->second.removeClient(client_fd);
 			if (it->second.isClientMapEmpty())
 			{
-				_map_channels.erase(it);
-				it = _map_channels.begin();
-				if (it == _map_channels.end())
-					break;
+				_map_channels.erase(it++);
+				continue;
 			}
+			it->second.promoteNextOperator();
 		}
+		++it;
 	}
-	for (std::vector<struct pollfd>::iterator poll_it = _vec_client_fds.begin(); 
+	for (std::vector<struct pollfd>::iterator poll_it = _vec_client_fds.begin();
 		 poll_it != _vec_client_fds.end(); ++poll_it)
 	{
 		if (poll_it->fd == client_fd)

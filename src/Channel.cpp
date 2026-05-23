@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 17:23:42 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/19 21:21:26 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/22 21:38:17 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,4 +273,17 @@ bool Channel::join(Client* client, const std::string& password)
 		+ " " + _channel_name + " :End of NAMES list\r\n";
 	client->appendOutputBuffer(eol_msg);
 	return true;
+}
+
+void Channel::promoteNextOperator()
+{
+	if (!_channel_operators.empty())
+		return;
+	if (_map_connect_clients.empty())
+		return;
+	int new_operator_fd = _map_connect_clients.begin()->first;
+	_channel_operators.insert(new_operator_fd);
+	std::string new_operator_nick = _map_connect_clients.begin()->second->getNickname();
+	std::string mode_msg = ":ft_irc MODE " + _channel_name + " +o " + new_operator_nick + "\r\n";
+	broadcast(mode_msg);
 }

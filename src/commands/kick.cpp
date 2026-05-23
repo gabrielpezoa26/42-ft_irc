@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/08 23:29:15 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/16 15:54:57 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/22 21:40:19 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,9 +91,10 @@ void Commands::handleKick(Client& client, const std::string& args)
 	std::string kick_msg = ":" + client.getNickname() + "!" + client.getUsername() + "@127.0.0.1 KICK " + channel_name + " " + target_user + " :" + reason + "\r\n";
 	channel.broadcast(kick_msg);
 	channel.removeClient(target_fd);
-
 	if (channel.isClientMapEmpty())
 	{
 		_map_channels.erase(it);
+		return;
 	}
+	channel.promoteNextOperator();
 }

@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 17:19:43 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/19 19:49:37 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/22 20:44:15 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ class Channel
 		bool getTopicRestricted() const;
 		void setUserLimit(int limit);
 		int getUserLimit() const;
+		void promoteNextOperator();
 
 		std::string getChannelName() const;
 		size_t getClientCount() const;

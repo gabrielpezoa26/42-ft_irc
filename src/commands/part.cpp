@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/08 23:29:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/17 00:28:22 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/22 21:39:49 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,5 +37,9 @@ void Commands::handlePart(Client& client, const std::string& args)
 	channel.broadcast(part_msg);
 	channel.removeClient(client.getClientFd());
 	if (channel.isClientMapEmpty())
+	{
 		_map_channels.erase(it);
+		return;
+	}
+	channel.promoteNextOperator();
 }

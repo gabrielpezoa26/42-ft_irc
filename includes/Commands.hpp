@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:22:54 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/11 18:06:56 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/22 20:33:58 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,6 @@ class Commands
 		void handlePart(Client& client, const std::string& args);
 		void handleTopic(Client& client, const std::string& args);
 		void handleInvite(Client& client, const std::string& args);
-
-
-
 };
 
 #endif

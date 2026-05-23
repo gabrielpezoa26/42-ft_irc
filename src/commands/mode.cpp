@@ -6,11 +6,19 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/08 23:34:11 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/17 00:08:26 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/22 23:03:27 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Commands.hpp"
+
+static bool _isValidModeChar(char x)
+{
+	if (x == 'I' || x == 'T' || x == 'K' || x == 'O' || x == 'L')
+		return true;
+	else
+		return false;
+}
 
 static int getTargetFd(Channel& channel, const std::string& target_user)
 {
@@ -49,9 +57,20 @@ static void _applyModeO(Client& client, Channel& channel, bool add_mode, const s
 
 static void _applyModeL(Channel& channel, bool add_mode, const std::string& mode_args)
 {
-	if (add_mode && !mode_args.empty())
-		channel.setUserLimit(atoi(mode_args.c_str()));
-	else if (!add_mode)
+	if (add_mode)
+	{
+		if (mode_args.empty())
+			return;
+		for (size_t i = 0; i < mode_args.length(); i++)
+		{
+			if (!isdigit(mode_args[i]))
+				return;
+		}
+		int limit = atoi(mode_args.c_str());
+		if (limit > 0)
+			channel.setUserLimit(limit);
+	}
+	else
 		channel.setUserLimit(-1);
 }
 
@@ -71,6 +90,8 @@ static void _applyModes(Client& client, Channel& channel, const std::string& mod
 			add_mode = false;
 			continue;
 		}
+		if (!_isValidModeChar(mode))
+			continue;
 		if (mode == 'i')
 			channel.setInviteOnly(add_mode);
 		else if (mode == 't')
