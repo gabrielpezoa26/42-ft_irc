@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/08 23:34:11 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/22 23:03:27 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/22 23:06:32 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static bool _isValidModeChar(char x)
 {
-	if (x == 'I' || x == 'T' || x == 'K' || x == 'O' || x == 'L')
+	if (x == 'i' || x == 't' || x == 'k' || x == 'o' || x == 'l')
 		return true;
 	else
 		return false;
@@ -31,52 +31,79 @@ static int getTargetFd(Channel& channel, const std::string& target_user)
 	return -1;
 }
 
-static void _applyModeK(Channel& channel, bool add_mode, const std::string& mode_args)
+static bool _applyModeK(Client& client, Channel& channel, bool add_mode, const std::string& mode_args)
 {
-	if (add_mode && !mode_args.empty())
+	if (add_mode)
+	{
+		if (mode_args.empty())
+		{
+			client.appendOutputBuffer(":ft_irc 461 " + client.getNickname() + " MODE :Not enough parameters\r\n");
+			return false;
+		}
 		channel.setPassword(mode_args);
-	else if (!add_mode)
+		return true;
+	}
+	else
+	{
 		channel.setPassword("");
+		return true;
+	}
 }
 
-static void _applyModeO(Client& client, Channel& channel, bool add_mode, const std::string& mode_args)
+static bool _applyModeO(Client& client, Channel& channel, bool add_mode, const std::string& mode_args)
 {
 	if (mode_args.empty())
-		return;
+	{
+		client.appendOutputBuffer(":ft_irc 461 " + client.getNickname() + " MODE :Not enough parameters\r\n");
+		return false;
+	}
 	int target_fd = getTargetFd(channel, mode_args);
 	if (target_fd == -1)
 	{
 		client.appendOutputBuffer(":ft_irc 441 " + client.getNickname() + " " + mode_args + " " + channel.getChannelName() + " :They aren't on that channel\r\n");
-		return;
+		return false;
 	}
 	if (add_mode)
 		channel.setOperator(target_fd);
 	else
 		channel.removeOperator(target_fd);
+	return true;
 }
 
-static void _applyModeL(Channel& channel, bool add_mode, const std::string& mode_args)
+static bool _applyModeL(Client& client, Channel& channel, bool add_mode, const std::string& mode_args)
 {
 	if (add_mode)
 	{
 		if (mode_args.empty())
-			return;
+		{
+			client.appendOutputBuffer(":ft_irc 461 " + client.getNickname() + " MODE :Not enough parameters\r\n");
+			return false;
+		}
 		for (size_t i = 0; i < mode_args.length(); i++)
 		{
 			if (!isdigit(mode_args[i]))
-				return;
+				return false;
 		}
 		int limit = atoi(mode_args.c_str());
 		if (limit > 0)
+		{
 			channel.setUserLimit(limit);
+			return true;
+		}
+		return false;
 	}
 	else
+	{
 		channel.setUserLimit(-1);
+		return true;
+	}
 }
 
-static void _applyModes(Client& client, Channel& channel, const std::string& mode_string, const std::string& mode_args)
+static bool _applyModes(Client& client, Channel& channel, const std::string& mode_string, const std::string& mode_args)
 {
 	bool add_mode = true;
+	bool state_changed = false;
+	
 	for (size_t i = 0; i < mode_string.length(); i++)
 	{
 		char mode = mode_string[i];
@@ -92,17 +119,34 @@ static void _applyModes(Client& client, Channel& channel, const std::string& mod
 		}
 		if (!_isValidModeChar(mode))
 			continue;
+			
 		if (mode == 'i')
+		{
 			channel.setInviteOnly(add_mode);
+			state_changed = true;
+		}
 		else if (mode == 't')
+		{
 			channel.setTopicRestricted(add_mode);
+			state_changed = true;
+		}
 		else if (mode == 'k')
-			_applyModeK(channel, add_mode, mode_args);
+		{
+			if (_applyModeK(client, channel, add_mode, mode_args))
+				state_changed = true;
+		}
 		else if (mode == 'o')
-			_applyModeO(client, channel, add_mode, mode_args);
+		{
+			if (_applyModeO(client, channel, add_mode, mode_args))
+				state_changed = true;
+		}
 		else if (mode == 'l')
-			_applyModeL(channel, add_mode, mode_args);
+		{
+			if (_applyModeL(client, channel, add_mode, mode_args))
+				state_changed = true;
+		}
 	}
+	return state_changed;
 }
 
 static void _parseModeArgs(const std::string& args, std::string& target, std::string& mode_string, std::string& mode_args)
@@ -177,11 +221,14 @@ void Commands::handleMode(Client& client, const std::string& args)
 		client.appendOutputBuffer(":ft_irc 482 " + client.getNickname() + " " + target + " :You're not channel operator\r\n");
 		return;
 	}
-	_applyModes(client, channel, mode_string, mode_args);
-	std::string mode_msg = ":" + client.getNickname() + "!" + client.getUsername()
-		+ "@127.0.0.1 MODE " + target + " " + mode_string;
-	if (!mode_args.empty())
-		mode_msg += " " + mode_args;
-	mode_msg += "\r\n";
-	channel.broadcast(mode_msg);
+	
+	if (_applyModes(client, channel, mode_string, mode_args))
+	{
+		std::string mode_msg = ":" + client.getNickname() + "!" + client.getUsername()
+			+ "@127.0.0.1 MODE " + target + " " + mode_string;
+		if (!mode_args.empty())
+			mode_msg += " " + mode_args;
+		mode_msg += "\r\n";
+		channel.broadcast(mode_msg);
+	}
 }

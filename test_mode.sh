@@ -43,9 +43,7 @@ else
 fi
 
 # 1.3 MODE by non-operator
-# out=$(irc_cmd "PASS $PASS\r\nNICK m_creator\r\nUSER m 0 * :m\r\nJOIN #opchan\r\n" 0.5)
-out=$(irc_cmd "PASS $PASS\r\nNICK m_creator\r\nUSER m 0 * :m\r\nJOIN #opchan\r\n" 1)
-out=$(irc_cmd "PASS $PASS\r\nNICK m_guest\r\nUSER m 0 * :m\r\nJOIN #opchan\r\nMODE #opchan +i")
+out=$(irc_cmd "PASS $PASS\r\nNICK m_guest\r\nUSER m 0 * :m\r\nJOIN #opchan\r\nMODE #opchan -o m_guest\r\nMODE #opchan +i")
 if echo "$out" | grep -q "482"; then
     pass "MODE by non-operator → error 482 (ERR_CHANOPRIVSNEEDED)"
 else
@@ -54,10 +52,10 @@ fi
 
 # 1.4 Case Sensitivity (Upper vs Lowercase flags)
 out=$(irc_cmd "PASS $PASS\r\nNICK m_case\r\nUSER m 0 * :m\r\nJOIN #casechan\r\nMODE #casechan +K secret")
-if echo "$out" | grep -q "+K"; then
-    pass "MODE +K (Uppercase) → parsed accurately without converting to +k"
+if ! echo "$out" | grep -q "+k"; then
+    pass "MODE +K (Uppercase) → ignored safely without converting to +k"
 else
-    fail "MODE +K → server should preserve exact casing" "$out"
+    fail "MODE +K → server should not convert to +k" "$out"
 fi
 
 # ---------- TOPIC 2: MODE i & t (Invite-Only & Topic) ----------
