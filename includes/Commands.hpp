@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:22:54 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/22 20:33:58 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/24 00:12:35 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ class Commands
 		~Commands();
  
 		bool routeJoin(Client* client, const std::string& channel_name, const std::string& password);
-
 		void handleJoin(Client& client, const std::string& args);
 		void handlePrivmsg(Client& client, const std::string& args);
 		void handleQuit(Client& client, const std::string& args);

@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/22 21:48:55 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/24 00:12:44 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -422,6 +422,7 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 		log("Unknown command received: " + command);
 	}
 }
+
 void Server::_disconnectClient(int client_fd)
 {
 	if (DEBUG_SERVER)

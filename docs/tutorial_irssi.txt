@@ -1,0 +1,86 @@
+rodar servidor
+    ./ircserv <porta> <senha_definida>
+
+
+conectar dois clients:
+    roda 'irssi' em outros 2 terminais
+    /connect 127.0.0.1 4444 senha123
+    no primeiro roda /nick <nome1>
+    no outro roda /nick <nome2>
+
+JOIN
+    nick1: /join #test
+    nick2  /join #test
+
+PRIVMSG
+    nick1: /msg #test hello everyone
+    Expected: nick2 sees the message. nick1 does NOT receive his own.
+
+    // Private message
+    nick1: /msg nick2 hello friend
+    Expected: nick2 receives the message in a private window. nick1 sees it was sent.
+
+    // Reply back
+    nick2: /msg nick1 hey friend
+    Expected: nick1 receives it in his private window.
+
+--- TOPIC ---
+    // Set topic (nick1 is operator)
+    nick1: /topic #test welcome to the test channel
+    Expected: nick2 sees the topic change notification in #test.
+
+    // View topic
+    nick2: /topic #test
+    Expected: nick2 sees "welcome to the test channel" as the current topic.
+
+    // Change topic
+    nick1: /topic #test new topic now
+    Expected: both clients see the updated topic.
+
+--- MODE ---
+    // +i / -i — invite only
+    nick1: /mode #test +i
+    Expected: mode change visible in #test for both clients.
+    nick1: /mode #test -i
+    Expected: channel is open again.
+
+    // +k / -k — channel password
+    nick1: /mode #test +k secret
+    Expected: mode change visible. channel now requires password "secret" to join.
+    nick1: /mode #test -k
+    Expected: password removed.
+
+    // +l / -l — user limit
+    nick1: /mode #test +l 5
+    Expected: mode change visible. channel now has a max of 5 users.
+    nick1: /mode #test -l
+    Expected: limit removed.
+
+    // +t / -t — topic restricted to operators
+    nick1: /mode #test +t
+    Expected: mode change visible. only operators can change topic now.
+    nick1: /mode #test -t
+    Expected: anyone in channel can change topic again.
+
+    // +o / -o — operator privilege
+    nick1: /mode #test +o nick2
+    Expected: nick2 gets @ prefix in the channel NAMES list.
+    nick1: /mode #test -o nick2
+    Expected: nick2 loses @ prefix.
+
+--- KICK ---
+    nick1: /kick #test nick2
+    Expected: nick2 is removed from #test and sees a KICK message.
+
+--- INVITE ---
+    nick1: /mode #test +i
+    nick1: /invite nick2 #test
+    Expected: nick1 sees invite confirmation. nick2 receives an invite notification.
+    nick2:     /join #test
+    Expected: nick2 joins successfully despite +i being set.
+
+--- PART / QUIT ---
+    nick1: /part #test
+    Expected: nick2 sees nick1 leave #test.
+    nick2:     /quit
+    Expected: server closes connection cleanly.
