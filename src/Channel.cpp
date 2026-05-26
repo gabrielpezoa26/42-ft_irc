@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 17:23:42 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/22 21:38:17 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/25 21:44:07 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ _user_limit(-1)
 Channel::Channel(const Channel& other)
 : _channel_name(other._channel_name),
 _channel_topic(other._channel_topic),
-_map_connect_clients(other._map_connect_clients),
-_channel_operators(other._channel_operators),
-_invited_clients(other._invited_clients),
+_map_connected_clients(other._map_connected_clients),
+_set_channel_operators(other._set_channel_operators),
+_set_invited_clients(other._set_invited_clients),
 _channel_password(other._channel_password),
 _is_invite_only(other._is_invite_only),
 _is_topic_restricted(other._is_topic_restricted),
@@ -55,9 +55,9 @@ Channel::~Channel()
 {
 	if (DEBUG_CHANNEL)
 		printDebug("Channel-> Destructor called");
-	_map_connect_clients.clear();
-	_channel_operators.clear();
-	_invited_clients.clear();
+	_map_connected_clients.clear();
+	_set_channel_operators.clear();
+	_set_invited_clients.clear();
 }
 
 Channel& Channel::operator=(const Channel& other)
@@ -69,9 +69,9 @@ Channel& Channel::operator=(const Channel& other)
 	{
 		_channel_name = other._channel_name;
 		_channel_topic = other._channel_topic;
-		_map_connect_clients = other._map_connect_clients;
-		_channel_operators = other._channel_operators;
-		_invited_clients = other._invited_clients;
+		_map_connected_clients = other._map_connected_clients;
+		_set_channel_operators = other._set_channel_operators;
+		_set_invited_clients = other._set_invited_clients;
 		_channel_password = other._channel_password;
 		_is_invite_only = other._is_invite_only;
 		_is_topic_restricted = other._is_topic_restricted;
@@ -87,7 +87,7 @@ void Channel::addClient(Client* client)
 
 	if (client != NULL)
 	{
-		_map_connect_clients[client->getClientFd()] = client;
+		_map_connected_clients[client->getClientFd()] = client;
 	}
 }
 
@@ -95,24 +95,28 @@ void Channel::removeClient(int client_fd)
 {
 	if (DEBUG_CHANNEL)
 		printDebug("Channel-> removeClient() called");
-	_map_connect_clients.erase(client_fd);
-	_channel_operators.erase(client_fd);
-	_invited_clients.erase(client_fd);
+	_map_connected_clients.erase(client_fd);
+	_set_channel_operators.erase(client_fd);
+	_set_invited_clients.erase(client_fd);
 }
 
 bool Channel::hasClient(int client_fd) const
 {
 	if (DEBUG_CHANNEL)
 		printDebug("Channel-> hasClient() called");
-	return _map_connect_clients.find(client_fd) != _map_connect_clients.end();
+
+	if (_map_connected_clients.find(client_fd) != _map_connected_clients.end())
+		return true;
+	else
+		return false;
 }
 
 void Channel::broadcast(const std::string& message)
 {
 	if (DEBUG_CHANNEL)
 		printDebug("Channel-> broadcast() called");
-	for (std::map<int, Client*>::iterator it = _map_connect_clients.begin();
-		 it != _map_connect_clients.end(); ++it)
+	for (std::map<int, Client*>::iterator it = _map_connected_clients.begin();
+		 it != _map_connected_clients.end(); ++it)
 	{
 		if (it->second)
 			it->second->appendOutputBuffer(message);
@@ -123,23 +127,23 @@ void Channel::broadcastExcept(int sender_fd, const std::string& message)
 {
 	if (DEBUG_CHANNEL)
 		printDebug("Channel-> broadcastExcept() called");
-	for (std::map<int, Client*>::iterator it = _map_connect_clients.begin();
-		 it != _map_connect_clients.end(); ++it)
+	for (std::map<int, Client*>::iterator it = _map_connected_clients.begin();
+		 it != _map_connected_clients.end(); ++it)
 	{
 		if (it->first != sender_fd && it->second)
 			it->second->appendOutputBuffer(message);
 	}
 }
 
-void Channel::setOperator(int client_fd) { _channel_operators.insert(client_fd); }
+void Channel::setOperator(int client_fd) { _set_channel_operators.insert(client_fd); }
 
-bool Channel::isOperator(int client_fd) const { return _channel_operators.find(client_fd) != _channel_operators.end(); }
+bool Channel::isOperator(int client_fd) const { return _set_channel_operators.find(client_fd) != _set_channel_operators.end(); }
 
-void Channel::removeOperator(int client_fd) { _channel_operators.erase(client_fd); }
+void Channel::removeOperator(int client_fd) { _set_channel_operators.erase(client_fd); }
 
-void Channel::inviteClient(int client_fd) { _invited_clients.insert(client_fd); }
+void Channel::inviteClient(int client_fd) { _set_invited_clients.insert(client_fd); }
 
-bool Channel::isInvited(int client_fd) const { return _invited_clients.find(client_fd) != _invited_clients.end(); }
+bool Channel::isInvited(int client_fd) const { return _set_invited_clients.find(client_fd) != _set_invited_clients.end(); }
 
 std::string Channel::getTopic() const { return _channel_topic; }
 
@@ -172,24 +176,24 @@ int Channel::getUserLimit() const { return _user_limit; }
 
 std::string Channel::getChannelName() const { return _channel_name; }
 
-size_t Channel::getClientCount() const { return _map_connect_clients.size(); }
+size_t Channel::getClientCount() const { return _map_connected_clients.size(); }
 
-bool Channel::isClientMapEmpty() const { return _map_connect_clients.empty(); }
+bool Channel::isClientMapEmpty() const { return _map_connected_clients.empty(); }
 
-std::map<int, Client*> Channel::getClientsMap() const { return _map_connect_clients; }
+std::map<int, Client*> Channel::getClientsMap() const { return _map_connected_clients; }
 
 std::vector<std::string> Channel::getClientNicknames() const
 {
 	if (DEBUG_CHANNEL)
 		printDebug("Channel-> getClientNicknames() called");
-	std::vector<std::string> nicks;
-	for (std::map<int, Client*>::const_iterator it = _map_connect_clients.begin();
-		 it != _map_connect_clients.end(); ++it)
+	std::vector<std::string> client_nicknames;
+	for (std::map<int, Client*>::const_iterator it = _map_connected_clients.begin();
+		 it != _map_connected_clients.end(); ++it)
 	{
 		if (it->second)
-			nicks.push_back(it->second->getNickname());
+			client_nicknames.push_back(it->second->getNickname());
 	}
-	return nicks;
+	return client_nicknames;
 }
 
 bool Channel::canJoin(Client* client, const std::string& password) const
@@ -204,7 +208,7 @@ bool Channel::canJoin(Client* client, const std::string& password) const
 
 	if (this->isInvited(client->getClientFd()))
 	{
-		if (_user_limit > 0 && (int)_map_connect_clients.size() >= _user_limit)
+		if (_user_limit > 0 && (int)_map_connected_clients.size() >= _user_limit)
 			return false;
 		return true;
 	}
@@ -215,7 +219,7 @@ bool Channel::canJoin(Client* client, const std::string& password) const
 	if (!_channel_password.empty() && _channel_password != password)
 		return false;
 
-	if (_user_limit > 0 && (int)_map_connect_clients.size() >= _user_limit)
+	if (_user_limit > 0 && (int)_map_connected_clients.size() >= _user_limit)
 		return false;
 
 	return true;
@@ -231,10 +235,10 @@ bool Channel::join(Client* client, const std::string& password)
 		return false;
 
 	if (this->isInvited(client->getClientFd()))
-		_invited_clients.erase(client->getClientFd());
+		_set_invited_clients.erase(client->getClientFd());
 
 	this->addClient(client);
-	if (_map_connect_clients.size() == 1)
+	if (_map_connected_clients.size() == 1)
 		this->setOperator(client->getClientFd());
 
 	std::string join_msg = ":" + client->getNickname() + "!" + client->getUsername()
@@ -255,15 +259,15 @@ bool Channel::join(Client* client, const std::string& password)
 	}
 
 	std::string names_msg = ":ft_irc 353 " + client->getNickname() + " = " + _channel_name + " :";
-	for (std::map<int, Client*>::iterator it = _map_connect_clients.begin();
-		 it != _map_connect_clients.end(); ++it)
+	for (std::map<int, Client*>::iterator it = _map_connected_clients.begin();
+		 it != _map_connected_clients.end(); ++it)
 	{
 		if (this->isOperator(it->first))
 			names_msg += "@";
 		names_msg += it->second->getNickname();
 		std::map<int, Client*>::iterator next = it;
 		++next;
-		if (next != _map_connect_clients.end())
+		if (next != _map_connected_clients.end())
 			names_msg += " ";
 	}
 	names_msg += "\r\n";
@@ -277,13 +281,13 @@ bool Channel::join(Client* client, const std::string& password)
 
 void Channel::promoteNextOperator()
 {
-	if (!_channel_operators.empty())
+	if (!_set_channel_operators.empty())
 		return;
-	if (_map_connect_clients.empty())
+	if (_map_connected_clients.empty())
 		return;
-	int new_operator_fd = _map_connect_clients.begin()->first;
-	_channel_operators.insert(new_operator_fd);
-	std::string new_operator_nick = _map_connect_clients.begin()->second->getNickname();
+	int new_operator_fd = _map_connected_clients.begin()->first;
+	_set_channel_operators.insert(new_operator_fd);
+	std::string new_operator_nick = _map_connected_clients.begin()->second->getNickname();
 	std::string mode_msg = ":ft_irc MODE " + _channel_name + " +o " + new_operator_nick + "\r\n";
 	broadcast(mode_msg);
 }

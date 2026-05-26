@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/24 00:12:44 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/25 22:16:46 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,6 +161,24 @@ void Server::setSocket()
 	_vec_client_fds.push_back(_new_client_poll);
 }
 
+void Server::run()
+{
+	if (DEBUG_SERVER)
+		printDebug("Server-> run() called");
+	
+	printCurrentTime();
+	setupSignals();
+	while (_continue_running)
+	{
+		_prepareEvents();
+		int poll_result = poll(&_vec_client_fds[0], _vec_client_fds.size(), -1);
+		if (poll_result == -1 && Server::_continue_running == true) 
+			throw std::runtime_error("Error while polling");
+		_processEvents();
+	}
+	_closeFds();
+}
+
 void Server::_prepareEvents()
 {
 	if (DEBUG_SERVER)
@@ -181,85 +199,79 @@ void Server::_prepareEvents()
 	}
 }
 
-void Server::_handleClientWrite(int client_fd)
-{
-	if (DEBUG_SERVER)
-		printDebug("Server-> _handleClientWrite() called");
-
-	std::map<int, Client>::iterator it = _map_connected_clients.find(client_fd);
-	if (it != _map_connected_clients.end())
-	{
-		const std::string& message = it->second.getOutputBuffer();
-		if (LOG_CONSOLE)
-			std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] buffer='" << message << "'" << RESET <<std::endl;
-		
-		ssize_t bytes_sent = send(it->first, message.c_str(), message.length(), 0);
-
-		if (LOG_CONSOLE)
-			std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] bytes_sent=" << bytes_sent << RESET << std::endl;
-		if (bytes_sent > 0)
-			it->second.eraseOutputBuffer(bytes_sent);
-		else if (bytes_sent == -1)
-			printError("Failed to send data");
-	}
-}
-
 void Server::_processEvents()
 {
 	if (DEBUG_SERVER)
 		printDebug("Server-> _processEvents() called");
-	for (size_t i = 0; i < _vec_client_fds.size(); i++)
+
+	//monitors network events
+	for (size_t index = 0; index < _vec_client_fds.size(); index++)
 	{
-		if (_vec_client_fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+		//check if socket connection was dropped, error, or invalid
+		if (_vec_client_fds[index].revents & (POLLHUP | POLLERR | POLLNVAL))
 		{
-			_disconnectClient(_vec_client_fds[i].fd);
-			i--;
+			_disconnectClient(_vec_client_fds[index].fd);
+			index--;
 			continue;
 		}
-		if (_vec_client_fds[i].revents & POLLIN)
+		// detects incoming data on socket
+		if (_vec_client_fds[index].revents & POLLIN)
 		{
-			if (_vec_client_fds[i].fd == _server_socket_fd)
+			if (_vec_client_fds[index].fd == _server_socket_fd)
 				_handleNewConnection();
 			else
 			{
-				if (!_handleClientActivity(_vec_client_fds[i].fd))
+				// processes regular activity 
+				if (!_handleClientActivity(_vec_client_fds[index].fd))
 				{
-					i--;
+					index--;
 					continue;
 				}
 			}
 		}
-		if (i < _vec_client_fds.size() && (_vec_client_fds[i].revents & POLLOUT))
+		//confirms vector size and socket state
+		if (index < _vec_client_fds.size() && (_vec_client_fds[index].revents & POLLOUT))
 		{
-			_handleClientWrite(_vec_client_fds[i].fd);
-			std::map<int, Client>::iterator it = _map_connected_clients.find(_vec_client_fds[i].fd);
+			_handleClientWrite(_vec_client_fds[index].fd);
+
+			//checks state post write
+			std::map<int, Client>::iterator it = _map_connected_clients.find(_vec_client_fds[index].fd);
 			if (it != _map_connected_clients.end() && it->second.getIsQuitting() && it->second.getOutputBuffer().empty())
 			{
-				_disconnectClient(_vec_client_fds[i].fd);
-				i--;
+				_disconnectClient(_vec_client_fds[index].fd);
+				index--;
 				continue;
 			}
 		}
 	}
 }
 
-void Server::run()
+void Server::_handleClientWrite(int client_fd)
 {
 	if (DEBUG_SERVER)
-		printDebug("Server-> run() called");
-	
-	printCurrentTime();
-	setupSignals();
-	while (_continue_running)
-	{
-		_prepareEvents();
-		int poll_result = poll(&_vec_client_fds[0], _vec_client_fds.size(), -1);
-		if (poll_result == -1 && Server::_continue_running == true) 
-			throw std::runtime_error("Error while polling");
+		printDebug("Server-> _handleClientWrite() called");
 
-		_processEvents();
+	// searches for the specific client
+	std::map<int, Client>::iterator it = _map_connected_clients.find(client_fd);
+
+	if (it != _map_connected_clients.end())
+	{
+		// Retrieves the pending data that needs to be sent to this specific client
+		const std::string& message = it->second.getOutputBuffer();
+		if (LOG_CONSOLE)
+			std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] buffer='" << message << "'" << RESET <<std::endl;
+		
+		// sends the message through the socket
+		ssize_t bytes_sent = send(it->first, message.c_str(), message.length(), 0);
+
+		if (LOG_CONSOLE)
+			std::cout << PURPLE << "DEBUG WRITE [fd=" << client_fd << "] bytes_sent=" << bytes_sent << RESET << std::endl;
+		//confirms data was sent with success
+		if (bytes_sent > 0)
+			it->second.eraseOutputBuffer(bytes_sent);
+		else if (bytes_sent == -1)
+			printError("Failed to send data");
 	}
-	_closeFds();
 }
 
 void Server::_handleNewConnection()
@@ -298,6 +310,7 @@ bool Server::_handleClientActivity(int client_fd)
 {
 	if (DEBUG_SERVER)
 		printDebug("Server-> _handleClientActivity() called");
+
 	char client_message[1024];
 	memset(client_message, 0, sizeof(client_message));
 	ssize_t bytes_received = recv(client_fd, client_message, sizeof(client_message) - 1, 0);
@@ -320,6 +333,7 @@ bool Server::_handleClientActivity(int client_fd)
 			std::cerr << std::endl;
 		}
 	}
+	// client graceful disconnect or network error
 	if (bytes_received <= 0)
 	{
 		if (bytes_received != 0)
@@ -327,19 +341,24 @@ bool Server::_handleClientActivity(int client_fd)
 		_disconnectClient(client_fd);
 		return false;
 	}
+
 	std::string new_data(client_message, bytes_received);
 	std::map<int, Client>::iterator it = _map_connected_clients.find(client_fd);
 	if (it == _map_connected_clients.end())
 		return false;
+
+	// handles tcp fragmentation
 	it->second.appendInputBuffer(new_data);
 	while (true)
 	{
 		it = _map_connected_clients.find(client_fd);
 		if (it == _map_connected_clients.end())
 			return false;
+
 		std::string extracted_cmd = it->second.fetchCommand();
 		if (extracted_cmd.empty())
 			break;
+
 		_routeCommand(it->second, extracted_cmd);
 	}
 	return true;

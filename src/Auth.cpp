@@ -6,13 +6,13 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 12:14:41 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/19 20:03:49 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/25 22:15:14 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
 
-Auth::Auth(std::map<int, Client>& clients_map) : _existing_clients(clients_map) 
+Auth::Auth(std::map<int, Client>& clients_map) : _map_existing_clients(clients_map) 
 {
 	if (DEBUG_AUTH)
 		
@@ -70,7 +70,7 @@ bool Auth::_validateNickname(Client& client, const std::string& cmd) const
 		}
 	}
 	std::map<int, Client>::const_iterator it;
-	for (it = _existing_clients.begin(); it != _existing_clients.end(); ++it)
+	for (it = _map_existing_clients.begin(); it != _map_existing_clients.end(); ++it)
 	{
 		if (it->first != client.getClientFd() && it->second.getNickname() == cmd)
 		{

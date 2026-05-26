@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 17:19:43 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/22 20:44:15 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/25 20:29:27 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ class Channel
 	private:
 		std::string _channel_name;
 		std::string _channel_topic;
-		std::map<int, Client*> _map_connect_clients;
-		std::set<int> _channel_operators;
-		std::set<int> _invited_clients;
+		std::map<int, Client*> _map_connected_clients;
+		std::set<int> _set_channel_operators;
+		std::set<int> _set_invited_clients;
 
 
 		std::string _channel_password;
