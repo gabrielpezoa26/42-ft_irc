@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/25 22:16:46 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/05/29 18:49:27 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -431,8 +431,11 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 		_command_handler.handleInvite(client, args);
 	else if (command == "WHO")
 	{
-		client.appendOutputBuffer(":ft_irc 315 " + client.getNickname()
-		+ " " + args + " :End of WHO list\r\n");
+		client.appendOutputBuffer(":ft_irc 315 " + client.getNickname() + " " + args + " :End of WHO list\r\n");
+	}
+	else if (command == "WHOIS")
+	{
+		client.appendOutputBuffer(":ft_irc 318 " + client.getNickname() + " " + args + " :End of WHOIS list\r\n");
 	}
 	else
 	{
