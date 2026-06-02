@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 18:20:55 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/19 19:53:55 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/06/02 19:28:05 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ std::string Client::fetchCommand()
 
 	return result;
 }
+
 void Client::appendInputBuffer(const std::string &in_to_append)
 {
 	if (DEBUG_CLIENT)
