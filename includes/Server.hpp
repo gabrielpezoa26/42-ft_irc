@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/19 20:11:44 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/06/02 19:51:10 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ class Server
 		void _prepareEvents();
 		void _handleClientWrite(int client_fd);
 		void _processEvents();
-		void _closeFds();
+		void _shutdownServer();
 
 
 	public:

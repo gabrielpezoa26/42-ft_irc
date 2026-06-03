@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/29 18:49:27 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/06/02 23:11:07 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,23 +80,6 @@ bool Server::_isValidPassword(const std::string &password)
 			return false;
 	}
 	return true;
-}
-
-void Server::_closeFds()
-{
-	if (DEBUG_SERVER)
-		printDebug("Server-> _closeFds() called");
-
-	for (std::map<int, Client>::iterator it = _map_connected_clients.begin(); it != _map_connected_clients.end(); ++it)
-	{
-		if (it->first != -1)
-			close(it->first);
-	}
-	_map_connected_clients.clear();
-	_vec_client_fds.clear();
-	if (_server_socket_fd != -1)
-		close(_server_socket_fd);
-	
 }
 
 /* ---------- Signals ---------- */
@@ -176,7 +159,7 @@ void Server::run()
 			throw std::runtime_error("Error while polling");
 		_processEvents();
 	}
-	_closeFds();
+	_shutdownServer();
 }
 
 void Server::_prepareEvents()
@@ -481,4 +464,24 @@ void Server::_disconnectClient(int client_fd)
 			break;
 		}
 	}
+}
+
+void Server::_shutdownServer()
+{
+	if (DEBUG_SERVER)
+		printDebug("Server-> _shutdownServer() called");
+
+	for (std::map<int, Client>::iterator it = _map_connected_clients.begin(); it != _map_connected_clients.end(); ++it)
+	{
+		if (it->first != -1)
+		{
+			std::string message = "ERROR :Server shutting down\r\n";
+			send(it->first, message.c_str(), message.size(), 0);
+			close(it->first);
+		}
+	}
+	_map_connected_clients.clear();
+	_vec_client_fds.clear();
+	if (_server_socket_fd != -1)
+		close(_server_socket_fd);
 }
