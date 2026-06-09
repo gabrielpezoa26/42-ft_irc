@@ -6,11 +6,11 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 10:42:08 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/05/19 21:30:53 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/06/08 22:44:43 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/utils.hpp"
+#include "../includes/utils.hpp"
 
 void log(std::string message) { std::cout << message << std::endl; }
 
@@ -27,11 +27,11 @@ void printCurrentTime()
 	std::cout << GREEN << readable_current_time << RESET;
 }
 
-std::string normalize(std::string& cmd)
+std::string normalize(std::string& str)
 {
-	for(size_t i = 0; i < cmd.length(); i++)
-		cmd[i] = std::toupper((unsigned char)cmd[i]);
-	return cmd;
+	for(size_t i = 0; i < str.length(); i++)
+		str[i] = std::toupper((unsigned char)str[i]);
+	return str;
 }
 
 std::string trim(const std::string& str)
@@ -46,4 +46,26 @@ std::string trim(const std::string& str)
 	if (pos != std::string::npos)
 		result.erase(0, pos);
 	return result;
+}
+
+void splitCommand(const std::string& cmd, std::string& command, std::string& args)
+{
+	std::string clean_cmd = trim(cmd);
+	if (clean_cmd.empty())
+		return;
+
+	std::string::size_type pos = clean_cmd.find(' ');
+	if (pos == std::string::npos)
+	{
+		command = normalize(clean_cmd);
+		args = "";
+	}
+	else
+	{
+		std::string tmp_cmd = clean_cmd.substr(0, pos);
+		command = normalize(tmp_cmd);
+		std::string::size_type arg_start = clean_cmd.find_first_not_of(' ', pos);
+		if (arg_start != std::string::npos)
+			args = clean_cmd.substr(arg_start);
+	}
 }

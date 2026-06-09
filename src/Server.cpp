@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:27:00 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/06/02 23:11:07 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/06/08 22:29:52 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,28 +82,7 @@ bool Server::_isValidPassword(const std::string &password)
 	return true;
 }
 
-/* ---------- Signals ---------- */
-bool Server::_continue_running = true;
-
-void Server::_handleSignals(int signum)
-{
-	(void)signum;
-	Server::_continue_running = 0;
-}
-
-void Server::setupSignals()
-{
-	struct sigaction sa;
-	
-	memset(&sa, 0, sizeof(sa));
-	sa.sa_handler = Server::_handleSignals;
-	sa.sa_flags = 0;
-	sigemptyset(&sa.sa_mask);
-	sigaction(SIGINT, &sa, NULL);
-	sigaction(SIGQUIT, &sa, NULL);
-}
-
-/* ---------- Methods ---------- */
+/* ---------- main Methods ---------- */
 void Server::init(char **argv)
 {
 	if (DEBUG_SERVER)
@@ -113,7 +92,7 @@ void Server::init(char **argv)
 	_server_password = argv[2];
 	if (!_isValidPort(input_port) || !_isValidPassword(_server_password))
 	{
-		throw std::invalid_argument("Server-> Exception caught: invalid input");
+		throw std::invalid_argument("Server-> Exception caught: invalid parameters");
 	}
 }
 
@@ -150,12 +129,12 @@ void Server::run()
 		printDebug("Server-> run() called");
 	
 	printCurrentTime();
-	setupSignals();
-	while (_continue_running)
+	SignalHandler::setupSignals();
+	while (SignalHandler::isRunning())
 	{
 		_prepareEvents();
 		int poll_result = poll(&_vec_client_fds[0], _vec_client_fds.size(), -1);
-		if (poll_result == -1 && Server::_continue_running == true) 
+		if (poll_result == -1 && SignalHandler::isRunning() == true) 
 			throw std::runtime_error("Error while polling");
 		_processEvents();
 	}
@@ -171,13 +150,14 @@ void Server::_prepareEvents()
 		if (_vec_client_fds[i].fd == _server_socket_fd)
 			continue;
 		
+		// associate integer fd with client object
 		std::map<int, Client>::iterator it = _map_connected_clients.find(_vec_client_fds[i].fd);
 		if (it != _map_connected_clients.end())
 		{
 			if (!it->second.getOutputBuffer().empty())
-				_vec_client_fds[i].events = POLLIN | POLLOUT;
+				_vec_client_fds[i].events = POLLIN | POLLOUT;  //set for response and receive data
 			else
-				_vec_client_fds[i].events = POLLIN;
+				_vec_client_fds[i].events = POLLIN;  //set for only receiving data
 		}
 	}
 }
@@ -327,6 +307,7 @@ bool Server::_handleClientActivity(int client_fd)
 
 	std::string new_data(client_message, bytes_received);
 	std::map<int, Client>::iterator it = _map_connected_clients.find(client_fd);
+	// obs
 	if (it == _map_connected_clients.end())
 		return false;
 
@@ -347,30 +328,6 @@ bool Server::_handleClientActivity(int client_fd)
 	return true;
 }
 
-void Server::_splitCommand(const std::string& cmd, std::string& command, std::string& args)
-{
-	if (DEBUG_SERVER)
-		printDebug("Server-> _splitCommand() called");
-	std::string clean_cmd = trim(cmd);
-	if (clean_cmd.empty())
-		return;
-
-	std::string::size_type pos = clean_cmd.find(' ');
-	if (pos == std::string::npos)
-	{
-		command = normalize(clean_cmd);
-		args = "";
-	}
-	else
-	{
-		std::string tmp_cmd = clean_cmd.substr(0, pos);
-		command = normalize(tmp_cmd);
-		std::string::size_type arg_start = clean_cmd.find_first_not_of(' ', pos);
-		if (arg_start != std::string::npos)
-			args = clean_cmd.substr(arg_start);
-	}
-}
-
 void Server::_routeCommand(Client& client, const std::string& cmd)
 {
 	if (DEBUG_SERVER)
@@ -378,7 +335,7 @@ void Server::_routeCommand(Client& client, const std::string& cmd)
 
 	std::string command;
 	std::string args;
-	_splitCommand(cmd, command, args);
+	splitCommand(cmd, command, args);
 	
 	if (command.empty())
 		return;

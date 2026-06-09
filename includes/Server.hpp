@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/06/02 19:51:10 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/06/08 22:29:08 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 #include "utils.hpp"
 #include "Channel.hpp"
 #include "Commands.hpp"
+#include "SignalHandler.hpp"
 
 #define LOG_CONSOLE true
 #define DEBUG_SERVER false
@@ -43,7 +44,6 @@ class Server
 	private:
 		int _server_port;
 		std::string _server_password;
-		static bool _continue_running;
 		int _server_socket_fd;
 		struct sockaddr_in _server_address;
 		struct sockaddr_in _client_address;
