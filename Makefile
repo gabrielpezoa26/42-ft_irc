@@ -7,7 +7,7 @@ INCLUDES = includes
 OBJ_DIR = objects
 
 SRC_DIR = src
-UTILS_DIR = $(SRC_DIR)/utils
+# UTILS_DIR = $(SRC_DIR)/utils
 COMMANDS_DIR = $(SRC_DIR)/commands
 
 SRCS = $(SRC_DIR)/main.cpp \
@@ -16,7 +16,8 @@ SRCS = $(SRC_DIR)/main.cpp \
 		$(SRC_DIR)/Auth.cpp \
 		$(SRC_DIR)/Channel.cpp \
 		$(SRC_DIR)/Commands.cpp \
-		$(UTILS_DIR)/utils.cpp \
+		$(SRC_DIR)/SignalHandler.cpp \
+		$(SRC_DIR)/utils.cpp \
 		$(COMMANDS_DIR)/join.cpp \
 		$(COMMANDS_DIR)/kick.cpp \
 		$(COMMANDS_DIR)/mode.cpp \
