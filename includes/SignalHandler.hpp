@@ -6,15 +6,15 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/08 22:28:58 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/06/08 22:35:11 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/06/09 23:30:39 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SIGNALS_HPP
 #define SIGNALS_HPP
 
-#include <unistd.h>
-#include "Server.hpp"
+#include <signal.h>
+#include <string.h>
 
 class SignalHandler
 {
