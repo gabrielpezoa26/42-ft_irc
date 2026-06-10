@@ -44,3 +44,20 @@ testar com o Irssi:
 			precisa do '-nocap'
 
 - usa "normal" pra enviar msgs etc (aí tem q ver na documentação deles rsrs)
+
+/mode #test +k password    (set key)
+/mode #test -k             (unset key)
+/mode #test +i             (invite only)
+/mode #test -i
+/mode #test +t             (topic lock)
+/mode #test +l 5           (user limit)
+/mode #test -l
+/mode #test +o nick        (op someone)
+/mode #test -o nick
+
+
+/mode #test +z             (unknown flag — should you 501 this or ignore?)
+/mode #nonexistent         (403)
+/mode #test +k             (missing password — should 461)
+/mode #test +l             (missing limit — should 461)
+/mode #test +o             (missing nick — should 461)

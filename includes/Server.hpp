@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/06/08 22:29:08 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/06/09 22:36:57 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ class Server
 		
 		Auth _auth_handler;
 		Commands _command_handler;
-		bool _isValidPort(const std::string &port);
-		bool _isValidPassword(const std::string &password);
+		bool _parsePort(const std::string &given_port);
+		bool _parsePassword(const std::string &given_password);
 
 
 		static void _handleSignals(int signum);

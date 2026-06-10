@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HOST="127.0.0.1"
-PORT="4444"
+PORT="6667"
 PASS="senha123"
 PASS_WRONG="wrongpass"
 

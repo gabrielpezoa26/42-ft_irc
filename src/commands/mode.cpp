@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/08 23:34:11 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/06/02 19:00:37 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/06/09 22:46:04 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,17 @@ static bool _isValidModeChar(char x)
 		return true;
 	else
 		return false;
+}
+
+static int _countModeFlags(const std::string& mode_string)
+{
+	int count = 0;
+	for (size_t i = 0; i < mode_string.length(); i++)
+	{
+		if (mode_string[i] != '+' && mode_string[i] != '-')
+			count++;
+	}
+	return count;
 }
 
 static int getTargetFd(Channel& channel, const std::string& target_user)
@@ -104,6 +115,12 @@ static bool _applyModes(Client& client, Channel& channel, const std::string& mod
 	bool add_mode = true;
 	bool state_changed = false;
 	
+	if (_countModeFlags(mode_string) > 1)
+	{
+		client.appendOutputBuffer(":ft_irc 461 " + client.getNickname() + " MODE :Not enough parameters\r\n");
+		return false;
+	}
+
 	for (size_t i = 0; i < mode_string.length(); i++)
 	{
 		char mode = mode_string[i];

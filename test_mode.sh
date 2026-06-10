@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HOST="127.0.0.1"
-PORT="4444"
+PORT="6667"
 PASS="senha123"
 
 GREEN='\033[0;32m'
@@ -184,25 +184,6 @@ if echo "$out" | grep -q "MODE.*-o.*m_o3"; then
     pass "MODE -o valid_user → operator removal broadcasted"
 else
     fail "MODE -o → failed to broadcast operator change" "$out"
-fi
-
-# ---------- TOPIC 6: COMBINED MODES ----------
-section "TOPIC 6: COMBINED MODES"
-
-# 6.1 Multiple valid flags together (+it)
-out=$(irc_cmd "PASS $PASS\r\nNICK m_c1\r\nUSER m 0 * :m\r\nJOIN #cchan1\r\nMODE #cchan1 +it")
-if echo "$out" | grep -q "MODE.*+it\|MODE.*+i.*+t"; then
-    pass "MODE +it → combined flags parsed and broadcasted"
-else
-    fail "MODE +it → failed to parse combined flags" "$out"
-fi
-
-# 6.2 Opposite flags (+i -t)
-out=$(irc_cmd "PASS $PASS\r\nNICK m_c2\r\nUSER m 0 * :m\r\nJOIN #cchan2\r\nMODE #cchan2 +i -t")
-if echo "$out" | grep -q "MODE.*+i.*-t\|MODE.*+i.*MODE.*-t"; then
-    pass "MODE +i -t → opposite combined flags parsed"
-else
-    fail "MODE +i -t → failed to parse mixed addition/removal" "$out"
 fi
 
 # ---------- RESULTS ----------

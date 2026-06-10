@@ -7,7 +7,6 @@ INCLUDES = includes
 OBJ_DIR = objects
 
 SRC_DIR = src
-# UTILS_DIR = $(SRC_DIR)/utils
 COMMANDS_DIR = $(SRC_DIR)/commands
 
 SRCS = $(SRC_DIR)/main.cpp \
@@ -50,16 +49,16 @@ fclean: clean
 re: fclean all
 
 run: all
-	./$(NAME) 4444 senha123
+	./$(NAME) 6667 senha123
 
 kill:
 	killall -9 $(NAME) || true
 
 nc:
-	nc -C 127.0.0.1 4444
+	nc -C 127.0.0.1 6667
 
 nc-manual:
-	nc 127.0.0.1 4444
+	nc 127.0.0.1 6667
 
 val: all
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --track-fds=yes ./$(NAME) 4444 senha123
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --track-fds=yes ./$(NAME) 6667 senha123

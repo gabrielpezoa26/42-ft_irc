@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 10:42:08 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/06/08 22:44:43 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/06/09 22:07:12 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,9 @@ std::string trim(const std::string& str)
 	return result;
 }
 
-void splitCommand(const std::string& cmd, std::string& command, std::string& args)
+void splitCommand(const std::string& input_cmd, std::string& command, std::string& args)
 {
-	std::string clean_cmd = trim(cmd);
+	std::string clean_cmd = trim(input_cmd);
 	if (clean_cmd.empty())
 		return;
 
