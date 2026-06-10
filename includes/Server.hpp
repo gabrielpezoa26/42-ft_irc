@@ -6,7 +6,7 @@
 /*   By: gcesar-n <gcesar-n@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 13:24:23 by gcesar-n          #+#    #+#             */
-/*   Updated: 2026/06/09 22:36:57 by gcesar-n         ###   ########.fr       */
+/*   Updated: 2026/06/10 17:59:44 by gcesar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@
 #include "Commands.hpp"
 #include "SignalHandler.hpp"
 
-#define LOG_CONSOLE true
+#define LOG_CONSOLE false
 #define DEBUG_SERVER false
 
 class Server

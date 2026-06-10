@@ -57,8 +57,5 @@ kill:
 nc:
 	nc -C 127.0.0.1 6667
 
-nc-manual:
-	nc 127.0.0.1 6667
-
 val: all
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --track-fds=yes ./$(NAME) 6667 senha123
