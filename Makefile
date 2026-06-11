@@ -49,7 +49,7 @@ fclean: clean
 re: fclean all
 
 run: all
-	./$(NAME) 6667 senha123
+	./$(NAME) 6667 admin123
 
 kill:
 	killall -9 $(NAME) || true
@@ -58,4 +58,4 @@ nc:
 	nc -C 127.0.0.1 6667
 
 val: all
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --track-fds=yes ./$(NAME) 6667 senha123
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --track-fds=yes ./$(NAME) 6667 admin123
